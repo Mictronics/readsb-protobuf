@@ -1,5 +1,5 @@
 PROGNAME=readsb
-READSB_VERSION='v3.8.2'
+READSB_VERSION='v4.0.0'
 
 RTLSDR ?= no
 BLADERF ?= no
@@ -11,7 +11,7 @@ CPPFLAGS += -DMODES_READSB_VERSION=\"$(READSB_VERSION)\" -DMODES_READSB_VARIANT=
 
 DIALECT = -std=c11
 CFLAGS += $(DIALECT) -O2 -g -W -D_DEFAULT_SOURCE -Wall -Werror
-LIBS = -pthread -lpthread -lm -lrt
+LIBS = -pthread -lpthread -lm -lrt -lncurses -lprotobuf-c
 
 ifeq ($(AGGRESSIVE), yes)
   CPPFLAGS += -DALLOW_AGGRESSIVE
@@ -54,18 +54,30 @@ ifeq ($(PLUTOSDR), yes)
     LIBS_SDR += $(shell pkg-config --libs libiio libad9361)
 endif
 
-all: readsb viewadsb
+all: protoc readsb viewadsb
+
+protoc: readsb.proto database.proto
+	mkdir -p ./webapp/src/script/readsb/protobuf
+	protoc --js_out=./webapp/src/script/readsb/protobuf $^
+	protoc-c --c_out=. $<
+
+protoc-clean:
+	rm -rf readsb.pb-c.c readsb.pb-c.h ./webapp/src/script/readsb/protobuf
 
 %.o: %.c *.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-readsb: readsb.o anet.o interactive.o mode_ac.o mode_s.o comm_b.o net_io.o crc.o demod_2400.o stats.o cpr.o icao_filter.o track.o util.o convert.o sdr_ifile.o sdr_beast.o sdr.o ais_charset.o $(SDR_OBJ) $(COMPAT)
-	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS) $(LIBS_SDR) -lncurses
+readsb.pb-c.o: readsb.proto
+	protoc-c --c_out=. $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c readsb.pb-c.c -o $@
 
-viewadsb: viewadsb.o anet.o interactive.o mode_ac.o mode_s.o comm_b.o net_io.o crc.o stats.o cpr.o icao_filter.o track.o util.o ais_charset.o $(COMPAT)
-	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS) -lncurses
+readsb: readsb.pb-c.o readsb.o anet.o interactive.o mode_ac.o mode_s.o comm_b.o net_io.o crc.o demod_2400.o stats.o cpr.o icao_filter.o track.o util.o convert.o sdr_ifile.o sdr_beast.o sdr.o ais_charset.o $(SDR_OBJ) $(COMPAT)
+	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS) $(LIBS_SDR) 
 
-clean:
+viewadsb: readsb.pb-c.o viewadsb.o anet.o interactive.o mode_ac.o mode_s.o comm_b.o net_io.o crc.o stats.o cpr.o icao_filter.o track.o util.o ais_charset.o $(COMPAT)
+	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
+
+clean:	protoc-clean
 	rm -f *.o compat/clock_gettime/*.o compat/clock_nanosleep/*.o readsb viewadsb cprtests crctests convert_benchmark
 
 test: cprtests

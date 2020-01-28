@@ -2,7 +2,7 @@
 //
 // sdr_beast.c: Mode-S Beast and GNS5894 support
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This file is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,16 +31,14 @@ static struct {
     uint16_t padding;
 } BeastSettings;
 
-static void beastSetOption(char opt)
-{
-    char optionsmsg[3] = { 0x1a, '1', opt };
+static void beastSetOption(char opt) {
+    char optionsmsg[3] = {0x1a, '1', opt};
     if (write(Modes.beast_fd, optionsmsg, 3) < 3) {
         fprintf(stderr, "Beast failed to set option: %s", strerror(errno));
     }
 }
 
-void beastInitConfig(void)
-{
+void beastInitConfig(void) {
     free(Modes.beast_serial);
     Modes.beast_serial = strdup("/dev/ttyUSB0");
     BeastSettings.filter_df045 = false;
@@ -52,9 +50,8 @@ void beastInitConfig(void)
     BeastSettings.crc = true;
 }
 
-bool beastHandleOption(int argc, char *argv)
-{
-    switch(argc){
+bool beastHandleOption(int argc, char *argv) {
+    switch (argc) {
         case OptBeastSerial:
             free(Modes.beast_serial);
             Modes.beast_serial = strdup(argv);
@@ -83,8 +80,7 @@ bool beastHandleOption(int argc, char *argv)
     return true;
 }
 
-static void signalHandlerIO (int sig, siginfo_t *siginfo, void *context)
-{
+static void signalHandlerIO(int sig, siginfo_t *siginfo, void *context) {
     MODES_NOTUSED(sig);
     MODES_NOTUSED(context);
 
@@ -93,21 +89,20 @@ static void signalHandlerIO (int sig, siginfo_t *siginfo, void *context)
     }
 }
 
-bool beastOpen(void)
-{
+bool beastOpen(void) {
     struct termios tios;
     struct sigaction saio;
     saio.sa_sigaction = &signalHandlerIO;
     saio.sa_flags = SA_SIGINFO;
     saio.sa_restorer = NULL;
 
-    if(Modes.sdr_type == SDR_GNS) {
+    if (Modes.sdr_type == SDR_GNS) {
         // GNS5894 hat by default on USART0
         free(Modes.beast_serial);
         Modes.beast_serial = strdup("/dev/ttyAMA0");
     }
 
-    Modes.beast_fd = open(Modes.beast_serial, O_RDWR  | O_NOCTTY);
+    Modes.beast_fd = open(Modes.beast_serial, O_RDWR | O_NOCTTY);
     if (Modes.beast_fd < 0) {
         fprintf(stderr, "Failed to open serial device %s: %s\n",
                 Modes.beast_serial, strerror(errno));
@@ -123,7 +118,7 @@ bool beastOpen(void)
     tios.c_iflag = IGNPAR;
     tios.c_oflag = 0;
     tios.c_lflag = 0;
-    if(Modes.sdr_type == SDR_MODESBEAST) {
+    if (Modes.sdr_type == SDR_MODESBEAST) {
         tios.c_cflag = CS8 | CRTSCTS;
         tios.c_cc[VMIN] = 11;
         tios.c_cc[VTIME] = 0;
@@ -131,11 +126,11 @@ bool beastOpen(void)
         tios.c_cflag = CS8 | CLOCAL | CREAD;
         tios.c_lflag = ICANON;
 
-        sigaction(SIGIO,&saio,NULL);
+        sigaction(SIGIO, &saio, NULL);
 
         fcntl(Modes.beast_fd, F_SETFL, FNDELAY);
         fcntl(Modes.beast_fd, F_SETOWN, getpid());
-        fcntl(Modes.beast_fd, F_SETFL,  O_ASYNC );
+        fcntl(Modes.beast_fd, F_SETFL, O_ASYNC);
     }
 
     if (cfsetispeed(&tios, B3000000) < 0) {
@@ -158,46 +153,46 @@ bool beastOpen(void)
         return false;
     }
 
-    if(Modes.sdr_type == SDR_MODESBEAST) {
+    if (Modes.sdr_type == SDR_MODESBEAST) {
         /* set options */
         beastSetOption('C'); /* use binary format */
         beastSetOption('H'); /* RTS enabled */
 
-        if(BeastSettings.filter_df1117)
+        if (BeastSettings.filter_df1117)
             beastSetOption('D'); /* enable DF11/17-only filter*/
         else
             beastSetOption('d'); /* disable DF11/17-only filter, deliver all messages */
 
-        if(BeastSettings.mlat_timestamp)
+        if (BeastSettings.mlat_timestamp)
             beastSetOption('E'); /* enable mlat timestamps */
         else
             beastSetOption('e'); /* disable mlat timestamps */
 
-        if(BeastSettings.crc)
+        if (BeastSettings.crc)
             beastSetOption('f'); /* enable CRC checks */
         else
             beastSetOption('F'); /* disable CRC checks */
 
-        if(BeastSettings.filter_df045)
+        if (BeastSettings.filter_df045)
             beastSetOption('G'); /* enable DF0/4/5 filter */
         else
             beastSetOption('g'); /* disable DF0/4/5 filter, deliver all messages */
 
-        if(Modes.nfix_crc || BeastSettings.fec)
+        if (Modes.nfix_crc || BeastSettings.fec)
             beastSetOption('i'); /* FEC enabled */
         else
             beastSetOption('I'); /* FEC disbled */
 
-        if(Modes.mode_ac || BeastSettings.mode_ac)
-            beastSetOption('J');  /* Mode A/C enabled */
+        if (Modes.mode_ac || BeastSettings.mode_ac)
+            beastSetOption('J'); /* Mode A/C enabled */
         else
-            beastSetOption('j');  /* Mode A/C disabled */
+            beastSetOption('j'); /* Mode A/C disabled */
     }
     /* Kick on handshake and start reception */
     int RTSDTR_flag = TIOCM_RTS | TIOCM_DTR;
-    ioctl(Modes.beast_fd, TIOCMBIS,&RTSDTR_flag); //Set RTS&DTR pin
+    ioctl(Modes.beast_fd, TIOCMBIS, &RTSDTR_flag); //Set RTS&DTR pin
 
-    if(Modes.sdr_type == SDR_MODESBEAST) {
+    if (Modes.sdr_type == SDR_MODESBEAST) {
         fprintf(stderr, "Running Mode-S Beast via USB.\n");
     } else {
         fprintf(stderr, "Running serial GNS5894.\n");
@@ -205,13 +200,11 @@ bool beastOpen(void)
     return true;
 }
 
-void beastRun()
-{
+void beastRun() {
 
 }
 
-void beastClose()
-{
+void beastClose() {
     /* Beast device will be closed in the main cleanup_and_exit function when
      * clients are freed.
      */

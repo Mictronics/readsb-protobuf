@@ -2,7 +2,7 @@
 //
 // view1090, a messages viewer for readsb backend.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -211,7 +211,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 
 int main(int argc, char **argv) {
     struct net_service *s;
-    struct net_connector *con = calloc(1, sizeof(struct net_connector));
+    struct net_connector *con = calloc(1, sizeof (struct net_connector));
 
     // Set sane defaults
 
@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
     con->port = bo_connect_port;
     con->service = s;
 
-    con->mutex = malloc(sizeof(pthread_mutex_t));
+    con->mutex = malloc(sizeof (pthread_mutex_t));
     if (!con->mutex || pthread_mutex_init(con->mutex, NULL)) {
         fprintf(stderr, "Unable to initialize connector mutex!\n");
         exit(1);
@@ -277,10 +277,10 @@ int main(int argc, char **argv) {
 
     // Initialization
     view1090Init();
-    
+
     // Keep going till the user does something that stops us
     while (!Modes.exit) {
-        struct timespec r = { 0, 100 * 1000 * 1000};
+        struct timespec r = {0, 100 * 1000 * 1000};
         icaoFilterExpire();
         trackPeriodicUpdate();
         modesNetPeriodicWork();

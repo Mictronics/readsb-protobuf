@@ -2,7 +2,7 @@
 //
 // comm_b.h: Comm-B message decoding (header)
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -25,6 +25,6 @@
 #ifndef COMM_B_H
 #define COMM_B_H
 
-void decodeCommB (struct modesMessage *mm);
+void decodeCommB(struct modesMessage *mm);
 
 #endif

@@ -2,7 +2,7 @@
 //
 // anet.c: Basic TCP socket stuff made a bit less boring
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -73,8 +73,7 @@
 
 static int open_fds;
 
-static void anetSetError(char *err, const char *fmt, ...)
-{
+static void anetSetError(char *err, const char *fmt, ...) {
     va_list ap;
 
     if (!err) return;
@@ -83,8 +82,7 @@ static void anetSetError(char *err, const char *fmt, ...)
     va_end(ap);
 }
 
-int anetNonBlock(char *err, int fd)
-{
+int anetNonBlock(char *err, int fd) {
     int flags;
 
     /* Set the socket nonblocking.
@@ -102,39 +100,33 @@ int anetNonBlock(char *err, int fd)
     return ANET_OK;
 }
 
-int anetTcpNoDelay(char *err, int fd)
-{
+int anetTcpNoDelay(char *err, int fd) {
     int yes = 1;
-    if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void*)&yes, sizeof(yes)) == -1)
-    {
+    if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (void*) &yes, sizeof (yes)) == -1) {
         anetSetError(err, "setsockopt TCP_NODELAY: %s", strerror(errno));
         return ANET_ERR;
     }
     return ANET_OK;
 }
 
-int anetSetSendBuffer(char *err, int fd, int buffsize)
-{
-    if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (void*)&buffsize, sizeof(buffsize)) == -1)
-    {
+int anetSetSendBuffer(char *err, int fd, int buffsize) {
+    if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, (void*) &buffsize, sizeof (buffsize)) == -1) {
         anetSetError(err, "setsockopt SO_SNDBUF: %s", strerror(errno));
         return ANET_ERR;
     }
     return ANET_OK;
 }
 
-int anetTcpKeepAlive(char *err, int fd)
-{
+int anetTcpKeepAlive(char *err, int fd) {
     int yes = 1;
-    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void*)&yes, sizeof(yes)) == -1) {
+    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (void*) &yes, sizeof (yes)) == -1) {
         anetSetError(err, "setsockopt SO_KEEPALIVE: %s", strerror(errno));
         return ANET_ERR;
     }
     return ANET_OK;
 }
 
-static int anetCreateSocket(char *err, int domain)
-{
+static int anetCreateSocket(char *err, int domain) {
     int s, on = 1;
     static int max_fds;
     if (!max_fds) {
@@ -157,7 +149,7 @@ static int anetCreateSocket(char *err, int domain)
 
     /* Make sure connection-intensive things like the redis benckmark
      * will be able to close/open sockets a zillion of times */
-    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void*)&on, sizeof(on)) == -1) {
+    if (setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void*) &on, sizeof (on)) == -1) {
         anetSetError(err, "setsockopt SO_REUSEADDR: %s", strerror(errno));
         anetCloseSocket(s);
         return ANET_ERR;
@@ -167,8 +159,8 @@ static int anetCreateSocket(char *err, int domain)
 
 #define ANET_CONNECT_NONE 0
 #define ANET_CONNECT_NONBLOCK 1
-static int anetTcpGenericConnect(char *err, char *addr, char *service, int flags, struct sockaddr_storage *ss)
-{
+
+static int anetTcpGenericConnect(char *err, char *addr, char *service, int flags, struct sockaddr_storage *ss) {
     int s;
     struct addrinfo gai_hints;
     struct addrinfo *gai_result, *p;
@@ -194,15 +186,15 @@ static int anetTcpGenericConnect(char *err, char *addr, char *service, int flags
             continue;
 
         if (flags & ANET_CONNECT_NONBLOCK) {
-            if (anetNonBlock(err,s) != ANET_OK)
+            if (anetNonBlock(err, s) != ANET_OK)
                 return ANET_ERR;
         }
 
         if (connect(s, p->ai_addr, p->ai_addrlen) >= 0 || (errno == EINPROGRESS && (flags & ANET_CONNECT_NONBLOCK))
-           ) {
+                ) {
             // If we were passed a place to toss the sockaddr info, save it
             if (ss) {
-                memcpy(ss, p->ai_addr, sizeof(*ss));
+                memcpy(ss, p->ai_addr, sizeof (*ss));
             }
             freeaddrinfo(gai_result);
             return s;
@@ -216,18 +208,15 @@ static int anetTcpGenericConnect(char *err, char *addr, char *service, int flags
     return ANET_ERR;
 }
 
-int anetTcpConnect(char *err, char *addr, char *service, struct sockaddr_storage *ss)
-{
-    return anetTcpGenericConnect(err,addr,service,ANET_CONNECT_NONE, ss);
+int anetTcpConnect(char *err, char *addr, char *service, struct sockaddr_storage *ss) {
+    return anetTcpGenericConnect(err, addr, service, ANET_CONNECT_NONE, ss);
 }
 
-int anetTcpNonBlockConnect(char *err, char *addr, char *service, struct sockaddr_storage *ss)
-{
-    return anetTcpGenericConnect(err,addr,service,ANET_CONNECT_NONBLOCK, ss);
+int anetTcpNonBlockConnect(char *err, char *addr, char *service, struct sockaddr_storage *ss) {
+    return anetTcpGenericConnect(err, addr, service, ANET_CONNECT_NONBLOCK, ss);
 }
 
-int anetGetaddrinfo(char *err, char *addr, char *service, struct addrinfo **gai_result)
-{
+int anetGetaddrinfo(char *err, char *addr, char *service, struct addrinfo **gai_result) {
     struct addrinfo gai_hints;
     int gai_error;
 
@@ -248,14 +237,13 @@ int anetGetaddrinfo(char *err, char *addr, char *service, struct addrinfo **gai_
     return 0;
 }
 
-int anetTcpNonBlockConnectAddr(char *err, struct addrinfo *p)
-{
+int anetTcpNonBlockConnectAddr(char *err, struct addrinfo *p) {
     int s;
 
     if ((s = anetCreateSocket(err, p->ai_family)) == ANET_ERR)
         return ANET_ERR;
 
-    if (anetNonBlock(err,s) != ANET_OK)
+    if (anetNonBlock(err, s) != ANET_OK)
         return ANET_ERR;
 
     if (connect(s, p->ai_addr, p->ai_addrlen) >= 0) {
@@ -273,11 +261,10 @@ int anetTcpNonBlockConnectAddr(char *err, struct addrinfo *p)
 
 /* Like read(2) but make sure 'count' is read before to return
  * (unless error or EOF condition is encountered) */
-int anetRead(int fd, char *buf, int count)
-{
+int anetRead(int fd, char *buf, int count) {
     int nread, totlen = 0;
-    while(totlen != count) {
-        nread = read(fd,buf,count-totlen);
+    while (totlen != count) {
+        nread = read(fd, buf, count - totlen);
         if (nread == 0) return totlen;
         if (nread == -1) return -1;
         totlen += nread;
@@ -288,11 +275,10 @@ int anetRead(int fd, char *buf, int count)
 
 /* Like write(2) but make sure 'count' is read before to return
  * (unless error is encountered) */
-int anetWrite(int fd, char *buf, int count)
-{
+int anetWrite(int fd, char *buf, int count) {
     int nwritten, totlen = 0;
-    while(totlen != count) {
-        nwritten = write(fd,buf,count-totlen);
+    while (totlen != count) {
+        nwritten = write(fd, buf, count - totlen);
         if (nwritten == 0) return totlen;
         if (nwritten == -1) return -1;
         totlen += nwritten;
@@ -304,10 +290,10 @@ int anetWrite(int fd, char *buf, int count)
 static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len) {
     if (sa->sa_family == AF_INET6) {
         int on = 1;
-        setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof(on));
+        setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, &on, sizeof (on));
     }
 
-    if (bind(s,sa,len) == -1) {
+    if (bind(s, sa, len) == -1) {
         anetSetError(err, "bind: %s", strerror(errno));
         anetCloseSocket(s);
         return ANET_ERR;
@@ -324,8 +310,7 @@ static int anetListen(char *err, int s, struct sockaddr *sa, socklen_t len) {
     return ANET_OK;
 }
 
-int anetTcpServer(char *err, char *service, char *bindaddr, int *fds, int nfds)
-{
+int anetTcpServer(char *err, char *service, char *bindaddr, int *fds, int nfds) {
     int s;
     int i = 0;
     struct addrinfo gai_hints;
@@ -362,11 +347,10 @@ int anetTcpServer(char *err, char *service, char *bindaddr, int *fds, int nfds)
     return (i > 0 ? i : ANET_ERR);
 }
 
-int anetGenericAccept(char *err, int s, struct sockaddr *sa, socklen_t *len)
-{
+int anetGenericAccept(char *err, int s, struct sockaddr *sa, socklen_t *len) {
     int fd;
-    while(1) {
-        fd = accept(s,sa,len);
+    while (1) {
+        fd = accept(s, sa, len);
         if (fd == -1) {
             if (errno == EINTR) {
                 continue;
@@ -377,7 +361,7 @@ int anetGenericAccept(char *err, int s, struct sockaddr *sa, socklen_t *len)
         break;
     }
     /* Turn on keepalives */
-    anetTcpKeepAlive(err,fd);
+    anetTcpKeepAlive(err, fd);
     return fd;
 }
 

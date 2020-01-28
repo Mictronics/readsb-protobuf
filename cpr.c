@@ -2,7 +2,7 @@
 //
 // cpr.c - Compact Position Reporting decoder and tests
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -59,6 +59,7 @@
 //
 // Always positive MOD operation, used for CPR decoding.
 //
+
 static int cprModInt(int a, int b) {
     int res = a % b;
     if (res < 0) res += b;
@@ -76,6 +77,7 @@ static double cprModDouble(double a, double b) {
 //
 // The NL function uses the precomputed table from 1090-WP-9-14
 //
+
 static int cprNLFunction(double lat) {
     if (lat < 0) lat = -lat; // Table is simmetric about the equator
     if (lat < 10.47047130) return 59;
@@ -141,6 +143,7 @@ static int cprNLFunction(double lat) {
 //
 //=========================================================================
 //
+
 static int cprNFunction(double lat, int fflag) {
     int nl = cprNLFunction(lat) - (fflag ? 1 : 0);
     if (nl < 1) nl = 1;
@@ -149,6 +152,7 @@ static int cprNFunction(double lat, int fflag) {
 //
 //=========================================================================
 //
+
 static double cprDlonFunction(double lat, int fflag, int surface) {
     return (surface ? 90.0 : 360.0) / cprNFunction(lat, fflag);
 }
@@ -161,6 +165,7 @@ static double cprDlonFunction(double lat, int fflag, int surface) {
 // A few remarks:
 // 1) 131072 is 2^17 since CPR latitude and longitude are encoded in 17 bits.
 //
+
 int decodeCPRairborne(int even_cprlat, int even_cprlon,
         int odd_cprlat, int odd_cprlon,
         int fflag,
@@ -322,6 +327,7 @@ int decodeCPRsurface(double reflat, double reflon,
 // See Figure 5-5 / 5-6 and note that floor is applied to (0.5 + fRP - fEP), not
 // directly to (fRP - fEP). Eq 38 is correct.
 //
+
 int decodeCPRrelative(double reflat, double reflon,
         int cprlat, int cprlon,
         int fflag, int surface,

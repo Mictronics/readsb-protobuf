@@ -2,7 +2,7 @@
 //
 // demod_2400.h: 2.4MHz Mode S demodulator prototypes.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -21,14 +21,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DUMP1090_DEMOD_2400_H
-#define DUMP1090_DEMOD_2400_H
+#ifndef DEMOD_2400_H
+#define DEMOD_2400_H
 
 #include <stdint.h>
 
 struct mag_buf;
 
-void demodulate2400 (struct mag_buf *mag);
-void demodulate2400AC (struct mag_buf *mag);
+void demodulate2400(struct mag_buf *mag);
+void demodulate2400AC(struct mag_buf *mag);
 
 #endif

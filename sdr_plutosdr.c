@@ -2,7 +2,7 @@
 //
 // sdr_pluto.c: PlutoSDR support
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This file is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ static struct {
     int dev_index;
     struct iio_channel *rx0_i;
     struct iio_channel *rx0_q;
-    struct iio_buffer  *rxbuf;
+    struct iio_buffer *rxbuf;
     struct iio_context *ctx;
     struct iio_device *dev;
     int16_t *readbuf;
@@ -39,8 +39,7 @@ static struct {
 
 static struct timespec thread_cpu;
 
-void plutosdrInitConfig()
-{
+void plutosdrInitConfig() {
     PLUTOSDR.readbuf = NULL;
     PLUTOSDR.converter = NULL;
     PLUTOSDR.converter_state = NULL;
@@ -48,8 +47,7 @@ void plutosdrInitConfig()
     PLUTOSDR.network = strdup("pluto.local");
 }
 
-bool plutosdrHandleOption(int argc, char *argv)
-{
+bool plutosdrHandleOption(int argc, char *argv) {
     switch (argc) {
         case OptPlutoUri:
             PLUTOSDR.uri = strdup(argv);
@@ -61,20 +59,17 @@ bool plutosdrHandleOption(int argc, char *argv)
     return true;
 }
 
-bool plutosdrOpen()
-{
+bool plutosdrOpen() {
     PLUTOSDR.ctx = iio_create_default_context();
     if (PLUTOSDR.ctx == NULL && PLUTOSDR.uri != NULL) {
         PLUTOSDR.ctx = iio_create_context_from_uri(PLUTOSDR.uri);
-    }
-
-    else if (PLUTOSDR.ctx == NULL) {
+    } else if (PLUTOSDR.ctx == NULL) {
         PLUTOSDR.ctx = iio_create_network_context(PLUTOSDR.network);
     }
 
     if (PLUTOSDR.ctx == NULL) {
         char buf[1024];
-        iio_strerror(errno, buf, sizeof(buf));
+        iio_strerror(errno, buf, sizeof (buf));
         fprintf(stderr, "plutosdr: Failed creating IIO context: %s\n", buf);
         return false;
     }
@@ -84,11 +79,11 @@ bool plutosdrOpen()
     ctx = iio_create_scan_context(NULL, 0);
     if (ctx) {
         int info_count = iio_scan_context_get_info_list(ctx, &info);
-        if(info_count > 0) {
+        if (info_count > 0) {
             fprintf(stderr, "plutosdr: %s\n", iio_context_info_get_description(info[0]));
             iio_context_info_list_free(info);
         }
-	iio_scan_context_destroy(ctx);
+        iio_scan_context_destroy(ctx);
     }
 
     int device_count = iio_context_get_devices_count(PLUTOSDR.ctx);
@@ -107,8 +102,8 @@ bool plutosdrOpen()
 
     struct iio_channel* phy_chn = iio_device_find_channel(iio_context_find_device(PLUTOSDR.ctx, "ad9361-phy"), "voltage0", false);
     iio_channel_attr_write(phy_chn, "rf_port_select", "A_BALANCED");
-    iio_channel_attr_write_longlong(phy_chn, "rf_bandwidth", (long long)1750000);
-    iio_channel_attr_write_longlong(phy_chn, "sampling_frequency", (long long)Modes.sample_rate);
+    iio_channel_attr_write_longlong(phy_chn, "rf_bandwidth", (long long) 1750000);
+    iio_channel_attr_write_longlong(phy_chn, "sampling_frequency", (long long) Modes.sample_rate);
 
     if (Modes.gain == MODES_AUTO_GAIN) {
         iio_channel_attr_write(phy_chn, "gain_control_mode", "slow_attack");
@@ -121,12 +116,12 @@ bool plutosdrOpen()
     }
 
     iio_channel_attr_write_bool(
-        iio_device_find_channel(iio_context_find_device(PLUTOSDR.ctx, "ad9361-phy"), "altvoltage1", true)
-        , "powerdown", true); // Turn OFF TX LO
+            iio_device_find_channel(iio_context_find_device(PLUTOSDR.ctx, "ad9361-phy"), "altvoltage1", true)
+            , "powerdown", true); // Turn OFF TX LO
 
     iio_channel_attr_write_longlong(
             iio_device_find_channel(iio_context_find_device(PLUTOSDR.ctx, "ad9361-phy"), "altvoltage0", true)
-            , "frequency", (long long)Modes.freq); // Set RX LO frequency
+            , "frequency", (long long) Modes.freq); // Set RX LO frequency
 
     PLUTOSDR.rx0_i = iio_device_find_channel(PLUTOSDR.dev, "voltage0", false);
     if (!PLUTOSDR.rx0_i)
@@ -268,7 +263,7 @@ void plutosdrRun() {
 }
 
 void plutosdrClose() {
-    if(PLUTOSDR.readbuf) {
+    if (PLUTOSDR.readbuf) {
         free(PLUTOSDR.readbuf);
     }
 

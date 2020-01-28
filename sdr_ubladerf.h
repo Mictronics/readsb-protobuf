@@ -2,7 +2,7 @@
 //
 // sdr_bladerf.h: bladeRF support (header)
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -26,10 +26,10 @@
 
 // Support for the Nuand bladeRF SDR
 
-void ubladeRFInitConfig ();
-bool ubladeRFHandleOption (int argc, char *argv);
-bool ubladeRFOpen ();
-void ubladeRFRun ();
-void ubladeRFClose ();
+void ubladeRFInitConfig();
+bool ubladeRFHandleOption(int argc, char *argv);
+bool ubladeRFOpen();
+void ubladeRFRun();
+void ubladeRFClose();
 
 #endif

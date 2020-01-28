@@ -2,7 +2,7 @@
 //
 // interactive.c: aircraft tracking and interactive display
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -52,7 +52,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "readsb.h"
-
 #include <curses.h>
 
 //
@@ -118,8 +117,8 @@ void interactiveShowData(void) {
         struct aircraft *a = Modes.aircrafts[j];
         while (a && row < rows) {
 
-            if ((now - a->seen) < Modes.interactive_display_ttl) {
-                int msgs = a->messages;
+            if ((now - a->meta.seen) < Modes.interactive_display_ttl) {
+                int msgs = a->meta.messages;
 
                 if (msgs > 1) {
                     char strSquawk[5] = " ";
@@ -128,15 +127,15 @@ void interactiveShowData(void) {
                     char strGs[5] = " ";
 
                     if (trackDataValid(&a->squawk_valid)) {
-                        snprintf(strSquawk, 5, "%04x", a->squawk);
+                        snprintf(strSquawk, 5, "%04x", a->meta.squawk);
                     }
 
                     if (trackDataValid(&a->gs_valid)) {
-                        snprintf(strGs, 5, "%3d", convert_speed(a->gs));
+                        snprintf(strGs, 5, "%3d", convert_speed(a->meta.gs));
                     }
 
                     if (trackDataValid(&a->track_valid)) {
-                        snprintf(strTt, 5, "%03.0f", a->track);
+                        snprintf(strTt, 5, "%3d", a->meta.track);
                     }
 
                     if (msgs > 99999) {
@@ -159,22 +158,22 @@ void interactiveShowData(void) {
                     }
 
                     if (trackDataValid(&a->position_valid)) {
-                        snprintf(strLat, 8, "%7.03f", a->lat);
-                        snprintf(strLon, 9, "%8.03f", a->lon);
+                        snprintf(strLat, 8, "%7.03f", a->meta.lat);
+                        snprintf(strLon, 9, "%8.03f", a->meta.lon);
                     }
 
-                    if (trackDataValid(&a->airground_valid) && a->airground == AG_GROUND) {
+                    if (trackDataValid(&a->airground_valid) && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND) {
                         snprintf(strFl, 7, " grnd");
                     } else if (Modes.use_gnss && trackDataValid(&a->altitude_geom_valid)) {
-                        snprintf(strFl, 7, "%5dH", convert_altitude(a->altitude_geom));
+                        snprintf(strFl, 7, "%5dH", convert_altitude(a->meta.alt_geom));
                     } else if (trackDataValid(&a->altitude_baro_valid)) {
-                        snprintf(strFl, 7, "%5d ", convert_altitude(a->altitude_baro));
+                        snprintf(strFl, 7, "%5d ", convert_altitude(a->meta.alt_baro));
                     }
 
                     mvprintw(row, 0, "%s%06X %-4s  %-4s  %-8s %6s %3s  %3s  %7s %8s %5.1f %5d %2.0f",
-                            (a->addr & MODES_NON_ICAO_ADDRESS) ? "~" : " ", (a->addr & 0xffffff),
+                            (a->meta.addr & MODES_NON_ICAO_ADDRESS) ? "~" : " ", (a->meta.addr & 0xffffff),
                             strMode, strSquawk, a->callsign, strFl, strGs, strTt,
-                            strLat, strLon, 10 * log10(signalAverage), msgs, (now - a->seen) / 1000.0);
+                            strLat, strLon, 10 * log10(signalAverage), msgs, (now - a->meta.seen) / 1000.0);
                     ++row;
                 }
             }

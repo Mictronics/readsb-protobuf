@@ -2,7 +2,7 @@
 //
 // sdr.h: generic SDR infrastructure (header)
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -27,10 +27,10 @@
 
 // Common interface to different SDR inputs.
 
-void sdrInitConfig ();
-bool sdrHandleOption (int argc, char *argv);
-bool sdrOpen ();
-void sdrRun ();
-void sdrClose ();
+void sdrInitConfig();
+bool sdrHandleOption(int argc, char *argv);
+bool sdrOpen();
+void sdrRun();
+void sdrClose();
 
 #endif

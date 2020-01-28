@@ -2,7 +2,7 @@
 //
 // readsb.c: main program & miscellany
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -145,6 +145,7 @@ void receiverPositionChanged(float lat, float lon, float alt) {
 //
 // =============================== Initialization ===========================
 //
+
 static void modesInitConfig(void) {
     // Default everything to zero/NULL
     memset(&Modes, 0, sizeof (Modes));
@@ -176,19 +177,21 @@ static void modesInitConfig(void) {
     Modes.net_output_flush_size = 1200; // Default to 1200 Bytes
     Modes.net_output_flush_interval = 50; // Default to 50 ms
     Modes.basestation_is_mlat = 1;
+    Modes.protobuf_out = 0; // Default output is JSON format;
 
     sdrInitConfig();
 }
 //
 //=========================================================================
 //
+
 static void modesInit(void) {
     int i;
 
     pthread_mutex_init(&Modes.data_mutex, NULL);
     pthread_cond_init(&Modes.data_cond, NULL);
 
-    Modes.sample_rate = (double)2400000.0;
+    Modes.sample_rate = (double) 2400000.0;
 
     // Allocate the various buffers used by Modes
     Modes.trailing_samples = (MODES_PREAMBLE_US + MODES_LONG_MSG_BITS + 16) * 1e-6 * Modes.sample_rate;
@@ -235,7 +238,7 @@ static void modesInit(void) {
         Modes.net_sndbuf_size = MODES_NET_SNDBUF_MAX;
     }
 
-    if((Modes.net_connector_delay <= 0) || (Modes.net_connector_delay > 86400 * 1000)) {
+    if ((Modes.net_connector_delay <= 0) || (Modes.net_connector_delay > 86400 * 1000)) {
         Modes.net_connector_delay = 30 * 1000;
     }
 
@@ -249,6 +252,7 @@ static void modesInit(void) {
 }
 
 // Set affinity of calling thread to specific core on a multi-core CPU
+
 static int thread_to_core(int core_id) {
     int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
     if (core_id < 0 || core_id >= num_cores)
@@ -268,6 +272,7 @@ static int thread_to_core(int core_id) {
 // We read data using a thread, so the main thread only handles decoding
 // without caring about data acquisition
 //
+
 void *readerThreadEntryPoint(void *arg) {
     MODES_NOTUSED(arg);
 
@@ -295,6 +300,7 @@ void *readerThreadEntryPoint(void *arg) {
 // Get raw IQ samples and filter everything is < than the specified level
 // for more than 256 samples in order to reduce example file size
 //
+
 static void snipMode(int level) {
     int i, q;
     uint64_t c = 0;
@@ -324,6 +330,7 @@ static void display_total_stats(void) {
 // perform tasks we need to do continuously, like accepting new clients
 // from the net, refreshing the screen in interactive mode, and so forth
 //
+
 static void backgroundTasks(void) {
     static uint64_t next_stats_display;
     static uint64_t next_stats_update;
@@ -394,18 +401,30 @@ static void backgroundTasks(void) {
     }
 
     if (Modes.json_dir && now >= next_json) {
-        writeJsonToFile("aircraft.json", generateAircraftJson());
+        if (Modes.protobuf_out) {
+            generateAircraftProtoBuf("aircraft.pb", false);
+        } else {
+            writeJsonToFile("aircraft.json", generateAircraftJson());
+        }
         next_json = now + Modes.json_interval;
-        //writeJsonToFile("vrs.json", generateVRS(0, 1));
     }
 
     if (Modes.json_dir && now >= next_history) {
         char filebuf[PATH_MAX];
-        snprintf(filebuf, PATH_MAX, "history_%d.json", Modes.json_aircraft_history_next);
-        writeJsonToFile(filebuf, generateAircraftJson());
+        if (Modes.protobuf_out) {
+            snprintf(filebuf, PATH_MAX, "history_%d.pb", Modes.json_aircraft_history_next);
+            generateAircraftProtoBuf(filebuf, true);
+        } else {
+            snprintf(filebuf, PATH_MAX, "history_%d.json", Modes.json_aircraft_history_next);
+            writeJsonToFile(filebuf, generateAircraftJson());
+        }
 
         if (!Modes.json_aircraft_history_full) {
-            writeJsonToFile("receiver.json", generateReceiverJson()); // number of history entries changed
+            if (Modes.protobuf_out) {
+                generateReceiverProtoBuf("receiver.pb");
+            } else {
+                writeJsonToFile("receiver.json", generateReceiverJson()); // number of history entries changed
+            }
             if (Modes.json_aircraft_history_next == HISTORY_SIZE - 1)
                 Modes.json_aircraft_history_full = 1;
         }
@@ -417,6 +436,7 @@ static void backgroundTasks(void) {
 
 //=========================================================================
 // Clean up memory prior to exit.
+
 static void cleanup_and_exit(int code) {
     // Free any used memory
     interactiveCleanup();
@@ -606,6 +626,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case OptJsonLocAcc:
             Modes.json_location_accuracy = atoi(arg);
             break;
+        case OptProtobufOut:
+            Modes.protobuf_out = 1;
+            break;
 #endif
         case OptNetHeartbeat:
             Modes.net_heartbeat_interval = (uint64_t) (1000 * atof(arg));
@@ -671,11 +694,11 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             if (!Modes.net_connectors || Modes.net_connectors_count + 1 > Modes.net_connectors_size) {
                 Modes.net_connectors_size = Modes.net_connectors_count * 2 + 8;
                 Modes.net_connectors = realloc(Modes.net_connectors,
-                        sizeof(struct net_connector *) * Modes.net_connectors_size);
+                        sizeof (struct net_connector *) * Modes.net_connectors_size);
                 if (!Modes.net_connectors)
                     return 1;
             }
-            struct net_connector *con = calloc(1, sizeof(struct net_connector));
+            struct net_connector *con = calloc(1, sizeof (struct net_connector));
             Modes.net_connectors[Modes.net_connectors_count++] = con;
             char *connect_string = strdup(arg);
             con->address = strtok(connect_string, ",");
@@ -704,7 +727,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
                 fprintf(stderr, "Correct syntax: --net-connector=ip,port,protocol\n");
                 return 1;
             }
-            if (atol(con->port) > (1<<16) || atol(con->port) < 1) {
+            if (atol(con->port) > (1 << 16) || atol(con->port) < 1) {
                 fprintf(stderr, "--net-connector: port must be in range 1 to 65536\n");
                 return 1;
             }
@@ -830,9 +853,15 @@ int main(int argc, char **argv) {
         Modes.stats_1min[j].start = Modes.stats_1min[j].end = Modes.stats_current.start;
 
     // write initial json files so they're not missing
-    writeJsonToFile("receiver.json", generateReceiverJson());
-    writeJsonToFile("stats.json", generateStatsJson());
-    writeJsonToFile("aircraft.json", generateAircraftJson());
+    if (Modes.protobuf_out) {
+        generateReceiverProtoBuf("receiver.pb");
+        generateStatsProtoBuf("stats.pb");
+        generateAircraftProtoBuf("aircraft.pb", false);
+    } else {
+        writeJsonToFile("receiver.json", generateReceiverJson());
+        writeJsonToFile("stats.json", generateStatsJson());
+        writeJsonToFile("aircraft.json", generateAircraftJson());
+    }
 
     interactiveInit();
 
@@ -855,7 +884,7 @@ int main(int argc, char **argv) {
             end_cpu_timing(&start_time, &Modes.stats_current.background_cpu);
 
             background_cpu_millis = (int64_t) Modes.stats_current.background_cpu.tv_sec * 1000UL +
-                Modes.stats_current.background_cpu.tv_nsec / 1000000UL;
+                    Modes.stats_current.background_cpu.tv_nsec / 1000000UL;
             sleep_millis = sleep_millis - (background_cpu_millis - prev_cpu_millis);
             sleep_millis = (sleep_millis <= 20) ? 20 : sleep_millis;
 

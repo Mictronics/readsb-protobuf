@@ -1,0 +1,244 @@
+// Part of readsb, a Mode-S/ADSB/TIS message decoder.
+//
+// readsb.proto: Protocol buffer scheme for aicraft data exchange,
+//               receiver details and statistics.
+//
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
+//
+// This file is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// any later version.
+//
+// This file is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+syntax = "proto3";
+
+/**
+ * Readsb single tracked aircraft meta data.
+ */
+message AircraftMeta {
+	uint32 addr = 1; // The 24-bit ICAO identifier of the aircraft, as 6 hex digits. The identifier may start with '~', this means that the address is a non-ICAO address (e.g. from TIS-B).
+	string flight = 2; // Callsign, the flight name or aircraft registration as 8 chars.
+	uint32 squawk = 3; // Mode A code (Squawk), encoded as 4 octal digits.
+	uint32 category	= 4; // Emitter category to identify particular aircraft or vehicle classes (values A0 - D7).
+	int32 alt_baro = 5; // The aircraft barometric altitude in feet.
+	int32 mag_heading = 6; // Heading, degrees clockwise from magnetic north.
+	uint32 ias = 7; // Indicated air speed in knots.
+	double lat = 8; // Aircraft position latitude in decimal degrees.
+	double lon = 9; // Aircraft position longitude in decimal degrees.
+	uint64 messages = 10;  // Total number of Mode S messages received from this aircraft.
+	uint64 seen = 11; // How long ago (in seconds before "now") a message was last received from this aircraft.
+	float rssi = 12; // Recent average RSSI (signal power), in dbFS; this will always be negative.
+
+	reserved 13 to 14;
+
+    enum AirGround {
+        AG_INVALID = 0;
+        AG_GROUND = 1;
+        AG_AIRBORNE = 2;
+        AG_UNCERTAIN = 3;
+    }
+    AirGround air_ground = 15;
+
+	int32 alt_geom = 20; // Geometric (GNSS / INS) altitude in feet referenced to the WGS84 ellipsoid.
+	int32 baro_rate = 21; // Rate of change of barometric altitude, feet/minute.
+	int32 geom_rate = 22; // Rate of change of geometric (GNSS / INS) altitude. feet/minute
+	uint32 gs = 23; // Ground speed in knots.
+	uint32 tas = 24; // True air speed in knots.
+	float mach = 25; // Mach number.
+	int32 true_heading = 26; // Heading, degrees clockwise from true north.
+    int32 track = 27; // True track over ground in degrees (0-359).
+	float track_rate = 28; // Rate of change of track, degrees/second.
+	float roll = 29; // Roll, degrees, negative is left roll.
+	
+	float nav_qnh = 30; // Navigation Accuracy for Velocity.
+	int32 nav_altitude_mcp =31; // Selected altitude from the Mode Control Panel / Flight Control Unit (MCP/FCU) or equivalent equipment.
+	int32 nav_altitude_fms = 32; // Selected altitude from the Flight Management System (FMS).
+	int32 nav_heading = 33; // Selected heading (True or Magnetic is not defined in DO-260B, mostly Magnetic as that is the de facto standard).
+
+	uint32 nic = 34; // Navigation Integrity Category.
+	uint32 rc = 35; // Radius of Containment, meters; a measure of position integrity derived from NIC & supplementary bits.
+
+	int32 version = 36; // ADS-B Version Number 0, 1, 2 (3-7 are reserved)
+	uint32 nic_baro = 37; // Navigation Integrity Category for Barometric Altitude
+	uint32 nac_p = 38; // Navigation Accuracy for Position
+	uint32 nac_v = 39; // Navigation Accuracy for Velocity
+	uint32 sil = 40; // Source Integity Level
+	
+	uint32 seen_pos = 41; // How long ago (in seconds before "now") the position was last updated.
+	bool alert = 42; // Flight status alert bit.
+	bool spi = 43; // Flight status special position identification bit.
+	uint32 gva = 44; // Geometric Vertical Accuracy
+    uint32 sda = 45; // System Design Assurance
+	
+	// Type of underlying message, one of:
+	enum AddrType {
+		ADDR_ADSB_ICAO = 0; // Mode S or ADS-B, ICAO address, transponder sourced.
+		ADDR_ADSB_ICAO_NT = 1; // ADS-B, ICAO address, non-transponder.
+		ADDR_ADSR_ICAO = 2; // ADS-R, ICAO address.
+		ADDR_TISB_ICAO = 3; // TIS-B, ICAO address.
+		ADDR_ADSB_OTHER = 4; // ADS-B, other address format.
+		ADDR_ADSR_OTHER = 5; // ADS-R, other address format.
+		ADDR_TISB_TRACKFILE = 6; // TIS-B, Mode A code + track file number.
+		ADDR_TISB_OTHER = 7; // TIS-B, other address format.
+		ADDR_MODE_A = 8; // Mode A.
+		ADDR_UNKNOWN = 9; // Unknown address format.
+	}
+	AddrType addr_type = 100;
+
+	// ADS-B emergency/priority status, a superset of the 7x00 squawks
+	enum Emergency
+	{
+		EMERGENCY_NONE = 0;
+		EMERGENCY_GENERAL = 1;
+		EMERGENCY_LIFEGUARD = 2;
+		EMERGENCY_MINFUEL = 3;
+		EMERGENCY_NORDO = 4;
+		EMERGENCY_UNLAWFUL = 5;
+		EMERGENCY_DOWNED = 6;
+		EMERGENCY_RESERVED = 7;
+	}
+	Emergency emergency = 101;
+	
+	// Interpretation of SIL: unknown, perhour, persample.
+	enum SilType {
+		SIL_INVALID = 0;
+		SIL_UNKNOWN = 1;
+		SIL_PER_SAMPLE = 2;
+		SIL_PER_HOUR = 3;
+	}
+	SilType sil_type = 102;
+   
+  	// Set of engaged automation modes.
+	message NavModes {
+		bool autopilot = 1;
+		bool vnav = 2;
+		bool althold = 3;
+		bool approach = 4;
+		bool lnav = 5;
+		bool tcas = 6;
+	}
+	NavModes nav_modes = 150;
+    
+	// List of valid source fields derived from MLAT or TISB data.
+	message ValidSource {
+        bool callsign = 100;
+        bool altitude = 101;
+        bool alt_geom = 102;
+        bool gs = 103;
+        bool ias = 104;
+        bool tas = 105;
+        bool mach = 106;
+        bool track = 107;
+        bool track_rate = 108;
+        bool roll = 109;
+        bool mag_heading = 110;
+        bool true_heading = 111;
+        bool baro_rate = 112;
+        bool geom_rate = 113;
+        bool squawk = 114;
+        bool emergency = 115;
+        bool nav_qnh = 116;
+        bool nav_altitude_mcp = 117;
+        bool nav_altitude_fms = 118;
+        bool nav_heading = 119;
+        bool nav_modes = 120;
+        bool lat = 121;
+        bool lon = 122;
+        bool nic = 123;
+        bool rc = 124;
+        bool nic_baro = 125;
+        bool nac_p = 126;
+        bool nac_v = 127;
+        bool sil = 128;
+        bool sil_type = 129;
+        bool gva = 130; 
+        bool sda = 131;
+	}
+	ValidSource mlat = 151;
+    ValidSource tisb = 152;
+}
+
+/**
+ * Collection of tracked aircrafts.
+ */
+message AircraftCollection {
+	uint64 now = 1; // The time this file was generated, in seconds since Unix epoch.
+	uint64 messages = 2; // The total number of Mode S messages processed since readsb started.
+	reserved 3 to 14; // Reserved for future use.
+	repeated AircraftMeta aircraft = 15; // The aircraft collection.
+}
+
+/**
+ * Readsb receiver details.
+ */
+message Receiver {
+    string version = 1; // Readsb version
+    float refresh = 2; // Data refresh period.
+    double latitude = 3; // Receiver location latitude.
+    double longitude = 4; // Receiver location longitude;
+    uint32 history = 15; // Aircraft history size.
+}
+
+/**
+ * Single statistcs entry.
+ */
+message StatisticEntry {
+    uint64 start = 1;
+    uint64 stop = 2;
+    uint64 messages = 3;
+    uint32 max_distance_in_metres = 4;
+    uint32 max_distance_in_nautical_miles = 5;
+    uint64 altitude_suppressed = 6;
+    uint64 tracks_all = 7;
+    uint64 tracks_single_message = 8;
+    uint64 cpu_demod = 20;
+    uint64 cpu_reader = 21;
+    uint64 cpu_background = 22;
+    uint64 cpr_surface = 40;
+    uint64 cpr_airborne = 41;
+    uint64 cpr_global_ok = 42;
+    uint64 cpr_global_bad = 43;
+    uint64 cpr_global_range = 44;
+    uint64 cpr_global_speed = 45;
+    uint64 cpr_global_skipped = 46;
+    uint64 cpr_local_ok = 47;
+    uint64 cpr_local_aircraft_relative = 48;
+    uint64 cpr_local_receiver_relative = 49;
+    uint64 cpr_local_skipped = 50;
+    uint64 cpr_local_range = 51;
+    uint64 cpr_local_speed = 52;
+    uint64 cpr_filtered = 53;    
+    uint64 remote_modeac = 70;
+    uint64 remote_modes = 71;
+    uint64 remote_bad = 72;
+    uint64 remote_unknown_icao = 73;
+    uint64 local_samples_processed = 90;
+    uint64 local_samples_dropped = 91;
+    uint64 local_modeac = 92;
+    uint64 local_modes = 93;
+    uint64 local_bad = 94;
+    uint64 local_unknown_icao = 95;
+    uint64 local_strong_signals = 96;
+    float local_signal = 97;
+    float local_noise = 98;
+    float local_peak_signal = 99;
+}
+
+/**
+ * Readsb receiver statistics.
+ */
+message Statistics {
+    StatisticEntry latest = 1;
+    StatisticEntry last_1min = 2;
+    StatisticEntry last_5min = 3;
+    StatisticEntry last_15min = 4;
+    StatisticEntry total = 5;
+}

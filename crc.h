@@ -2,7 +2,7 @@
 //
 // crc.h: Mode S checksum prototypes.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -21,26 +21,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DUMP1090_CRC_H
-#define DUMP1090_CRC_H
+#ifndef CRC_H
+#define CRC_H
 
 #include <stdint.h>
 
 // Global max for fixable bit erros
 #define MODES_MAX_BITERRORS 2
 
-struct errorinfo
-{
-  uint32_t syndrome; // CRC syndrome
-  int errors; // number of errors
-  int8_t bit[MODES_MAX_BITERRORS]; // bit positions to fix (-1 = no bit)
-  uint16_t padding;
+struct errorinfo {
+    uint32_t syndrome; // CRC syndrome
+    int errors; // number of errors
+    int8_t bit[MODES_MAX_BITERRORS]; // bit positions to fix (-1 = no bit)
+    uint16_t padding;
 };
 
-void modesChecksumInit (int fixBits);
-uint32_t modesChecksum (uint8_t *msg, int bitlen);
-struct errorinfo *modesChecksumDiagnose (uint32_t syndrome, int bitlen);
-void modesChecksumFix (uint8_t *msg, struct errorinfo *info);
-void crcCleanupTables (void);
+void modesChecksumInit(int fixBits);
+uint32_t modesChecksum(uint8_t *msg, int bitlen);
+struct errorinfo *modesChecksumDiagnose(uint32_t syndrome, int bitlen);
+void modesChecksumFix(uint8_t *msg, struct errorinfo *info);
+void crcCleanupTables(void);
 
 #endif

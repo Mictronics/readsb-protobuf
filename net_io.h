@@ -2,7 +2,7 @@
 //
 // net_io.h: network handling.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -35,43 +35,40 @@ struct net_service;
 typedef int (*read_fn)(struct client *, char *, int);
 typedef void (*heartbeat_fn)(struct net_service *);
 
-typedef enum
-{
-  READ_MODE_IGNORE,
-  READ_MODE_BEAST,
-  READ_MODE_BEAST_COMMAND,
-  READ_MODE_ASCII
+typedef enum {
+    READ_MODE_IGNORE,
+    READ_MODE_BEAST,
+    READ_MODE_BEAST_COMMAND,
+    READ_MODE_ASCII
 } read_mode_t;
 
 /* Data mode to feed push server */
-typedef enum
-{
-  PUSH_MODE_RAW,
-  PUSH_MODE_BEAST,
-  PUSH_MODE_SBS,
+typedef enum {
+    PUSH_MODE_RAW,
+    PUSH_MODE_BEAST,
+    PUSH_MODE_SBS,
 } push_mode_t;
 
 // Describes one network service (a group of clients with common behaviour)
 
-struct net_service
-{
-  int listener_count; // number of listeners
-  int pusher_count; // Number of push servers connected to
-  int connections; // number of active clients
-  int serial_service; // 1 if this is a service for serial devices
-  read_mode_t read_mode;
-  read_fn read_handler;
-  struct net_writer *writer; // shared writer state
-  struct net_service* next;
-  int *listener_fds; // listening FDs
-  const char *read_sep; // hander details for input data
-  int read_sep_len;
-  const char *descr;
+struct net_service {
+    int listener_count; // number of listeners
+    int pusher_count; // Number of push servers connected to
+    int connections; // number of active clients
+    int serial_service; // 1 if this is a service for serial devices
+    read_mode_t read_mode;
+    read_fn read_handler;
+    struct net_writer *writer; // shared writer state
+    struct net_service* next;
+    int *listener_fds; // listening FDs
+    const char *read_sep; // hander details for input data
+    int read_sep_len;
+    const char *descr;
 };
 
 // Client connection
-struct net_connector
-{
+
+struct net_connector {
     char *address;
     char *port;
     char *protocol;
@@ -81,7 +78,7 @@ struct net_connector
     int fd;
     uint64_t next_reconnect;
     uint64_t connect_timeout;
-    char resolved_addr[NI_MAXHOST+3];
+    char resolved_addr[NI_MAXHOST + 3];
     struct addrinfo *addr_info;
     struct addrinfo *try_addr; // pointer walking addr_info list
     int gai_error;
@@ -92,71 +89,71 @@ struct net_connector
 
 // Structure used to describe a networking client
 
-struct client
-{
-  struct net_service *service; // Service this client is part of
-  struct client* next; // Pointer to next client
-  int fd; // File descriptor
-  int buflen; // Amount of data on buffer
-  int modeac_requested; // 1 if this Beast output connection has asked for A/C
-  uint64_t last_flush;
-  uint64_t last_send;
-  uint64_t last_read;  // This is used on write-only clients to help check for dead connections
-  char buf[MODES_CLIENT_BUF_SIZE + 4]; // Read buffer+padding
-  void *sendq;  // Write buffer - allocated later
-  int sendq_len; // Amount of data in SendQ
-  int sendq_max; // Max size of SendQ
-  char host[NI_MAXHOST]; // For logging
-  char port[NI_MAXSERV];
-  struct net_connector *con;
+struct client {
+    struct net_service *service; // Service this client is part of
+    struct client* next; // Pointer to next client
+    int fd; // File descriptor
+    int buflen; // Amount of data on buffer
+    int modeac_requested; // 1 if this Beast output connection has asked for A/C
+    uint64_t last_flush;
+    uint64_t last_send;
+    uint64_t last_read; // This is used on write-only clients to help check for dead connections
+    char buf[MODES_CLIENT_BUF_SIZE + 4]; // Read buffer+padding
+    void *sendq; // Write buffer - allocated later
+    int sendq_len; // Amount of data in SendQ
+    int sendq_max; // Max size of SendQ
+    char host[NI_MAXHOST]; // For logging
+    char port[NI_MAXSERV];
+    struct net_connector *con;
 };
 
 // Common writer state for all output sockets of one type
 
-struct net_writer
-{
-  void *data; // shared write buffer, sized MODES_OUT_BUF_SIZE
-  int dataUsed; // number of bytes of write buffer currently used
+struct net_writer {
+    void *data; // shared write buffer, sized MODES_OUT_BUF_SIZE
+    int dataUsed; // number of bytes of write buffer currently used
 #if !defined(__arm__)
-  uint32_t padding;
+    uint32_t padding;
 #endif
-  struct net_service *service; // owning service
-  heartbeat_fn send_heartbeat; // function that queues a heartbeat if needed
-  uint64_t lastWrite; // time of last write to clients
+    struct net_service *service; // owning service
+    heartbeat_fn send_heartbeat; // function that queues a heartbeat if needed
+    uint64_t lastWrite; // time of last write to clients
 };
 
-struct net_service *serviceInit (const char *descr, struct net_writer *writer, heartbeat_fn hb_handler, read_mode_t mode, const char *sep, read_fn read_handler);
+struct net_service *serviceInit(const char *descr, struct net_writer *writer, heartbeat_fn hb_handler, read_mode_t mode, const char *sep, read_fn read_handler);
 struct client *serviceConnect(struct net_connector *con);
 void serviceReconnectCallback(uint64_t now);
 struct client *checkServiceConnected(struct net_connector *con);
-void serviceListen (struct net_service *service, char *bind_addr, char *bind_ports);
-struct client *createSocketClient (struct net_service *service, int fd);
-struct client *createGenericClient (struct net_service *service, int fd);
+void serviceListen(struct net_service *service, char *bind_addr, char *bind_ports);
+struct client *createSocketClient(struct net_service *service, int fd);
+struct client *createGenericClient(struct net_service *service, int fd);
 
 // viewadsb want to create these itselves
-struct net_service *makeBeastInputService (void);
-struct net_service *makeFatsvOutputService (void);
+struct net_service *makeBeastInputService(void);
+struct net_service *makeFatsvOutputService(void);
 
-struct char_buffer
-{
+struct char_buffer {
     char *buffer;
     size_t len;
 };
 
-void sendBeastSettings (int fd, const char *settings);
+void sendBeastSettings(int fd, const char *settings);
 
-void modesInitNet (void);
-void modesQueueOutput (struct modesMessage *mm, struct aircraft *a);
-void modesNetPeriodicWork (void);
+void modesInitNet(void);
+void modesQueueOutput(struct modesMessage *mm, struct aircraft *a);
+void modesNetPeriodicWork(void);
 void modesReadSerialClient(void);
 
 // TODO: move these somewhere else
-struct char_buffer generateAircraftJson ();
-struct char_buffer generateStatsJson ();
-struct char_buffer generateReceiverJson ();
-struct char_buffer generateHistoryJson ();
-void writeJsonToFile (const char *file, struct char_buffer cb);
+struct char_buffer generateAircraftJson();
+struct char_buffer generateStatsJson();
+struct char_buffer generateReceiverJson();
+struct char_buffer generateHistoryJson();
+void writeJsonToFile(const char *file, struct char_buffer cb);
 struct char_buffer generateVRS(int part, int n_parts);
 void writeJsonToNet(struct net_writer *writer, struct char_buffer cb);
+void generateAircraftProtoBuf(const char *file, bool is_history);
+void generateReceiverProtoBuf(const char *file);
+void generateStatsProtoBuf(const char *file);
 
 #endif

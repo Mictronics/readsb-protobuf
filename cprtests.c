@@ -2,7 +2,7 @@
 //
 // cprtests.c - tests for CPR decoder
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -27,6 +27,7 @@
 #include "cpr.h"
 
 // Global, airborne CPR test data:
+
 static const struct {
     int even_cprlat, even_cprlon; // input: raw CPR values, even message
     int odd_cprlat, odd_cprlon; // input: raw CPR values, odd message
@@ -42,6 +43,7 @@ static const struct {
 };
 
 // Global, surface CPR test data:
+
 static const struct {
     double reflat, reflon; // input: reference location for decoding
     int even_cprlat, even_cprlon; // input: raw CPR values, even message
@@ -86,6 +88,7 @@ static const struct {
 };
 
 // Relative CPR test data:
+
 static const struct {
     double reflat, reflon; // input: reference location for decoding
     int cprlat, cprlon; // input: raw CPR values, even or odd message

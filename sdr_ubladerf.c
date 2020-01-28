@@ -2,7 +2,7 @@
 //
 // sdr_ubladerf.c: bladeRF 2.0 Micro support
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This file is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,18 +85,18 @@ static void show_config() {
     bool biastee;
 
     if ((status = bladerf_get_sample_rate(uBladeRF.device, BLADERF_MODULE_RX, &rate)) < 0) {
-       fprintf(stderr, "bladeRF: couldn't read back device sample rate: %s\n", bladerf_strerror(status));
-       return;
+        fprintf(stderr, "bladeRF: couldn't read back device sample rate: %s\n", bladerf_strerror(status));
+        return;
     }
 
     if ((status = bladerf_get_frequency(uBladeRF.device, BLADERF_MODULE_RX, &freq)) < 0) {
-       fprintf(stderr, "bladeRF: couldn't read back device frequency: %s\n", bladerf_strerror(status));
-       return;
+        fprintf(stderr, "bladeRF: couldn't read back device frequency: %s\n", bladerf_strerror(status));
+        return;
     }
 
     if ((status = bladerf_get_bandwidth(uBladeRF.device, BLADERF_MODULE_RX, &bw)) < 0) {
-      fprintf(stderr, "bladeRF: couldn't read back device bandwidth: %s\n", bladerf_strerror(status));
-       return;
+        fprintf(stderr, "bladeRF: couldn't read back device bandwidth: %s\n", bladerf_strerror(status));
+        return;
     }
 
     if ((status = bladerf_get_gain(uBladeRF.device, BLADERF_MODULE_RX, &gain)) < 0) {
@@ -129,11 +129,11 @@ static void show_config() {
     fprintf(stderr, "bladeRF: sampling rate: %.1f MHz\n", rate / 1e6);
     fprintf(stderr, "bladeRF: frequency:     %.1f MHz\n", freq / 1e6);
     fprintf(stderr, "bladeRF: gain:          %ddB\n", gain);
-    fprintf(stderr, "bladeRF: biastee:       %d\n", (int)biastee);
+    fprintf(stderr, "bladeRF: biastee:       %d\n", (int) biastee);
 
     switch (lpf_mode) {
         case BLADERF_LPF_NORMAL:
-            fprintf(stderr, "bladeRF: LPF bandwidth: %.2f MHz\n", bw/1e6);
+            fprintf(stderr, "bladeRF: LPF bandwidth: %.2f MHz\n", bw / 1e6);
             break;
         case BLADERF_LPF_BYPASSED:
             fprintf(stderr, "bladeRF: LPF bypassed\n");

@@ -2,7 +2,7 @@
 //
 // sdr_rtlsdr.h: rtlsdr dongle support (header)
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -25,10 +25,10 @@
 #ifndef SDR_RTLSDR_H
 #define SDR_RTLSDR_H
 
-void rtlsdrInitConfig ();
-bool rtlsdrOpen ();
-void rtlsdrRun ();
-void rtlsdrClose ();
-bool rtlsdrHandleOption (int argc, char *argv);
+void rtlsdrInitConfig();
+bool rtlsdrOpen();
+void rtlsdrRun();
+void rtlsdrClose();
+bool rtlsdrHandleOption(int argc, char *argv);
 
 #endif

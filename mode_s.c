@@ -2,7 +2,7 @@
 //
 // mode_s.c: Mode S message decoding.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -579,19 +579,19 @@ int decodeModesMessage(struct modesMessage *mm, unsigned char *msg) {
 
         switch (mm->CA) {
             case 0:
-                mm->airground = AG_UNCERTAIN;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
                 break;
             case 4:
-                mm->airground = AG_GROUND;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_GROUND;
                 break;
             case 5:
-                mm->airground = AG_AIRBORNE;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE;
                 break;
             case 6:
-                mm->airground = AG_UNCERTAIN;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
                 break;
             case 7:
-                mm->airground = AG_UNCERTAIN;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
                 break;
         }
     }
@@ -619,26 +619,26 @@ int decodeModesMessage(struct modesMessage *mm, unsigned char *msg) {
 
         switch (mm->FS) {
             case 0:
-                mm->airground = AG_UNCERTAIN;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
                 break;
             case 1:
-                mm->airground = AG_GROUND;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_GROUND;
                 break;
             case 2:
-                mm->airground = AG_UNCERTAIN;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
                 mm->alert = 1;
                 break;
             case 3:
-                mm->airground = AG_GROUND;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_GROUND;
                 mm->alert = 1;
                 break;
             case 4:
-                mm->airground = AG_UNCERTAIN;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
                 mm->alert = 1;
                 mm->spi = 1;
                 break;
             case 5:
-                mm->airground = AG_UNCERTAIN;
+                mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
                 mm->spi = 1;
                 break;
             default:
@@ -709,9 +709,9 @@ int decodeModesMessage(struct modesMessage *mm, unsigned char *msg) {
     if (mm->msgtype == 0 || mm->msgtype == 16) {
         mm->VS = getbit(msg, 6);
         if (mm->VS)
-            mm->airground = AG_GROUND;
+            mm->airground = AIRCRAFT_META__AIR_GROUND__AG_GROUND;
         else
-            mm->airground = AG_UNCERTAIN;
+            mm->airground = AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN;
     }
 
     if (!mm->correctedbits && (mm->msgtype == 17 || (mm->msgtype == 11 && mm->IID == 0))) {
@@ -754,8 +754,8 @@ static void decodeESIdentAndCategory(struct modesMessage *mm) {
     // actually valid?
     for (unsigned i = 0; i < 8; ++i) {
         if (!(mm->callsign[i] >= 'A' && mm->callsign[i] <= 'Z') &&
-            !(mm->callsign[i] >= '0' && mm->callsign[i] <= '9') &&
-            mm->callsign[i] != ' ') {
+                !(mm->callsign[i] >= '0' && mm->callsign[i] <= '9') &&
+                mm->callsign[i] != ' ') {
             // Bad callsign, ignore it
             mm->callsign_valid = 0;
             break;
@@ -771,18 +771,18 @@ static void decodeESIdentAndCategory(struct modesMessage *mm) {
 static void setIMF(struct modesMessage *mm) {
     mm->addr |= MODES_NON_ICAO_ADDRESS;
     switch (mm->addrtype) {
-        case ADDR_ADSB_ICAO:
-        case ADDR_ADSB_ICAO_NT:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO_NT:
             // Shouldn't happen, but let's try to handle it
-            mm->addrtype = ADDR_ADSB_OTHER;
+            mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_OTHER;
             break;
 
-        case ADDR_TISB_ICAO:
-            mm->addrtype = ADDR_TISB_TRACKFILE;
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_ICAO:
+            mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_TRACKFILE;
             break;
 
-        case ADDR_ADSR_ICAO:
-            mm->addrtype = ADDR_ADSR_OTHER;
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSR_ICAO:
+            mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_ADSR_OTHER;
             break;
 
         default:
@@ -903,7 +903,7 @@ static void decodeESSurfacePosition(struct modesMessage *mm, int check_imf) {
     // Surface position and movement
     unsigned char *me = mm->ME;
 
-    mm->airground = AG_GROUND; // definitely.
+    mm->airground = AIRCRAFT_META__AIR_GROUND__AG_GROUND; // definitely.
     mm->cpr_valid = 1;
     mm->cpr_type = CPR_SURFACE;
 
@@ -1004,7 +1004,7 @@ static void decodeESAirbornePosition(struct modesMessage *mm, int check_imf) {
         }
     }
 
-    if (AC12Field && mm->airground != AG_GROUND) {// Only attempt to decode if a valid (non zero) altitude is present and not on ground
+    if (AC12Field && mm->airground != AIRCRAFT_META__AIR_GROUND__AG_GROUND) {// Only attempt to decode if a valid (non zero) altitude is present and not on ground
         altitude_unit_t unit;
         int alt = decodeAC12Field(AC12Field, &unit);
         if (alt != INVALID_ALTITUDE) {
@@ -1043,7 +1043,7 @@ static void decodeESAircraftStatus(struct modesMessage *mm, int check_imf) {
 
     if (mm->mesub == 1) { // Emergency status squawk field
         mm->emergency_valid = 1;
-        mm->emergency = (emergency_t) getbits(me, 9, 11);
+        mm->emergency = (AircraftMeta__Emergency) getbits(me, 9, 11);
 
         unsigned ID13Field = getbits(me, 12, 24);
         if (ID13Field) {
@@ -1162,7 +1162,7 @@ static void decodeESTargetStatus(struct modesMessage *mm, int check_imf) {
 
         // 45-46: SIL
         mm->accuracy.sil = getbits(me, 45, 46);
-        mm->accuracy.sil_type = SIL_UNKNOWN;
+        mm->accuracy.sil_type = AIRCRAFT_META__SIL_TYPE__SIL_UNKNOWN;
 
         // 47-51: reserved
 
@@ -1190,7 +1190,7 @@ static void decodeESTargetStatus(struct modesMessage *mm, int check_imf) {
 
         // 54-56: emergency/priority
         mm->emergency_valid = 1;
-        mm->emergency = (emergency_t) getbits(me, 54, 56);
+        mm->emergency = (AircraftMeta__Emergency) getbits(me, 54, 56);
     } else if (mm->mesub == 1) { // Target state and status, V2
         // 8: SIL
         unsigned is_fms = getbit(me, 9);
@@ -1230,7 +1230,7 @@ static void decodeESTargetStatus(struct modesMessage *mm, int check_imf) {
 
         // 45-46: SIL
         mm->accuracy.sil = getbits(me, 45, 46);
-        mm->accuracy.sil_type = SIL_UNKNOWN;
+        mm->accuracy.sil_type = AIRCRAFT_META__SIL_TYPE__SIL_UNKNOWN;
 
         // 47: mode bits validity
         if (getbit(me, 47)) {
@@ -1298,21 +1298,21 @@ static void decodeESOperationalStatus(struct modesMessage *mm, int check_imf) {
                 mm->accuracy.nic_a = getbit(me, 44);
                 mm->accuracy.nac_p_valid = 1;
                 mm->accuracy.nac_p = getbits(me, 45, 48);
-                mm->accuracy.sil_type = SIL_UNKNOWN;
+                mm->accuracy.sil_type = AIRCRAFT_META__SIL_TYPE__SIL_UNKNOWN;
                 mm->accuracy.sil = getbits(me, 51, 52);
 
                 mm->opstatus.hrd = getbit(me, 54) ? HEADING_MAGNETIC : HEADING_TRUE;
 
-            if (mm->mesub == 0) {
-                mm->accuracy.nic_baro_valid = 1;
-                mm->accuracy.nic_baro = getbit(me, 53);
-            } else {
-                // see DO=260B §2.2.3.2.7.2.12
-                // TAH=0 : surface movement reports ground track
-                // TAH=1 : surface movement reports aircraft heading
-                mm->opstatus.tah = getbit(me, 53) ? mm->opstatus.hrd : HEADING_GROUND_TRACK;
-            }
-            break;
+                if (mm->mesub == 0) {
+                    mm->accuracy.nic_baro_valid = 1;
+                    mm->accuracy.nic_baro = getbit(me, 53);
+                } else {
+                    // see DO=260B §2.2.3.2.7.2.12
+                    // TAH=0 : surface movement reports ground track
+                    // TAH=1 : surface movement reports aircraft heading
+                    mm->opstatus.tah = getbit(me, 53) ? mm->opstatus.hrd : HEADING_GROUND_TRACK;
+                }
+                break;
 
             case 2:
                 if (getbits(me, 25, 26) == 0) {
@@ -1347,25 +1347,25 @@ static void decodeESOperationalStatus(struct modesMessage *mm, int check_imf) {
                     mm->opstatus.cc_antenna_offset = getbits(me, 33, 40);
                 }
 
-            mm->accuracy.nic_a_valid = 1;
-            mm->accuracy.nic_a = getbit(me, 44);
-            mm->accuracy.nac_p_valid = 1;
-            mm->accuracy.nac_p = getbits(me, 45, 48);
-            mm->accuracy.sil = getbits(me, 51, 52);
-            mm->accuracy.sil_type = getbit(me, 55) ? SIL_PER_SAMPLE : SIL_PER_HOUR;
-            mm->opstatus.hrd = getbit(me, 54) ? HEADING_MAGNETIC : HEADING_TRUE;
-            if (mm->mesub == 0) {
-                mm->accuracy.gva_valid = 1;
-                mm->accuracy.gva = getbits(me, 49, 50);
-                mm->accuracy.nic_baro_valid = 1;
-                mm->accuracy.nic_baro = getbit(me, 53);
-            } else {
-                // see DO=260B §2.2.3.2.7.2.12
-                // TAH=0 : surface movement reports ground track
-                // TAH=1 : surface movement reports aircraft heading
-                mm->opstatus.tah = getbit(me, 53) ? mm->opstatus.hrd : HEADING_GROUND_TRACK;
-            }
-            break;
+                mm->accuracy.nic_a_valid = 1;
+                mm->accuracy.nic_a = getbit(me, 44);
+                mm->accuracy.nac_p_valid = 1;
+                mm->accuracy.nac_p = getbits(me, 45, 48);
+                mm->accuracy.sil = getbits(me, 51, 52);
+                mm->accuracy.sil_type = getbit(me, 55) ? AIRCRAFT_META__SIL_TYPE__SIL_PER_SAMPLE : AIRCRAFT_META__SIL_TYPE__SIL_PER_HOUR;
+                mm->opstatus.hrd = getbit(me, 54) ? HEADING_MAGNETIC : HEADING_TRUE;
+                if (mm->mesub == 0) {
+                    mm->accuracy.gva_valid = 1;
+                    mm->accuracy.gva = getbits(me, 49, 50);
+                    mm->accuracy.nic_baro_valid = 1;
+                    mm->accuracy.nic_baro = getbit(me, 53);
+                } else {
+                    // see DO=260B §2.2.3.2.7.2.12
+                    // TAH=0 : surface movement reports ground track
+                    // TAH=1 : surface movement reports aircraft heading
+                    mm->opstatus.tah = getbit(me, 53) ? mm->opstatus.hrd : HEADING_GROUND_TRACK;
+                }
+                break;
         }
     }
 }
@@ -1379,11 +1379,11 @@ static void decodeExtendedSquitter(struct modesMessage *mm) {
     if (mm->msgtype == 18) {
         switch (mm->CF) {
             case 0: // ADS-B Message from a non-transponder device, AA field holds 24-bit ICAO aircraft address
-                mm->addrtype = ADDR_ADSB_ICAO_NT;
+                mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO_NT;
                 break;
 
             case 1: // Reserved for ADS-B Message in which the AA field holds anonymous address or ground vehicle address or fixed obstruction address
-                mm->addrtype = ADDR_ADSB_OTHER;
+                mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_OTHER;
                 mm->addr |= MODES_NON_ICAO_ADDRESS;
                 break;
 
@@ -1391,7 +1391,7 @@ static void decodeExtendedSquitter(struct modesMessage *mm) {
                 // IMF=0: AA field contains the 24-bit ICAO aircraft address
                 // IMF=1: AA field contains the 12-bit Mode A code followed by a 12-bit track file number
                 mm->source = SOURCE_TISB;
-                mm->addrtype = ADDR_TISB_ICAO;
+                mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_ICAO;
                 check_imf = 1;
                 break;
 
@@ -1401,13 +1401,13 @@ static void decodeExtendedSquitter(struct modesMessage *mm) {
 
                 // For now we only look at the IMF bit.
                 mm->source = SOURCE_TISB;
-                mm->addrtype = ADDR_TISB_ICAO;
+                mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_ICAO;
                 if (getbit(me, 1))
                     setIMF(mm);
                 return;
 
             case 5: // Fine TIS-B Message, AA field contains a non-ICAO 24-bit address
-                mm->addrtype = ADDR_TISB_OTHER;
+                mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_OTHER;
                 mm->source = SOURCE_TISB;
                 mm->addr |= MODES_NON_ICAO_ADDRESS;
                 break;
@@ -1415,13 +1415,13 @@ static void decodeExtendedSquitter(struct modesMessage *mm) {
             case 6: // Rebroadcast of ADS-B Message from an alternate data link
                 // IMF=0: AA field holds 24-bit ICAO aircraft address
                 // IMF=1: AA field holds anonymous address or ground vehicle address or fixed obstruction address
-                mm->addrtype = ADDR_ADSR_ICAO;
+                mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_ADSR_ICAO;
                 mm->source = SOURCE_ADSR;
                 check_imf = 1;
                 break;
 
             default: // All others, we don't know the format.
-                mm->addrtype = ADDR_UNKNOWN;
+                mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_UNKNOWN;
                 mm->addr |= MODES_NON_ICAO_ADDRESS; // assume non-ICAO
                 return;
         }
@@ -1528,40 +1528,40 @@ static const char *altitude_unit_to_string(altitude_unit_t unit) {
     }
 }
 
-static const char *airground_to_string(airground_t airground) {
+static const char *airground_to_string(AircraftMeta__AirGround airground) {
     switch (airground) {
-        case AG_GROUND:
+        case AIRCRAFT_META__AIR_GROUND__AG_GROUND:
             return "ground";
-        case AG_AIRBORNE:
+        case AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE:
             return "airborne";
-        case AG_INVALID:
+        case AIRCRAFT_META__AIR_GROUND__AG_INVALID:
             return "invalid";
-        case AG_UNCERTAIN:
+        case AIRCRAFT_META__AIR_GROUND__AG_UNCERTAIN:
             return "airborne?";
         default:
             return "(unknown airground state)";
     }
 }
 
-static const char *addrtype_to_string(addrtype_t type) {
+static const char *addrtype_to_string(AircraftMeta__AddrType type) {
     switch (type) {
-        case ADDR_ADSB_ICAO:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO:
             return "Mode S / ADS-B";
-        case ADDR_ADSB_ICAO_NT:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO_NT:
             return "ADS-B, non-transponder";
-        case ADDR_ADSB_OTHER:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_OTHER:
             return "ADS-B, other addressing scheme";
-        case ADDR_TISB_ICAO:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_ICAO:
             return "TIS-B";
-        case ADDR_TISB_OTHER:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_OTHER:
             return "TIS-B, other addressing scheme";
-        case ADDR_TISB_TRACKFILE:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_TRACKFILE:
             return "TIS-B, Mode A code and track file number";
-        case ADDR_ADSR_ICAO:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSR_ICAO:
             return "ADS-R";
-        case ADDR_ADSR_OTHER:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSR_OTHER:
             return "ADS-R, other addressing scheme";
-        case ADDR_MODE_A:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_MODE_A:
             return "Mode A";
         default:
             return "unknown addressing scheme";
@@ -1600,26 +1600,26 @@ static const char *heading_type_to_string(heading_type_t type) {
 
 static const char *commb_format_to_string(commb_format_t format) {
     switch (format) {
-    case COMMB_EMPTY_RESPONSE:
-        return "empty response";
-    case COMMB_AMBIGUOUS:
-        return "ambiguous format";
-    case COMMB_DATALINK_CAPS:
-        return "BDS1,0 Datalink capabilities";
-    case COMMB_GICB_CAPS:
-        return "BDS1,7 Common usage GICB capabilities";
-    case COMMB_AIRCRAFT_IDENT:
-        return "BDS2,0 Aircraft identification";
-    case COMMB_ACAS_RA:
-        return "BDS3,0 ACAS resolution advisory";
-    case COMMB_VERTICAL_INTENT:
-        return "BDS4,0 Selected vertical intention";
-    case COMMB_TRACK_TURN:
-        return "BDS5,0 Track and turn report";
-    case COMMB_HEADING_SPEED:
-        return "BDS6,0 Heading and speed report";
-    default:
-        return "unknown format";
+        case COMMB_EMPTY_RESPONSE:
+            return "empty response";
+        case COMMB_AMBIGUOUS:
+            return "ambiguous format";
+        case COMMB_DATALINK_CAPS:
+            return "BDS1,0 Datalink capabilities";
+        case COMMB_GICB_CAPS:
+            return "BDS1,7 Common usage GICB capabilities";
+        case COMMB_AIRCRAFT_IDENT:
+            return "BDS2,0 Aircraft identification";
+        case COMMB_ACAS_RA:
+            return "BDS3,0 ACAS resolution advisory";
+        case COMMB_VERTICAL_INTENT:
+            return "BDS4,0 Selected vertical intention";
+        case COMMB_TRACK_TURN:
+            return "BDS5,0 Track and turn report";
+        case COMMB_HEADING_SPEED:
+            return "BDS6,0 Heading and speed report";
+        default:
+            return "unknown format";
     }
 }
 
@@ -1646,24 +1646,24 @@ static const char *nav_modes_to_string(nav_modes_t flags) {
     return buf;
 }
 
-static const char *sil_type_to_string(sil_type_t type) {
+static const char *sil_type_to_string(AircraftMeta__SilType type) {
     switch (type) {
-        case SIL_UNKNOWN: return "unknown type";
-        case SIL_PER_HOUR: return "per flight hour";
-        case SIL_PER_SAMPLE: return "per sample";
+        case AIRCRAFT_META__SIL_TYPE__SIL_UNKNOWN: return "unknown type";
+        case AIRCRAFT_META__SIL_TYPE__SIL_PER_HOUR: return "per flight hour";
+        case AIRCRAFT_META__SIL_TYPE__SIL_PER_SAMPLE: return "per sample";
         default: return "invalid type";
     }
 }
 
-static const char *emergency_to_string(emergency_t emergency) {
+static const char *emergency_to_string(AircraftMeta__Emergency emergency) {
     switch (emergency) {
-        case EMERGENCY_NONE: return "no emergency";
-        case EMERGENCY_GENERAL: return "general emergency (7700)";
-        case EMERGENCY_LIFEGUARD: return "lifeguard / medical emergency";
-        case EMERGENCY_MINFUEL: return "minimum fuel";
-        case EMERGENCY_NORDO: return "no communications (7600)";
-        case EMERGENCY_UNLAWFUL: return "unlawful interference (7500)";
-        case EMERGENCY_DOWNED: return "downed aircraft";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_NONE: return "no emergency";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_GENERAL: return "general emergency (7700)";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_LIFEGUARD: return "lifeguard / medical emergency";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_MINFUEL: return "minimum fuel";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_NORDO: return "no communications (7600)";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_UNLAWFUL: return "unlawful interference (7500)";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_DOWNED: return "downed aircraft";
         default: return "reserved";
     }
 }
@@ -1912,7 +1912,7 @@ void displayModesMessage(struct modesMessage *mm) {
         printf("  ICAO Address:  %06X (%s)\n", mm->addr, addrtype_to_string(mm->addrtype));
     }
 
-    if (mm->airground != AG_INVALID) {
+    if (mm->airground != AIRCRAFT_META__AIR_GROUND__AG_INVALID) {
         printf("  Air/Ground:    %s\n",
                 airground_to_string(mm->airground));
     }
@@ -2042,7 +2042,7 @@ void displayModesMessage(struct modesMessage *mm) {
     if (mm->accuracy.gva_valid) {
         printf("  GVA:           %d\n", mm->accuracy.gva);
     }
-    if (mm->accuracy.sil_type != SIL_INVALID) {
+    if (mm->accuracy.sil_type != AIRCRAFT_META__SIL_TYPE__SIL_INVALID) {
         const char *sil_description;
         switch (mm->accuracy.sil) {
             case 1:
@@ -2144,6 +2144,7 @@ void displayModesMessage(struct modesMessage *mm) {
 // Basically this function passes a raw message to the upper layers for further
 // processing and visualization
 //
+
 void useModesMessage(struct modesMessage *mm) {
     struct aircraft *a;
 
@@ -2166,10 +2167,10 @@ void useModesMessage(struct modesMessage *mm) {
         if (Modes.net_verbatim || mm->msgtype == 32 || !a) {
             // Unconditionally send
             modesQueueOutput(mm, a);
-        } else if (a->messages > 1) {
+        } else if (a->meta.messages > 1) {
             // Suppress the first message. When we receive a second message,
             // emit the first two messages.
-            if (a->messages == 2) {
+            if (a->meta.messages == 2) {
                 modesQueueOutput(&a->first_message, a);
             }
             modesQueueOutput(mm, a);

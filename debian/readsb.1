@@ -3,7 +3,7 @@
 .SH NAME
 readsb \- Mode-S aircraft data processor for various receiver hardware.
 .SH VERSION
-v3.8.2
+v4.0.0
 .SH DESCRIPTION
 \fBreadsb Mode-S Receiver
 .SH BUILD OPTIONS
@@ -158,6 +158,10 @@ external webserver)
 .B
 \fB--write-json-every\fP=<t>
 Write json output every t seconds (default 1)
+.TP
+.B
+\fB--protobuf-out\fP
+Write all output (for external webserver) in protocol buffer format.
 .SS  NETWORK OPTIONS
 .TP
 .B
@@ -375,9 +379,6 @@ Log network debugging info
 j
 Log frames to frames.js, loadable by debug.html
 .PP
-.SH CREDITS
-Matthias Wirth aka wiedehopf
-Taner Halicioglu aka tanerH
 .SH BUGS
 Report bugs to Michael Wolf <michael@mictronics.de>.
 .SH AUTHOR

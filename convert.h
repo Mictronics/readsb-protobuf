@@ -2,7 +2,7 @@
 //
 // convert.h: support for various IQ -> magnitude conversions
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -21,28 +21,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DUMP1090_CONVERT_H
-#define DUMP1090_CONVERT_H
+#ifndef CONVERT_H
+#define CONVERT_H
 
 struct converter_state;
 
-typedef enum
-{
-  INPUT_UC8 = 0, INPUT_SC16, INPUT_SC16Q11
+typedef enum {
+    INPUT_UC8 = 0, INPUT_SC16, INPUT_SC16Q11
 } input_format_t;
 
 typedef void (*iq_convert_fn)(void *iq_data,
-                              uint16_t *mag_data,
-                              unsigned nsamples,
-                              struct converter_state *state,
-                              double *out_mean_level,
-                              double *out_mean_power);
+        uint16_t *mag_data,
+        unsigned nsamples,
+        struct converter_state *state,
+        double *out_mean_level,
+        double *out_mean_power);
 
-iq_convert_fn init_converter (input_format_t format,
-                              double sample_rate,
-                              int filter_dc,
-                              struct converter_state **out_state);
+iq_convert_fn init_converter(input_format_t format,
+        double sample_rate,
+        int filter_dc,
+        struct converter_state **out_state);
 
-void cleanup_converter (struct converter_state *state);
+void cleanup_converter(struct converter_state *state);
 
 #endif

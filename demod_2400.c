@@ -2,7 +2,7 @@
 //
 // demod_2400.c: 2.4MHz Mode S demodulator.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -69,6 +69,7 @@ static inline int slice_phase4(uint16_t *m) {
 // Given 'mlen' magnitude samples in 'm', sampled at 2.4MHz,
 // try to demodulate some Mode S messages.
 //
+
 void demodulate2400(struct mag_buf *mag) {
     static struct modesMessage zeroMessage;
     struct modesMessage mm;
@@ -473,6 +474,7 @@ static void draw_modeac(uint16_t *m, unsigned modeac, unsigned f1_clock, unsigne
 //            1.00us = 60 cycles } one bit period = 1.45us = 87 cycles
 //
 // one 2.4MHz sample = 25 cycles
+
 void demodulate2400AC(struct mag_buf *mag) {
     struct modesMessage mm;
     uint16_t *m = mag->data;

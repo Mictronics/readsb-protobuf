@@ -2,7 +2,7 @@
 //
 // icao_filter.c: prototypes for ICAO address hashtable
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -21,25 +21,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DUMP1090_ICAO_FILTER_H
-#define DUMP1090_ICAO_FILTER_H
+#ifndef ICAO_FILTER_H
+#define ICAO_FILTER_H
 
 // Call once:
-void icaoFilterInit ();
+void icaoFilterInit();
 
 // Add an address to the filter
-void icaoFilterAdd (uint32_t addr);
+void icaoFilterAdd(uint32_t addr);
 
 // Test if the given address matches the filter
-int icaoFilterTest (uint32_t addr);
+int icaoFilterTest(uint32_t addr);
 
 // Test if the top 16 bits match any previously added address.
 // If they do, returns an arbitrary one of the matched
 // addresses. Returns 0 on failure.
-uint32_t icaoFilterTestFuzzy (uint32_t partial);
+uint32_t icaoFilterTestFuzzy(uint32_t partial);
 
 // Call this periodically to allow the filter to expire
 // old entries.
-void icaoFilterExpire ();
+void icaoFilterExpire();
 
 #endif

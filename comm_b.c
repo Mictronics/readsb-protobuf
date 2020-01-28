@@ -2,7 +2,7 @@
 //
 // comm_b.c: Comm-B message decoding
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -205,7 +205,7 @@ static int decodeBDS17(struct modesMessage *mm, bool store) {
 // BDS2,0 Aircraft identification
 
 static int decodeBDS20(struct modesMessage *mm, bool store) {
-    char callsign[sizeof(mm->callsign)];
+    char callsign[sizeof (mm->callsign)];
     unsigned char *msg = mm->MB;
 
     // BDS identifier
@@ -241,7 +241,7 @@ static int decodeBDS20(struct modesMessage *mm, bool store) {
     if (store) {
         mm->commb_format = COMMB_AIRCRAFT_IDENT;
         if (valid) {
-            memcpy(mm->callsign, callsign, sizeof(mm->callsign));
+            memcpy(mm->callsign, callsign, sizeof (mm->callsign));
             mm->callsign_valid = 1;
         }
     }
@@ -543,7 +543,7 @@ static int decodeBDS50(struct modesMessage *mm, bool store) {
 
     // small penalty for inconsistent data
     if (gs_valid && tas_valid) {
-        int delta = abs((int)gs_valid - (int)tas_valid);
+        int delta = abs((int) gs_valid - (int) tas_valid);
         if (delta > 150) {
             score -= 6;
         }

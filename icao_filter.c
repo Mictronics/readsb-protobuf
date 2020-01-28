@@ -2,7 +2,7 @@
 //
 // icao_filter.c: hashtable for ICAO addresses
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -144,6 +144,7 @@ uint32_t icaoFilterTestFuzzy(uint32_t partial) {
 }
 
 // call this periodically:
+
 void icaoFilterExpire() {
     static uint64_t next_flip = 0;
     uint64_t now = mstime();

@@ -2,7 +2,7 @@
 //
 // sdr_ifile.c: "file" SDR support (header)
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -27,10 +27,10 @@
 
 // Pseudo-SDR that reads from a sample file
 
-void ifileInitConfig ();
-bool ifileHandleOption (int argc, char *argv);
-bool ifileOpen ();
-void ifileRun ();
-void ifileClose ();
+void ifileInitConfig();
+bool ifileHandleOption(int argc, char *argv);
+bool ifileOpen();
+void ifileRun();
+void ifileClose();
 
 #endif

@@ -8,11 +8,15 @@ but development will continue as a standalone project with new name. Readsb can 
 host system with dump1090-fa, it doesn't use or modify its resources. However both programs will not
 share a receiver device at the same time and in parallel.
 
+This version uses Googles protocol buffer for data storage and exchange with web application.
+Saves up to 70% in storage space and bandwidth.
+
 ###### Disclaimer
 This is a personal, hobbyist project with no commercial background.
 
 ## Modifications:
 
+* Storing and exchanging aircraft meta data using Protocol Buffer.
 * Light and dark theme.
 * Add max distance to stats.json.
 * Add VRS JSON network writer.
@@ -85,6 +89,20 @@ this output are normal beast messages and compatible with every program able to 
 It is designed to build as a Debian package.
 
 ## Building under jessie, stretch or buster
+
+### General dependencies
+
+Building the package with `dpkg-buildpackage -b` or by `make all` requires the following libraries and tools (with sub-dependencies) being installed:
+
+* debhelper(>=9)
+* libusb-1.0-0-dev
+* pkg-config
+* dh-systemd 
+* libncurses5-dev
+* libprotobuf-c-dev
+* libprotobuf-dev
+* protobuf-c-compiler
+* protobuf-compiler
 
 ### Dependencies - PlutoSDR (ADALM-PLUTO)
 
@@ -166,8 +184,3 @@ You can find suitable source packages [here](https://github.com/librtlsdr/librtl
 support code when building, be sure to include preprocessor define macro HAVE_BIASTEE, e.g.:
 
 "make HAVE_BIASTEE=yes" will enable biastee support for RTLSDR interfaces.
-
-## Credits
-
-- Matthias Wirth aka wiedehopf
-- Taner Halicioglu aka tanerH

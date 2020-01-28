@@ -2,7 +2,7 @@
 //
 // anet.h: Basic TCP socket stuff made a bit less boring (header)
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //

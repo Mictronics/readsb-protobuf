@@ -2,7 +2,7 @@
 //
 // mode_ac.c: Mode A/C decoder.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -77,6 +77,7 @@ void modeACInit() {
 // Given a mode A value (hex-encoded, see above)
 // return the mode C value (signed multiple of 100s of feet)
 // or INVALID_ALITITUDE if not a valid mode C value
+
 int modeAToModeC(unsigned modeA) {
     unsigned i = modeAToIndex(modeA);
     if (i >= 4096)
@@ -87,6 +88,7 @@ int modeAToModeC(unsigned modeA) {
 
 // Given a mode C value (signed multiple of 100s of feet)
 // return the mode A value, or 0 if not a valid mode C value
+
 unsigned modeCToModeA(int modeC) {
     modeC += 13;
     if (modeC < 0 || modeC >= 4096)
@@ -162,9 +164,10 @@ static int internalModeAToModeC(unsigned int ModeA) {
 //
 //=========================================================================
 //
+
 void decodeModeAMessage(struct modesMessage *mm, int ModeA) {
     mm->source = SOURCE_MODE_AC;
-    mm->addrtype = ADDR_MODE_A;
+    mm->addrtype = AIRCRAFT_META__ADDR_TYPE__ADDR_MODE_A;
     mm->msgtype = 32; // Valid Mode S DF's are DF-00 to DF-31.
     // so use 32 to indicate Mode A/C
 

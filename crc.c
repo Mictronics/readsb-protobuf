@@ -2,7 +2,7 @@
 //
 // crc.h: Mode S CRC calculation and error correction.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -88,6 +88,7 @@ static struct errorinfo *bitErrorTable_long;
 static int bitErrorTableSize_long;
 
 // compare two errorinfo structures
+
 static int syndrome_compare(const void *x, const void *y) {
     struct errorinfo *ex = (struct errorinfo*) x;
     struct errorinfo *ey = (struct errorinfo*) y;
@@ -95,6 +96,7 @@ static int syndrome_compare(const void *x, const void *y) {
 }
 
 // (n k), the number of ways of selecting k distinct items from a set of n items
+
 static int combinations(int n, int k) {
     int result = 1, i;
 
@@ -127,6 +129,7 @@ static int combinations(int n, int k) {
 // out:
 //   returns:    the next free entry in the table
 //   table:      has been populated between [n, return value)
+
 static int prepareSubtable(struct errorinfo *table, int n, int maxsize, int offset, int startbit, int endbit, struct errorinfo *base_entry, int error_bit, int max_errors) {
     int i = 0;
 
@@ -177,6 +180,7 @@ static int flagCollisions(struct errorinfo *table, int tablesize, int offset, in
 
 // Allocate and build an error table for messages of length "bits" (max 112)
 // returns a pointer to the new table and sets *size_out to the table length
+
 static struct errorinfo *prepareErrorTable(int bits, int max_correct, int max_detect, int *size_out) {
     int maxsize, usedsize;
     struct errorinfo *table;
@@ -350,6 +354,7 @@ static struct errorinfo *prepareErrorTable(int bits, int max_correct, int max_de
 }
 
 // Precompute syndrome tables for 56- and 112-bit messages.
+
 void modesChecksumInit(int fixBits) {
     initLookupTables();
 
@@ -380,6 +385,7 @@ void modesChecksumInit(int fixBits) {
 // Given an error syndrome and message length, return
 // an error-correction descriptor, or NULL if the
 // syndrome is uncorrectable
+
 struct errorinfo *modesChecksumDiagnose(uint32_t syndrome, int bitlen) {
     struct errorinfo *table;
     int tablesize;
@@ -407,6 +413,7 @@ struct errorinfo *modesChecksumDiagnose(uint32_t syndrome, int bitlen) {
 
 // Given a message and an error-correction descriptor,
 // apply the error correction to the given message.
+
 void modesChecksumFix(uint8_t *msg, struct errorinfo *info) {
     int i;
 

@@ -2,7 +2,7 @@
 //
 // net_io.c: network handling.
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -102,6 +102,7 @@ static void *pthreadGetaddrinfo(void *param);
 
 // Init a service with the given read/write characteristics, return the new service.
 // Doesn't arrange for the service to listen or connect
+
 struct net_service *serviceInit(const char *descr, struct net_writer *writer, heartbeat_fn hb, read_mode_t mode, const char *sep, read_fn handler) {
     struct net_service *service;
     if (!descr) {
@@ -145,6 +146,7 @@ struct net_service *serviceInit(const char *descr, struct net_writer *writer, he
 }
 
 // Create a client attached to the given service using the provided socket FD
+
 struct client *createSocketClient(struct net_service *service, int fd) {
     anetSetSendBuffer(Modes.aneterr, fd, (MODES_NET_SNDBUF_SIZE << Modes.net_sndbuf_size));
     return createGenericClient(service, fd);
@@ -195,6 +197,7 @@ struct client *createGenericClient(struct net_service *service, int fd) {
 
 // Timer callback checking periodically whether the push service lost its server
 // connection and requires a re-connect.
+
 void serviceReconnectCallback(uint64_t now) {
     // Loop through the connectors, and
     //  - If it's not connected:
@@ -243,7 +246,7 @@ struct client *checkServiceConnected(struct net_connector *con) {
 
     // At this point, we need to check getsockopt() to see if we succeeded or failed...
     int optval = -1;
-    socklen_t optlen = sizeof(optval);
+    socklen_t optlen = sizeof (optval);
     if (getsockopt(con->fd, SOL_SOCKET, SO_ERROR, &optval, &optlen) == -1) {
         fprintf(stderr, "getsockopt failed: %d (%s)\n", errno, strerror(errno));
         // Bad stuff going on, but clear this anyway
@@ -273,8 +276,8 @@ struct client *checkServiceConnected(struct net_connector *con) {
         return NULL;
     }
 
-    strncpy(c->host, con->address, sizeof(c->host) - 1);
-    strncpy(c->port, con->port, sizeof(c->port) - 1);
+    strncpy(c->host, con->address, sizeof (c->host) - 1);
+    strncpy(c->port, con->port, sizeof (c->port) - 1);
 
     fprintf(stderr, "%s: Connection established: %s%s port %s\n",
             con->service->descr, con->address, con->resolved_addr, con->port);
@@ -288,6 +291,7 @@ struct client *checkServiceConnected(struct net_connector *con) {
 
 // Initiate an outgoing connection.
 // Return the new client or NULL if the connection failed
+
 struct client *serviceConnect(struct net_connector *con) {
 
     int fd;
@@ -297,7 +301,7 @@ struct client *serviceConnect(struct net_connector *con) {
         con->try_addr = con->try_addr->ai_next;
     } else {
         // get the address info
-        if (!con->gai_request_in_progress)  {
+        if (!con->gai_request_in_progress) {
             // launch a pthread for async getaddrinfo
             con->try_addr = NULL;
             freeaddrinfo(con->addr_info);
@@ -333,16 +337,16 @@ struct client *serviceConnect(struct net_connector *con) {
     }
 
     getnameinfo(con->try_addr->ai_addr, con->try_addr->ai_addrlen,
-            con->resolved_addr, sizeof(con->resolved_addr) - 3,
+            con->resolved_addr, sizeof (con->resolved_addr) - 3,
             NULL, 0,
             NI_NUMERICHOST | NI_NUMERICSERV);
 
     if (strcmp(con->resolved_addr, con->address) == 0) {
         con->resolved_addr[0] = '\0';
     } else {
-        char tmp[sizeof(con->resolved_addr)+3]; // shut up gcc
-        snprintf(tmp, sizeof(tmp), " (%s)", con->resolved_addr);
-        memcpy(con->resolved_addr, tmp, sizeof(con->resolved_addr));
+        char tmp[sizeof (con->resolved_addr) + 3]; // shut up gcc
+        snprintf(tmp, sizeof (tmp), " (%s)", con->resolved_addr);
+        memcpy(con->resolved_addr, tmp, sizeof (con->resolved_addr));
     }
 
     if (!con->try_addr->ai_next) {
@@ -363,7 +367,7 @@ struct client *serviceConnect(struct net_connector *con) {
     }
 
     con->connecting = 1;
-    con->connect_timeout = mstime() + 10 * 1000;	// 10 sec TODO: Move to var
+    con->connect_timeout = mstime() + 10 * 1000; // 10 sec TODO: Move to var
     con->fd = fd;
 
     // Since this is a non-blocking connect, it will always return right away.
@@ -374,6 +378,7 @@ struct client *serviceConnect(struct net_connector *con) {
 
 // Set up the given service to listen on an address/port.
 // _exits_ on failure!
+
 void serviceListen(struct net_service *service, char *bind_addr, char *bind_ports) {
     int *fds = NULL;
     int n = 0;
@@ -472,7 +477,7 @@ void modesInitNet(void) {
     sbs_out = serviceInit("Basestation TCP output", &Modes.sbs_out, send_sbs_heartbeat, READ_MODE_IGNORE, NULL, NULL);
     serviceListen(sbs_out, Modes.net_bind_address, Modes.net_output_sbs_ports);
 
-    sbs_in = serviceInit("Basestation TCP input", NULL, NULL, READ_MODE_ASCII, "\n",  decodeSbsLine);
+    sbs_in = serviceInit("Basestation TCP input", NULL, NULL, READ_MODE_ASCII, "\n", decodeSbsLine);
     serviceListen(sbs_in, Modes.net_bind_address, Modes.net_input_sbs_ports);
 
     raw_in = serviceInit("Raw TCP input", NULL, NULL, READ_MODE_ASCII, "\n", decodeHexMessage);
@@ -485,8 +490,7 @@ void modesInitNet(void) {
     /* Beast input from local Modes-S Beast via USB */
     if (Modes.sdr_type == SDR_MODESBEAST) {
         createGenericClient(beast_in, Modes.beast_fd);
-    }
-    else if (Modes.sdr_type == SDR_GNS) {
+    } else if (Modes.sdr_type == SDR_GNS) {
         /* Hex input from local GNS5894 via USART0 */
         s = serviceInit("Hex GNSHAT input", NULL, NULL, READ_MODE_ASCII, "\n", decodeHexMessage);
         s->serial_service = 1;
@@ -513,7 +517,7 @@ void modesInitNet(void) {
             con->service = sbs_in;
 
 
-        con->mutex = malloc(sizeof(pthread_mutex_t));
+        con->mutex = malloc(sizeof (pthread_mutex_t));
         if (!con->mutex || pthread_mutex_init(con->mutex, NULL)) {
             fprintf(stderr, "Unable to initialize connector mutex!\n");
             exit(1);
@@ -530,6 +534,7 @@ void modesInitNet(void) {
 // This function gets called from time to time when the decoding thread is
 // awakened by new data arriving. This usually happens a few times every second
 //
+
 static struct client * modesAcceptClients(void) {
     int fd;
     struct net_service *s;
@@ -540,15 +545,15 @@ static struct client * modesAcceptClients(void) {
         for (i = 0; i < s->listener_count; ++i) {
             struct sockaddr_storage storage;
             struct sockaddr *saddr = (struct sockaddr *) &storage;
-            socklen_t slen = sizeof(storage);
+            socklen_t slen = sizeof (storage);
 
             while ((fd = anetGenericAccept(Modes.aneterr, s->listener_fds[i], saddr, &slen)) >= 0) {
                 c = createSocketClient(s, fd);
                 if (c) {
                     // We created the client, save the sockaddr info and 'hostport'
                     getnameinfo(saddr, slen,
-                            c->host, sizeof(c->host),
-                            c->port, sizeof(c->port),
+                            c->host, sizeof (c->host),
+                            c->port, sizeof (c->port),
                             NI_NUMERICHOST | NI_NUMERICSERV);
 
                     if (Modes.debug & MODES_DEBUG_NET) {
@@ -568,6 +573,7 @@ static struct client * modesAcceptClients(void) {
 //
 // On error free the client, collect the structure, adjust maxfd if needed.
 //
+
 static void modesCloseClient(struct client *c) {
     if (!c->service) {
         fprintf(stderr, "warning: double close of net client\n");
@@ -601,6 +607,7 @@ static void modesCloseClient(struct client *c) {
 //
 // Send data to clients, if we can...
 //
+
 static void flushClients() {
     struct client *c;
     uint64_t now = mstime();
@@ -634,7 +641,7 @@ static void flushClients() {
                                 c->fd, c->sendq_len, c->buflen);
                         modesCloseClient(c);
                     }
-                    done = 1;	// Blocking, just bail, try later.
+                    done = 1; // Blocking, just bail, try later.
                 } else {
                     if (nwritten > 0) {
                         // We've written something, add it to the total
@@ -650,12 +657,12 @@ static void flushClients() {
             } while (!done && (loops < max_loops));
 
             if (total_nwritten > 0) {
-                c->last_send = now;	// If we wrote anything, update this.
+                c->last_send = now; // If we wrote anything, update this.
                 if (total_nwritten == c->sendq_len) {
                     c->sendq_len = 0;
                 } else {
                     c->sendq_len -= total_nwritten;
-                    memmove((void*)c->sendq, c->sendq + total_nwritten, towrite);
+                    memmove((void*) c->sendq, c->sendq + total_nwritten, towrite);
                 }
             }
             c->last_flush = now;
@@ -675,6 +682,7 @@ static void flushClients() {
 //
 // Send the write buffer for the specified writer to all connected clients
 //
+
 static void flushWrites(struct net_writer *writer) {
     struct client *c;
 
@@ -682,7 +690,7 @@ static void flushWrites(struct net_writer *writer) {
         if (!c->service)
             continue;
         if (c->service->writer == writer->service->writer) {
-            uintptr_t psendq_end = (uintptr_t)c->sendq + c->sendq_len; // Pointer to end of sendq
+            uintptr_t psendq_end = (uintptr_t) c->sendq + c->sendq_len; // Pointer to end of sendq
 
             // Add the buffer to the client's SendQ
             if ((c->sendq_len + writer->dataUsed) >= c->sendq_max) {
@@ -691,10 +699,10 @@ static void flushWrites(struct net_writer *writer) {
                         c->service->descr, c->host, c->port,
                         c->fd, c->sendq_len, c->buflen);
                 modesCloseClient(c);
-                continue;	// Go to the next client
+                continue; // Go to the next client
             }
             // Append the data to the end of the queue, increment len
-            memcpy((void*)psendq_end, writer->data, writer->dataUsed);
+            memcpy((void*) psendq_end, writer->data, writer->dataUsed);
             c->sendq_len += writer->dataUsed;
         }
     }
@@ -707,6 +715,7 @@ static void flushWrites(struct net_writer *writer) {
 
 // Prepare to write up to 'len' bytes to the given net_writer.
 // Returns a pointer to write to, or NULL to skip this write.
+
 static void *prepareWrite(struct net_writer *writer, int len) {
     if (!writer ||
             !writer->service ||
@@ -728,6 +737,7 @@ static void *prepareWrite(struct net_writer *writer, int len) {
 // Complete a write previously begun by prepareWrite.
 // endptr should point one byte past the last byte written
 // to the buffer returned from prepareWrite.
+
 static void completeWrite(struct net_writer *writer, void *endptr) {
     writer->dataUsed = endptr - writer->data;
 
@@ -741,6 +751,7 @@ static void completeWrite(struct net_writer *writer, void *endptr) {
 //
 // Write raw output in Beast Binary format with Timestamp to TCP clients
 //
+
 static void modesSendBeastOutput(struct modesMessage *mm, struct net_writer *writer) {
     int msgLen = mm->msgbits / 8;
     char *p = prepareWrite(writer, 2 + 2 * (7 + msgLen));
@@ -829,6 +840,7 @@ static void send_beast_heartbeat(struct net_service *service) {
 //
 // Print the two hex digits to a string for a single byte.
 //
+
 static void printHexDigit(char *p, unsigned char c) {
     const char hex_lookup[] = "0123456789ABCDEF";
     p[0] = hex_lookup[(c >> 4) & 0x0F];
@@ -840,6 +852,7 @@ static void printHexDigit(char *p, unsigned char c) {
 //
 // Write raw output to TCP clients
 //
+
 static void modesSendRawOutput(struct modesMessage *mm) {
     int msgLen = mm->msgbits / 8;
     char *p = prepareWrite(&Modes.raw_out, msgLen * 2 + 15);
@@ -889,6 +902,7 @@ static void send_raw_heartbeat(struct net_service *service) {
 //
 // Read SBS input from TCP clients
 //
+
 static int decodeSbsLine(struct client *c, char *line, int remote) {
     struct modesMessage mm;
     static struct modesMessage zeroMessage;
@@ -974,6 +988,7 @@ static int decodeSbsLine(struct client *c, char *line, int remote) {
 //
 // Write SBS output to TCP clients
 //
+
 static void modesSendSBSOutput(struct modesMessage *mm, struct aircraft *a) {
     char *p;
     struct timespec now;
@@ -1163,10 +1178,10 @@ static void modesSendSBSOutput(struct modesMessage *mm, struct aircraft *a) {
 
     // Field 22 is the OnTheGround flag (if we have it)
     switch (mm->airground) {
-        case AG_GROUND:
+        case AIRCRAFT_META__AIR_GROUND__AG_GROUND:
             p += sprintf(p, ",-1");
             break;
-        case AG_AIRBORNE:
+        case AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE:
             p += sprintf(p, ",0");
             break;
         default:
@@ -1198,6 +1213,7 @@ static void send_sbs_heartbeat(struct net_service *service) {
 //
 //=========================================================================
 //
+
 void modesQueueOutput(struct modesMessage *mm, struct aircraft *a) {
     int is_mlat = (mm->source == SOURCE_MLAT);
 
@@ -1228,6 +1244,7 @@ void modesQueueOutput(struct modesMessage *mm, struct aircraft *a) {
 }
 
 // Decode a little-endian IEEE754 float (binary32)
+
 float ieee754_binary32_le_to_float(uint8_t *data) {
     double sign = (data[3] & 0x80) ? -1.0 : 1.0;
     int16_t raw_exponent = ((data[3] & 0x7f) << 1) | ((data[2] & 0x80) >> 7);
@@ -1276,6 +1293,7 @@ static void handle_radarcape_position(float lat, float lon, float alt) {
 }
 
 // recompute global Mode A/C setting
+
 static void autoset_modeac() {
     struct client *c;
 
@@ -1292,6 +1310,7 @@ static void autoset_modeac() {
 }
 
 // Send some Beast settings commands to a client
+
 void sendBeastSettings(int fd, const char *settings) {
     int len;
     char *buf, *p;
@@ -1313,6 +1332,7 @@ void sendBeastSettings(int fd, const char *settings) {
 // Currently, we just look for the Mode A/C command message
 // and ignore everything else.
 //
+
 static int handleBeastCommand(struct client *c, char *p, int remote) {
     MODES_NOTUSED(remote);
     if (p[0] != '1') {
@@ -1346,6 +1366,7 @@ static int handleBeastCommand(struct client *c, char *p, int remote) {
 // The function always returns 0 (success) to the caller as there is no
 // case where we want broken messages here to close the client connection.
 //
+
 static int decodeBinMessage(struct client *c, char *p, int remote) {
     int msgLen = 0;
     int j;
@@ -1490,6 +1511,7 @@ static int decodeBinMessage(struct client *c, char *p, int remote) {
 // Turn an hex digit into its 4 bit decimal value.
 // Returns -1 if the digit is not in the 0-F range.
 //
+
 static int hexDigitVal(int c) {
     if (c >= '0' && c <= '9') return c - '0';
     else if (c >= 'A' && c <= 'F') return c - 'A' + 10;
@@ -1510,6 +1532,7 @@ static int hexDigitVal(int c) {
 // The function always returns 0 (success) to the caller as there is no
 // case where we want broken messages here to close the client connection.
 //
+
 static int decodeHexMessage(struct client *c, char *hex, int remote) {
     int l = strlen(hex), j;
     unsigned char msg[MODES_LONG_MSG_BYTES];
@@ -1639,6 +1662,7 @@ __attribute__ ((format(printf, 3, 4))) static char *safe_snprintf(char *p, char 
 // Return a description of planes in json. No metric conversion
 //
 // usual caveats about function-returning-pointer-to-static-buffer apply
+
 static const char *jsonEscapeString(const char *str) {
     static char buf[1024];
     const char *in = str;
@@ -1726,85 +1750,76 @@ static char *append_flags(char *p, char *end, struct aircraft *a, datasource_t s
     return p;
 }
 
-static struct {
-    nav_modes_t flag;
-    const char *name;
-} nav_modes_names[] = {
-    { NAV_MODE_AUTOPILOT, "autopilot"},
-    { NAV_MODE_VNAV, "vnav"},
-    { NAV_MODE_ALT_HOLD, "althold"},
-    { NAV_MODE_APPROACH, "approach"},
-    { NAV_MODE_LNAV, "lnav"},
-    { NAV_MODE_TCAS, "tcas"},
-    { 0, NULL}
-};
-
-static char *append_nav_modes(char *p, char *end, nav_modes_t flags, const char *quote, const char *sep) {
-    int first = 1;
-    for (int i = 0; nav_modes_names[i].name; ++i) {
-        if (!(flags & nav_modes_names[i].flag)) {
-            continue;
-        }
-
-        if (!first) {
-            p = safe_snprintf(p, end, "%s", sep);
-        }
-
-        first = 0;
-        p = safe_snprintf(p, end, "%s%s%s", quote, nav_modes_names[i].name, quote);
+static char *append_nav_modes(char *p, char *end, AircraftMeta__NavModes flags, const char *quote, const char *sep) {
+    if (flags.has_autopilot) {
+        p = safe_snprintf(p, end, "%sautopilot%s%s", quote, quote, sep);
     }
-
+    if (flags.has_vnav) {
+        p = safe_snprintf(p, end, "%svnav%s%s", quote, quote, sep);
+    }
+    if (flags.has_althold) {
+        p = safe_snprintf(p, end, "%salthold%s%s", quote, quote, sep);
+    }
+    if (flags.has_approach) {
+        p = safe_snprintf(p, end, "%sapproach%s%s", quote, quote, sep);
+    }
+    if (flags.has_lnav) {
+        p = safe_snprintf(p, end, "%slnav%s%s", quote, quote, sep);
+    }
+    if (flags.has_tcas) {
+        p = safe_snprintf(p, end, "%stcas%s%s", quote, quote, sep);
+    }
     return p;
 }
 
-static const char *nav_modes_flags_string(nav_modes_t flags) {
+static const char *nav_modes_flags_string(AircraftMeta__NavModes flags) {
     static char buf[256];
     buf[0] = 0;
     append_nav_modes(buf, buf + sizeof (buf), flags, "", " ");
     return buf;
 }
 
-static const char *addrtype_enum_string(addrtype_t type) {
+static const char *addrtype_enum_string(AircraftMeta__AddrType type) {
     switch (type) {
-        case ADDR_ADSB_ICAO:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO:
             return "adsb_icao";
-        case ADDR_ADSB_ICAO_NT:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO_NT:
             return "adsb_icao_nt";
-        case ADDR_ADSR_ICAO:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSR_ICAO:
             return "adsr_icao";
-        case ADDR_TISB_ICAO:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_ICAO:
             return "tisb_icao";
-        case ADDR_ADSB_OTHER:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_OTHER:
             return "adsb_other";
-        case ADDR_ADSR_OTHER:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_ADSR_OTHER:
             return "adsr_other";
-        case ADDR_TISB_OTHER:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_OTHER:
             return "tisb_other";
-        case ADDR_TISB_TRACKFILE:
+        case AIRCRAFT_META__ADDR_TYPE__ADDR_TISB_TRACKFILE:
             return "tisb_trackfile";
         default:
             return "unknown";
     }
 }
 
-static const char *emergency_enum_string(emergency_t emergency) {
+static const char *emergency_enum_string(AircraftMeta__Emergency emergency) {
     switch (emergency) {
-        case EMERGENCY_NONE: return "none";
-        case EMERGENCY_GENERAL: return "general";
-        case EMERGENCY_LIFEGUARD: return "lifeguard";
-        case EMERGENCY_MINFUEL: return "minfuel";
-        case EMERGENCY_NORDO: return "nordo";
-        case EMERGENCY_UNLAWFUL: return "unlawful";
-        case EMERGENCY_DOWNED: return "downed";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_NONE: return "none";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_GENERAL: return "general";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_LIFEGUARD: return "lifeguard";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_MINFUEL: return "minfuel";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_NORDO: return "nordo";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_UNLAWFUL: return "unlawful";
+        case AIRCRAFT_META__EMERGENCY__EMERGENCY_DOWNED: return "downed";
         default: return "reserved";
     }
 }
 
-static const char *sil_type_enum_string(sil_type_t type) {
+static const char *sil_type_enum_string(AircraftMeta__SilType type) {
     switch (type) {
-        case SIL_UNKNOWN: return "unknown";
-        case SIL_PER_HOUR: return "perhour";
-        case SIL_PER_SAMPLE: return "persample";
+        case AIRCRAFT_META__SIL_TYPE__SIL_UNKNOWN: return "unknown";
+        case AIRCRAFT_META__SIL_TYPE__SIL_PER_HOUR: return "perhour";
+        case AIRCRAFT_META__SIL_TYPE__SIL_PER_SAMPLE: return "persample";
         default: return "invalid";
     }
 }
@@ -1820,11 +1835,333 @@ static const char *nav_altitude_source_enum_string(nav_altitude_source_t src) {
     }
 }
 
-struct char_buffer generateAircraftJson(){
+/**
+ * Create valid source message for MLAT or TISB parameters if one or more are valid.
+ * @param a Single aicraft data.
+ * @param source Source type.
+ * @return Pointer to valid source message or NULL when no parameter was found valid.
+ */
+static AircraftMeta__ValidSource *generateValidSourceMessage(struct aircraft *a, datasource_t source) {
+    AircraftMeta__ValidSource msg = AIRCRAFT_META__VALID_SOURCE__INIT;
+    bool has_valid = false;
+
+    if (a->callsign_valid.source == source)
+        msg.callsign = msg.has_callsign = has_valid = true;
+    if (a->altitude_baro_valid.source == source)
+        msg.altitude = msg.has_altitude = has_valid = true;
+    if (a->altitude_geom_valid.source == source)
+        msg.alt_geom = msg.has_alt_geom = has_valid = true;
+    if (a->gs_valid.source == source)
+        msg.gs = msg.has_gs = has_valid = true;
+    if (a->ias_valid.source == source)
+        msg.ias = msg.has_ias = has_valid = true;
+    if (a->tas_valid.source == source)
+        msg.tas = msg.has_tas = has_valid = true;
+    if (a->mach_valid.source == source)
+        msg.mach = msg.has_mach = has_valid = true;
+    if (a->track_valid.source == source)
+        msg.track = msg.has_track = has_valid = true;
+    if (a->track_rate_valid.source == source)
+        msg.track_rate = msg.has_track_rate = has_valid = true;
+    if (a->roll_valid.source == source)
+        msg.roll = msg.has_roll = has_valid = true;
+    if (a->mag_heading_valid.source == source)
+        msg.mag_heading = msg.has_mag_heading = has_valid = true;
+    if (a->true_heading_valid.source == source)
+        msg.true_heading = msg.has_true_heading = has_valid = true;
+    if (a->baro_rate_valid.source == source)
+        msg.baro_rate = msg.has_baro_rate = has_valid = true;
+    if (a->geom_rate_valid.source == source)
+        msg.geom_rate = msg.has_geom_rate = has_valid = true;
+    if (a->squawk_valid.source == source)
+        msg.squawk = msg.has_squawk = has_valid = true;
+    if (a->emergency_valid.source == source)
+        msg.emergency = msg.has_emergency = has_valid = true;
+    if (a->nav_qnh_valid.source == source)
+        msg.nav_qnh = msg.has_nav_qnh = has_valid = true;
+    if (a->nav_altitude_mcp_valid.source == source)
+        msg.nav_altitude_mcp = msg.has_nav_altitude_mcp = has_valid = true;
+    if (a->nav_altitude_fms_valid.source == source)
+        msg.nav_altitude_fms = msg.has_nav_altitude_fms = has_valid = true;
+    if (a->nav_heading_valid.source == source)
+        msg.nav_heading = msg.has_nav_heading = has_valid = true;
+    if (a->nav_modes_valid.source == source)
+        msg.nav_modes = msg.has_nav_modes = has_valid = true;
+    if (a->position_valid.source == source) {
+        msg.lat = msg.has_lat = has_valid = true;
+        msg.lon = msg.has_lon = has_valid = true;
+        msg.nic = msg.has_nic = has_valid = true;
+        msg.rc = msg.has_rc = has_valid = true;
+    }
+    if (a->nic_baro_valid.source == source)
+        msg.nic_baro = msg.has_nic_baro = has_valid = true;
+    if (a->nac_p_valid.source == source)
+        msg.nac_p = msg.has_nac_p = has_valid = true;
+    if (a->nac_v_valid.source == source)
+        msg.nac_v = msg.has_nac_v = has_valid = true;
+    if (a->sil_valid.source == source) {
+        msg.sil = msg.has_sil = has_valid = true;
+        msg.sil_type = msg.has_sil_type = has_valid = true;
+    }
+    if (a->gva_valid.source == source)
+        msg.gva = msg.has_gva = has_valid = true;
+    if (a->sda_valid.source == source)
+        msg.sda = msg.has_sda = has_valid = true;
+
+    if (has_valid) {
+        AircraftMeta__ValidSource *p = malloc(sizeof (AircraftMeta__ValidSource));
+        return memcpy(p, &msg, sizeof (AircraftMeta__ValidSource));
+    }
+
+    return NULL;
+}
+
+/**
+ * Generate aircraft metadata collection as protocol buffer file.
+ * @param file File name for protocol buffer output.
+ * @param is_history True when history file is generated with reduced parameter set.
+ */
+void generateAircraftProtoBuf(const char *file, bool is_history) {
+    char pathbuf[PATH_MAX];
+    char tmppath[PATH_MAX];
+    int fd;
+    mode_t mask;
+
+    if (!Modes.json_dir) {
+        return;
+    }
+
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.json_dir, file);
+    tmppath[PATH_MAX - 1] = 0;
+    fd = mkstemp(tmppath);
+    if (fd < 0) {
+        return;
+    }
+
+    uint64_t now = mstime();
+    struct aircraft *a;
+    size_t j;
+    // The entire collection of tracked aircrafts. Equal to aircraft.json content.
+    AircraftCollection msg = AIRCRAFT_COLLECTION__INIT;
+    // Source type collection of parameters received through MLAT, if any.
+    AircraftMeta__ValidSource **mlat = NULL;
+    unsigned n_mlat = 0;
+    // Same for parameters received through TISB.
+    AircraftMeta__ValidSource **tisb = NULL;
+    unsigned n_tisb = 0;
+
+    msg.n_aircraft = 0;
+    msg.now = now / 1000;
+    msg.has_now = true;
+    msg.messages = Modes.stats_current.messages_total + Modes.stats_alltime.messages_total;
+    msg.has_messages = true;
+
+    for (j = 0; j < AIRCRAFTS_BUCKETS; j++) {
+        for (a = Modes.aircrafts[j]; a; a = a->next) {
+            if ((a->meta.messages < 2) || (now > (a->meta.seen + 90E3))) {
+                // Basic filter for bad decodes and
+                // don't include stale aircraft in the JSON.
+                continue;
+            }
+
+            // Record only aircrafts with position in history.
+            if (!trackDataValid(&a->position_valid) && is_history) {
+                continue;
+            }
+
+            if (msg.aircraft == NULL) {
+                msg.aircraft = malloc(sizeof (AircraftMeta*));
+            } else {
+                msg.aircraft = realloc(msg.aircraft, sizeof (AircraftMeta*) * (msg.n_aircraft + 1));
+            }
+
+            msg.aircraft[msg.n_aircraft] = &a->meta;
+
+            // History file contains address, position and altitude.
+            msg.aircraft[msg.n_aircraft]->has_addr = true;
+            if (trackDataValid(&a->position_valid)) {
+                msg.aircraft[msg.n_aircraft]->has_lat = true;
+                msg.aircraft[msg.n_aircraft]->has_lon = true;
+            }
+            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE) {
+                msg.aircraft[msg.n_aircraft]->has_alt_baro = (trackDataValid(&a->altitude_baro_valid) & (a->altitude_baro_reliable >= 3));
+            }
+            // Skip everything else when creating history files.
+            if (is_history) {
+                msg.aircraft[msg.n_aircraft]->has_addr_type = false;
+                msg.aircraft[msg.n_aircraft]->flight = NULL;
+                msg.aircraft[msg.n_aircraft]->has_category = false;
+                msg.aircraft[msg.n_aircraft]->has_alt_geom = false;
+                msg.aircraft[msg.n_aircraft]->has_gs = false;
+                msg.aircraft[msg.n_aircraft]->has_ias = false;
+                msg.aircraft[msg.n_aircraft]->has_tas = false;
+                msg.aircraft[msg.n_aircraft]->has_mach = false;
+                msg.aircraft[msg.n_aircraft]->has_track = false;
+                msg.aircraft[msg.n_aircraft]->has_track_rate = false;
+                msg.aircraft[msg.n_aircraft]->has_roll = false;
+                msg.aircraft[msg.n_aircraft]->has_baro_rate = false;
+                msg.aircraft[msg.n_aircraft]->has_geom_rate = false;
+                msg.aircraft[msg.n_aircraft]->has_squawk = false;
+                msg.aircraft[msg.n_aircraft]->has_emergency = false;
+                msg.aircraft[msg.n_aircraft]->has_nav_qnh = false;
+                msg.aircraft[msg.n_aircraft]->has_nav_altitude_mcp = false;
+                msg.aircraft[msg.n_aircraft]->has_nav_altitude_fms = false;
+                msg.aircraft[msg.n_aircraft]->has_nav_heading = false;
+                msg.aircraft[msg.n_aircraft]->has_nic_baro = false;
+                msg.aircraft[msg.n_aircraft]->has_nac_p = false;
+                msg.aircraft[msg.n_aircraft]->has_nac_v = false;
+                msg.aircraft[msg.n_aircraft]->has_sil = false;
+                msg.aircraft[msg.n_aircraft]->has_gva = false;
+                msg.aircraft[msg.n_aircraft]->has_sda = false;
+                msg.aircraft[msg.n_aircraft]->has_alert = false;
+                msg.aircraft[msg.n_aircraft]->has_spi = false;
+                msg.aircraft[msg.n_aircraft]->has_air_ground = false;
+                msg.aircraft[msg.n_aircraft]->has_nic = false;
+                msg.aircraft[msg.n_aircraft]->has_rc = false;
+                msg.aircraft[msg.n_aircraft]->has_seen_pos = false;
+                msg.aircraft[msg.n_aircraft]->has_version = false;
+                msg.aircraft[msg.n_aircraft]->has_sil_type = false;
+                msg.aircraft[msg.n_aircraft]->has_messages = false;
+                msg.aircraft[msg.n_aircraft]->has_seen = false;
+                msg.aircraft[msg.n_aircraft]->has_rssi = false;
+                msg.aircraft[msg.n_aircraft]->has_mag_heading = false;
+                msg.aircraft[msg.n_aircraft]->has_true_heading = false;
+                msg.n_aircraft += 1;
+                continue;
+            }
+
+            if (a->meta.addr_type != AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO) {
+                msg.aircraft[msg.n_aircraft]->has_addr_type = true;
+            }
+            if (trackDataValid(&a->callsign_valid)) {
+                msg.aircraft[msg.n_aircraft]->flight = a->callsign;
+            }
+            if (a->meta.category != 0) {
+                msg.aircraft[msg.n_aircraft]->has_category = true;
+            }
+            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND) {
+                msg.aircraft[msg.n_aircraft]->has_alt_baro = false;
+            } else {
+                msg.aircraft[msg.n_aircraft]->has_alt_baro = (trackDataValid(&a->altitude_baro_valid) & (a->altitude_baro_reliable >= 3));
+                msg.aircraft[msg.n_aircraft]->has_alt_geom = trackDataValid(&a->altitude_geom_valid);
+            }
+            msg.aircraft[msg.n_aircraft]->has_mag_heading = trackDataValid(&a->mag_heading_valid);
+            msg.aircraft[msg.n_aircraft]->has_true_heading = trackDataValid(&a->true_heading_valid);
+            msg.aircraft[msg.n_aircraft]->has_gs = trackDataValid(&a->gs_valid);
+            msg.aircraft[msg.n_aircraft]->has_ias = trackDataValid(&a->ias_valid);
+            msg.aircraft[msg.n_aircraft]->has_tas = trackDataValid(&a->tas_valid);
+            msg.aircraft[msg.n_aircraft]->has_mach = trackDataValid(&a->mach_valid);
+            msg.aircraft[msg.n_aircraft]->has_track = trackDataValid(&a->track_valid);
+            msg.aircraft[msg.n_aircraft]->has_track_rate = trackDataValid(&a->track_rate_valid);
+            msg.aircraft[msg.n_aircraft]->has_roll = trackDataValid(&a->roll_valid);
+            msg.aircraft[msg.n_aircraft]->has_baro_rate = trackDataValid(&a->baro_rate_valid);
+            msg.aircraft[msg.n_aircraft]->has_geom_rate = trackDataValid(&a->geom_rate_valid);
+            msg.aircraft[msg.n_aircraft]->has_squawk = trackDataValid(&a->squawk_valid);
+            msg.aircraft[msg.n_aircraft]->has_emergency = trackDataValid(&a->emergency_valid);
+            msg.aircraft[msg.n_aircraft]->has_nav_qnh = trackDataValid(&a->nav_qnh_valid);
+            msg.aircraft[msg.n_aircraft]->has_nav_altitude_mcp = trackDataValid(&a->nav_altitude_mcp_valid);
+            msg.aircraft[msg.n_aircraft]->has_nav_altitude_fms = trackDataValid(&a->nav_altitude_fms_valid);
+            msg.aircraft[msg.n_aircraft]->has_nav_heading = trackDataValid(&a->nav_heading_valid);
+            msg.aircraft[msg.n_aircraft]->has_nic_baro = trackDataValid(&a->nic_baro_valid);
+            msg.aircraft[msg.n_aircraft]->has_nac_p = trackDataValid(&a->nac_p_valid);
+            msg.aircraft[msg.n_aircraft]->has_nac_v = trackDataValid(&a->nac_v_valid);
+            msg.aircraft[msg.n_aircraft]->has_sil = trackDataValid(&a->sil_valid);
+            msg.aircraft[msg.n_aircraft]->has_gva = trackDataValid(&a->gva_valid);
+            msg.aircraft[msg.n_aircraft]->has_sda = trackDataValid(&a->sda_valid);
+            msg.aircraft[msg.n_aircraft]->has_alert = trackDataValid(&a->alert_valid);
+            msg.aircraft[msg.n_aircraft]->has_spi = trackDataValid(&a->spi_valid);
+            msg.aircraft[msg.n_aircraft]->has_air_ground = trackDataValid(&a->airground_valid);
+
+            if (trackDataValid(&a->nav_modes_valid)) {
+                msg.aircraft[msg.n_aircraft]->nav_modes = &a->nav_modes;
+            }
+            if (trackDataValid(&a->position_valid)) {
+                msg.aircraft[msg.n_aircraft]->has_nic = true;
+                msg.aircraft[msg.n_aircraft]->has_rc = true;
+                msg.aircraft[msg.n_aircraft]->seen_pos = (now - a->position_valid.updated) / 1000.0;
+                msg.aircraft[msg.n_aircraft]->has_seen_pos = true;
+            }
+            if (a->adsb_version >= 0) {
+                msg.aircraft[msg.n_aircraft]->version = a->adsb_version;
+                msg.aircraft[msg.n_aircraft]->has_version = true;
+            }
+            if (a->meta.sil_type != AIRCRAFT_META__SIL_TYPE__SIL_INVALID) {
+                msg.aircraft[msg.n_aircraft]->has_sil_type = true;
+            }
+
+            // Create MLAT valid source information
+            AircraftMeta__ValidSource *vs = generateValidSourceMessage(a, SOURCE_MLAT);
+            if (vs != NULL) {
+                if (mlat == NULL) {
+                    mlat = malloc(sizeof (AircraftMeta__ValidSource*));
+                } else {
+                    mlat = realloc(mlat, sizeof (AircraftMeta__ValidSource*) * (n_mlat + 1));
+                }
+                mlat[n_mlat] = vs;
+                msg.aircraft[msg.n_aircraft]->mlat = mlat[n_mlat];
+                n_mlat += 1;
+            }
+
+            // Create TISB valid source information
+            vs = generateValidSourceMessage(a, SOURCE_TISB);
+            if (vs != NULL) {
+                if (tisb == NULL) {
+                    tisb = malloc(sizeof (AircraftMeta__ValidSource*));
+                } else {
+                    tisb = realloc(tisb, sizeof (AircraftMeta__ValidSource*) * (n_tisb + 1));
+                }
+                tisb[n_tisb] = vs;
+                msg.aircraft[msg.n_aircraft]->tisb = tisb[n_tisb];
+                n_tisb += 1;
+            }
+
+            msg.aircraft[msg.n_aircraft]->has_messages = true;
+            msg.aircraft[msg.n_aircraft]->has_seen = true;
+            msg.aircraft[msg.n_aircraft]->rssi = 10 * log10((a->signalLevel[0] + a->signalLevel[1] + a->signalLevel[2] + a->signalLevel[3] +
+                    a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8);
+            msg.aircraft[msg.n_aircraft]->has_rssi = true;
+            msg.n_aircraft += 1;
+        }
+    }
+    // Pack and serialize entire aicraft collection.
+    unsigned len = aircraft_collection__get_packed_size(&msg);
+    void *buf = malloc(len);
+    aircraft_collection__pack(&msg, buf);
+    // Write aircraft collection to file.
+    mask = umask(0);
+    umask(mask);
+    fchmod(fd, 0644 & ~mask);
+
+    if (write(fd, buf, len) != len) {
+        close(fd);
+    } else {
+        if (close(fd) == 0) {
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
+            pathbuf[PATH_MAX - 1] = 0;
+            rename(tmppath, pathbuf);
+        } else {
+            unlink(tmppath);
+        }
+    }
+    // Free up all allocated memory.
+    free(buf);
+    for (j = 0; j < n_tisb; j++) {
+        free(tisb[j]);
+    }
+
+    for (j = 0; j < n_mlat; j++) {
+        free(mlat[j]);
+    }
+    free(mlat);
+    free(tisb);
+    free(msg.aircraft);
+}
+
+struct char_buffer generateAircraftJson() {
     struct char_buffer cb;
     uint64_t now = mstime();
     struct aircraft *a;
-    int buflen = 256*1024; // The initial buffer is resized as needed
+    int buflen = 256 * 1024; // The initial buffer is resized as needed
     char *buf = (char *) malloc(buflen), *p = buf, *end = buf + buflen;
     char *line_start;
     int first = 1;
@@ -1840,10 +2177,10 @@ struct char_buffer generateAircraftJson(){
 
     for (int j = 0; j < AIRCRAFTS_BUCKETS; j++) {
         for (a = Modes.aircrafts[j]; a; a = a->next) {
-            if (a->messages < 2) { // basic filter for bad decodes
+            if (a->meta.messages < 2) { // basic filter for bad decodes
                 continue;
             }
-            if ((now - a->seen) > 90E3) // don't include stale aircraft in the JSON
+            if ((now - a->meta.seen) > 90E3) // don't include stale aircraft in the JSON
                 continue;
 
             if (first)
@@ -1853,82 +2190,82 @@ struct char_buffer generateAircraftJson(){
 
 retry:
             line_start = p;
-            p = safe_snprintf(p, end, "\n    {\"hex\":\"%s%06x\"", (a->addr & MODES_NON_ICAO_ADDRESS) ? "~" : "", a->addr & 0xFFFFFF);
-            if (a->addrtype != ADDR_ADSB_ICAO)
-                p = safe_snprintf(p, end, ",\"type\":\"%s\"", addrtype_enum_string(a->addrtype));
+            p = safe_snprintf(p, end, "\n    {\"hex\":\"%s%06x\"", (a->meta.addr & MODES_NON_ICAO_ADDRESS) ? "~" : "", a->meta.addr & 0xFFFFFF);
+            if (a->meta.addr_type != AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO)
+                p = safe_snprintf(p, end, ",\"type\":\"%s\"", addrtype_enum_string(a->meta.addr_type));
             if (trackDataValid(&a->callsign_valid))
                 p = safe_snprintf(p, end, ",\"flight\":\"%s\"", jsonEscapeString(a->callsign));
-            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->airground == AG_GROUND)
+            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND)
                 p = safe_snprintf(p, end, ",\"alt_baro\":\"ground\"");
             else {
                 if (trackDataValid(&a->altitude_baro_valid) && a->altitude_baro_reliable >= 3)
-                    p = safe_snprintf(p, end, ",\"alt_baro\":%d", a->altitude_baro);
+                    p = safe_snprintf(p, end, ",\"alt_baro\":%d", a->meta.alt_baro);
                 if (trackDataValid(&a->altitude_geom_valid))
-                    p = safe_snprintf(p, end, ",\"alt_geom\":%d", a->altitude_geom);
+                    p = safe_snprintf(p, end, ",\"alt_geom\":%d", a->meta.alt_geom);
             }
             if (trackDataValid(&a->gs_valid))
-                p = safe_snprintf(p, end, ",\"gs\":%.1f", a->gs);
+                p = safe_snprintf(p, end, ",\"gs\":%d", a->meta.gs);
             if (trackDataValid(&a->ias_valid))
-                p = safe_snprintf(p, end, ",\"ias\":%u", a->ias);
+                p = safe_snprintf(p, end, ",\"ias\":%u", a->meta.ias);
             if (trackDataValid(&a->tas_valid))
-                p = safe_snprintf(p, end, ",\"tas\":%u", a->tas);
+                p = safe_snprintf(p, end, ",\"tas\":%u", a->meta.tas);
             if (trackDataValid(&a->mach_valid))
-                p = safe_snprintf(p, end, ",\"mach\":%.3f", a->mach);
+                p = safe_snprintf(p, end, ",\"mach\":%.3f", a->meta.mach);
             if (trackDataValid(&a->track_valid))
-                p = safe_snprintf(p, end, ",\"track\":%.1f", a->track);
+                p = safe_snprintf(p, end, ",\"track\":%d", a->meta.track);
             if (trackDataValid(&a->track_rate_valid))
-                p = safe_snprintf(p, end, ",\"track_rate\":%.2f", a->track_rate);
+                p = safe_snprintf(p, end, ",\"track_rate\":%.2f", a->meta.track_rate);
             if (trackDataValid(&a->roll_valid))
-                p = safe_snprintf(p, end, ",\"roll\":%.1f", a->roll);
+                p = safe_snprintf(p, end, ",\"roll\":%.1f", a->meta.roll);
             if (trackDataValid(&a->mag_heading_valid))
-                p = safe_snprintf(p, end, ",\"mag_heading\":%.1f", a->mag_heading);
+                p = safe_snprintf(p, end, ",\"mag_heading\":%d", a->meta.mag_heading);
             if (trackDataValid(&a->true_heading_valid))
-                p = safe_snprintf(p, end, ",\"true_heading\":%.1f", a->true_heading);
+                p = safe_snprintf(p, end, ",\"true_heading\":%d", a->meta.true_heading);
             if (trackDataValid(&a->baro_rate_valid))
-                p = safe_snprintf(p, end, ",\"baro_rate\":%d", a->baro_rate);
+                p = safe_snprintf(p, end, ",\"baro_rate\":%d", a->meta.baro_rate);
             if (trackDataValid(&a->geom_rate_valid))
-                p = safe_snprintf(p, end, ",\"geom_rate\":%d", a->geom_rate);
+                p = safe_snprintf(p, end, ",\"geom_rate\":%d", a->meta.geom_rate);
             if (trackDataValid(&a->squawk_valid))
-                p = safe_snprintf(p, end, ",\"squawk\":\"%04x\"", a->squawk);
+                p = safe_snprintf(p, end, ",\"squawk\":\"%04x\"", a->meta.squawk);
             if (trackDataValid(&a->emergency_valid))
-                p = safe_snprintf(p, end, ",\"emergency\":\"%s\"", emergency_enum_string(a->emergency));
-            if (a->category != 0)
-                p = safe_snprintf(p, end, ",\"category\":\"%02X\"", a->category);
+                p = safe_snprintf(p, end, ",\"emergency\":\"%s\"", emergency_enum_string(a->meta.emergency));
+            if (a->meta.category != 0)
+                p = safe_snprintf(p, end, ",\"category\":\"%02X\"", a->meta.category);
             if (trackDataValid(&a->nav_qnh_valid))
-                p = safe_snprintf(p, end, ",\"nav_qnh\":%.1f", a->nav_qnh);
+                p = safe_snprintf(p, end, ",\"nav_qnh\":%.1f", a->meta.nav_qnh);
             if (trackDataValid(&a->nav_altitude_mcp_valid))
-                p = safe_snprintf(p, end, ",\"nav_altitude_mcp\":%d", a->nav_altitude_mcp);
+                p = safe_snprintf(p, end, ",\"nav_altitude_mcp\":%d", a->meta.nav_altitude_mcp);
             if (trackDataValid(&a->nav_altitude_fms_valid))
-                p = safe_snprintf(p, end, ",\"nav_altitude_fms\":%d", a->nav_altitude_fms);
+                p = safe_snprintf(p, end, ",\"nav_altitude_fms\":%d", a->meta.nav_altitude_fms);
             if (trackDataValid(&a->nav_heading_valid))
-                p = safe_snprintf(p, end, ",\"nav_heading\":%.1f", a->nav_heading);
+                p = safe_snprintf(p, end, ",\"nav_heading\":%d", a->meta.nav_heading);
             if (trackDataValid(&a->nav_modes_valid)) {
                 p = safe_snprintf(p, end, ",\"nav_modes\":[");
                 p = append_nav_modes(p, end, a->nav_modes, "\"", ",");
                 p = safe_snprintf(p, end, "]");
             }
             if (trackDataValid(&a->position_valid))
-                p = safe_snprintf(p, end, ",\"lat\":%f,\"lon\":%f,\"nic\":%u,\"rc\":%u,\"seen_pos\":%.1f", a->lat, a->lon, a->pos_nic, a->pos_rc, (now - a->position_valid.updated) / 1000.0);
+                p = safe_snprintf(p, end, ",\"lat\":%f,\"lon\":%f,\"nic\":%u,\"rc\":%u,\"seen_pos\":%.1f", a->meta.lat, a->meta.lon, a->meta.nic, a->meta.rc, (now - a->position_valid.updated) / 1000.0);
             if (a->adsb_version >= 0)
                 p = safe_snprintf(p, end, ",\"version\":%d", a->adsb_version);
             if (trackDataValid(&a->nic_baro_valid))
-                p = safe_snprintf(p, end, ",\"nic_baro\":%u", a->nic_baro);
+                p = safe_snprintf(p, end, ",\"nic_baro\":%u", a->meta.nic_baro);
             if (trackDataValid(&a->nac_p_valid))
-                p = safe_snprintf(p, end, ",\"nac_p\":%u", a->nac_p);
+                p = safe_snprintf(p, end, ",\"nac_p\":%u", a->meta.nac_p);
             if (trackDataValid(&a->nac_v_valid))
-                p = safe_snprintf(p, end, ",\"nac_v\":%u", a->nac_v);
+                p = safe_snprintf(p, end, ",\"nac_v\":%u", a->meta.nac_v);
             if (trackDataValid(&a->sil_valid))
-                p = safe_snprintf(p, end, ",\"sil\":%u", a->sil);
-            if (a->sil_type != SIL_INVALID)
-                p = safe_snprintf(p, end, ",\"sil_type\":\"%s\"", sil_type_enum_string(a->sil_type));
+                p = safe_snprintf(p, end, ",\"sil\":%u", a->meta.sil);
+            if (a->meta.sil_type != AIRCRAFT_META__SIL_TYPE__SIL_INVALID)
+                p = safe_snprintf(p, end, ",\"sil_type\":\"%s\"", sil_type_enum_string(a->meta.sil_type));
             if (trackDataValid(&a->gva_valid))
-                p = safe_snprintf(p, end, ",\"gva\":%u", a->gva);
+                p = safe_snprintf(p, end, ",\"gva\":%u", a->meta.gva);
             if (trackDataValid(&a->sda_valid))
-                p = safe_snprintf(p, end, ",\"sda\":%u", a->sda);
+                p = safe_snprintf(p, end, ",\"sda\":%u", a->meta.sda);
             if (trackDataValid(&a->alert_valid))
-                p = safe_snprintf(p, end, ",\"alert\":%u", a->alert);
+                p = safe_snprintf(p, end, ",\"alert\":%u", a->meta.alert);
             if (trackDataValid(&a->spi_valid))
-                p = safe_snprintf(p, end, ",\"spi\":%u", a->spi);
+                p = safe_snprintf(p, end, ",\"spi\":%u", a->meta.spi);
 
             p = safe_snprintf(p, end, ",\"mlat\":");
             p = append_flags(p, end, a, SOURCE_MLAT);
@@ -1936,9 +2273,9 @@ retry:
             p = append_flags(p, end, a, SOURCE_TISB);
 
             p = safe_snprintf(p, end, ",\"messages\":%ld,\"seen\":%.1f,\"rssi\":%.1f}",
-                    a->messages, (now - a->seen) / 1000.0,
+                    a->meta.messages, (now - a->meta.seen) / 1000.0,
                     10 * log10((a->signalLevel[0] + a->signalLevel[1] + a->signalLevel[2] + a->signalLevel[3] +
-                            a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8));
+                    a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8));
 
             if ((p + 10) >= end) { // +10 to leave some space for the final line
                 // overran the buffer
@@ -2077,13 +2414,17 @@ static char * appendStatsJson(char *p,
     return p;
 }
 
+/**
+ * Generate statistics JSON string.
+ * @return JSON string.
+ */
 struct char_buffer generateStatsJson() {
     struct char_buffer cb;
     struct stats add;
     char *buf = (char *) malloc(4096), *p = buf, *end = buf + 4096;
 
     p = safe_snprintf(p, end, "{\n");
-    p = appendStatsJson(p, end, &Modes.stats_current, "latest");
+    p = appendStatsJson(p, end, &Modes.stats_periodic, "latest");
     p = safe_snprintf(p, end, ",\n");
 
     p = appendStatsJson(p, end, &Modes.stats_1min[Modes.stats_latest_1min], "last1min");
@@ -2106,9 +2447,181 @@ struct char_buffer generateStatsJson() {
     return cb;
 }
 
-//
-// Return a description of the receiver in json.
-//
+static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
+    e->start = st->start / 1000.0;
+    e->has_start = true;
+    e->stop = st->end / 1000.0;
+    e->has_stop = true;
+
+    uint64_t demod_cpu_millis = (uint64_t) st->demod_cpu.tv_sec * 1000UL + st->demod_cpu.tv_nsec / 1000000UL;
+    uint64_t reader_cpu_millis = (uint64_t) st->reader_cpu.tv_sec * 1000UL + st->reader_cpu.tv_nsec / 1000000UL;
+    uint64_t background_cpu_millis = (uint64_t) st->background_cpu.tv_sec * 1000UL + st->background_cpu.tv_nsec / 1000000UL;
+
+    if (!Modes.net_only) {
+        e->local_samples_processed = st->samples_processed;
+        e->has_local_samples_processed = true;
+        e->local_samples_dropped = st->samples_dropped;
+        e->has_local_samples_dropped = true;
+        e->local_modeac = st->demod_modeac;
+        e->has_local_modeac = true;
+        e->local_modes = st->demod_preambles;
+        e->has_local_modes = true;
+        e->local_bad = st->remote_rejected_bad;
+        e->has_local_bad = true;
+        e->local_unknown_icao = st->demod_rejected_unknown_icao;
+        e->has_local_unknown_icao = true;
+
+        if (st->signal_power_sum > 0 && st->signal_power_count > 0) {
+            e->local_signal = 10 * log10(st->signal_power_sum / st->signal_power_count);
+            e->has_local_signal = true;
+        }
+
+        if (st->noise_power_sum > 0 && st->noise_power_count > 0) {
+            e->local_noise = 10 * log10(st->noise_power_sum / st->noise_power_count);
+            e->has_local_noise = true;
+        }
+
+        if (st->peak_signal_power > 0) {
+            e->local_peak_signal = 10 * log10(st->peak_signal_power);
+            e->has_local_peak_signal = true;
+        }
+        e->local_strong_signals = st->strong_signal_count;
+        e->has_local_strong_signals = true;
+    }
+
+    if (Modes.net) {
+        e->remote_modeac = st->remote_received_modeac;
+        e->has_remote_modeac = true;
+        e->remote_modes = st->remote_received_modes;
+        e->has_remote_modes = true;
+        e->remote_bad = st->remote_rejected_bad;
+        e->has_remote_bad = true;
+        e->remote_unknown_icao = st->remote_rejected_unknown_icao;
+        e->has_remote_unknown_icao = true;
+    }
+
+    e->cpr_surface = st->cpr_surface;
+    e->has_cpr_surface = true;
+    e->cpr_airborne = st->cpr_airborne;
+    e->has_cpr_airborne = true;
+
+    e->cpr_global_ok = st->cpr_global_ok;
+    e->has_cpr_global_ok = true;
+    e->cpr_global_bad = st->cpr_global_bad;
+    e->has_cpr_global_bad = true;
+    e->cpr_global_range = st->cpr_global_range_checks;
+    e->has_cpr_global_range = true;
+    e->cpr_global_speed = st->cpr_global_speed_checks;
+    e->has_cpr_global_speed = true;
+    e->cpr_global_skipped = st->cpr_global_skipped;
+    e->has_cpr_global_skipped = true;
+
+    e->cpr_local_ok = st->cpr_local_ok;
+    e->has_cpr_local_ok = true;
+    e->cpr_local_aircraft_relative = st->cpr_local_aircraft_relative;
+    e->has_cpr_local_aircraft_relative = true;
+    e->cpr_local_receiver_relative = st->cpr_local_receiver_relative;
+    e->has_cpr_local_receiver_relative = true;
+    e->cpr_local_skipped = st->cpr_local_skipped;
+    e->has_cpr_local_skipped = true;
+    e->cpr_local_range = st->cpr_local_range_checks;
+    e->has_cpr_local_range = true;
+    e->cpr_local_speed = st->cpr_local_speed_checks;
+    e->has_cpr_local_speed = true;
+    e->cpr_filtered = st->cpr_filtered;
+    e->has_cpr_filtered = true;
+
+    e->altitude_suppressed = st->suppressed_altitude_messages;
+    e->has_altitude_suppressed = true;
+
+    e->cpu_demod = demod_cpu_millis;
+    e->has_cpu_demod = true;
+    e->cpu_reader = reader_cpu_millis;
+    e->has_cpu_reader = true;
+    e->cpu_background = background_cpu_millis;
+    e->has_cpu_background = true;
+
+    e->tracks_all = st->unique_aircraft;
+    e->has_tracks_all = true;
+    e->tracks_single_message = st->single_message_aircraft;
+    e->has_tracks_single_message = true;
+    e->messages = st->messages_total;
+    e->has_messages = true;
+    e->max_distance_in_metres = st->longest_distance;
+    e->has_max_distance_in_metres = true;
+    e->max_distance_in_nautical_miles = st->longest_distance / 1852.0;
+    e->has_max_distance_in_nautical_miles = true;
+}
+
+/**
+ * Generate statistics in protocol buffer format.
+ * @param file File name.
+ */
+void generateStatsProtoBuf(const char *file) {
+    char pathbuf[PATH_MAX];
+    char tmppath[PATH_MAX];
+    int fd;
+    mode_t mask;
+
+    if (!Modes.json_dir) {
+        return;
+    }
+
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.json_dir, file);
+    tmppath[PATH_MAX - 1] = 0;
+    fd = mkstemp(tmppath);
+    if (fd < 0) {
+        return;
+    }
+
+    Statistics stats = STATISTICS__INIT;
+    StatisticEntry latest = STATISTIC_ENTRY__INIT;
+    StatisticEntry last_1min = STATISTIC_ENTRY__INIT;
+    StatisticEntry last_5min = STATISTIC_ENTRY__INIT;
+    StatisticEntry last_15min = STATISTIC_ENTRY__INIT;
+    StatisticEntry total = STATISTIC_ENTRY__INIT;
+    struct stats add;
+
+    createStatisticEntry(&latest, &Modes.stats_periodic);
+    createStatisticEntry(&last_1min, &Modes.stats_1min[Modes.stats_latest_1min]);
+    createStatisticEntry(&last_5min, &Modes.stats_5min);
+    createStatisticEntry(&last_15min, &Modes.stats_15min);
+    add_stats(&Modes.stats_alltime, &Modes.stats_current, &add);
+    createStatisticEntry(&total, &add);
+
+    stats.latest = &latest;
+    stats.last_1min = &last_1min;
+    stats.last_5min = &last_5min;
+    stats.last_15min = &last_15min;
+    stats.total = &total;
+    // Pack and serialize entire aicraft collection.
+    unsigned len = statistics__get_packed_size(&stats);
+    void *buf = malloc(len);
+    statistics__pack(&stats, buf);
+    // Write aircraft collection to file.
+    mask = umask(0);
+    umask(mask);
+    fchmod(fd, 0644 & ~mask);
+
+    if (write(fd, buf, len) != len) {
+        close(fd);
+    } else {
+        if (close(fd) == 0) {
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
+            pathbuf[PATH_MAX - 1] = 0;
+            rename(tmppath, pathbuf);
+        } else {
+            unlink(tmppath);
+        }
+    }
+    // Free up all allocated memory.
+    free(buf);
+}
+
+/**
+ * Generate receiver description in JSON.
+ * @return JSON string.
+ */
 struct char_buffer generateReceiverJson() {
     struct char_buffer cb;
     char *buf = (char *) malloc(1024), *p = buf;
@@ -2117,7 +2630,7 @@ struct char_buffer generateReceiverJson() {
             "\"version\" : \"%s\", "
             "\"refresh\" : %.0f, "
             "\"history\" : %d",
-            MODES_READSB_VERSION, 1.0 * Modes.json_interval, Modes.json_aircraft_history_next + 1 );
+            MODES_READSB_VERSION, 1.0 * Modes.json_interval, Modes.json_aircraft_history_next + 1);
 
     if (Modes.json_location_accuracy && (Modes.fUserLat != 0.0 || Modes.fUserLon != 0.0)) {
         if (Modes.json_location_accuracy == 1) {
@@ -2140,8 +2653,77 @@ struct char_buffer generateReceiverJson() {
     return cb;
 }
 
-// Write JSON to file
-void writeJsonToFile (const char *file, struct char_buffer cb) {
+/**
+ * Generate receiver description in protocol buffer format.
+ * @param file File name.
+ */
+void generateReceiverProtoBuf(const char *file) {
+    char pathbuf[PATH_MAX];
+    char tmppath[PATH_MAX];
+    int fd;
+    mode_t mask;
+
+    if (!Modes.json_dir) {
+        return;
+    }
+
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.json_dir, file);
+    tmppath[PATH_MAX - 1] = 0;
+    fd = mkstemp(tmppath);
+    if (fd < 0) {
+        return;
+    }
+
+    Receiver msg = RECEIVER__INIT;
+    msg.version = MODES_READSB_VERSION;
+    msg.refresh = 1.0 * Modes.json_interval;
+    msg.has_refresh = true;
+    msg.history = Modes.json_aircraft_history_next + 1;
+    msg.has_history = true;
+
+    if (Modes.json_location_accuracy && (Modes.fUserLat != 0.0 || Modes.fUserLon != 0.0)) {
+        if (Modes.json_location_accuracy == 1) {
+            // round to 2 decimal digits - about 0.5-1km accuracy - for privacy reasons
+            msg.latitude = round(Modes.fUserLat * 100) / 100;
+            msg.longitude = round(Modes.fUserLon * 100) / 100;
+        } else {
+            // exact location
+            msg.latitude = Modes.fUserLat;
+            msg.longitude = Modes.fUserLon;
+        }
+        msg.has_latitude = msg.has_longitude = true;
+    }
+
+    // Pack and serialize entire aicraft collection.
+    unsigned len = receiver__get_packed_size(&msg);
+    void *buf = malloc(len);
+    receiver__pack(&msg, buf);
+    // Write aircraft collection to file.
+    mask = umask(0);
+    umask(mask);
+    fchmod(fd, 0644 & ~mask);
+
+    if (write(fd, buf, len) != len) {
+        close(fd);
+    } else {
+        if (close(fd) == 0) {
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
+            pathbuf[PATH_MAX - 1] = 0;
+            rename(tmppath, pathbuf);
+        } else {
+            unlink(tmppath);
+        }
+    }
+    // Free up all allocated memory.
+    free(buf);
+}
+
+/**
+ * Write JSON string to file.
+ * @param file File name.
+ * @param cb JSON string.
+ */
+void writeJsonToFile(const char *file, struct char_buffer cb) {
 #ifndef _WIN32
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
@@ -2167,39 +2749,32 @@ void writeJsonToFile (const char *file, struct char_buffer cb) {
     umask(mask);
     fchmod(fd, 0644 & ~mask);
 
-    snprintf(pathbuf, PATH_MAX, "/data/%s", file);
-    pathbuf[PATH_MAX - 1] = 0;
+    if (write(fd, content, len) != len) {
+        close(fd);
+    } else {
+        if (close(fd) == 0) {
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
+            pathbuf[PATH_MAX - 1] = 0;
+            rename(tmppath, pathbuf);
+        } else {
+            unlink(tmppath);
+        }
+    }
 
-    if (write(fd, content, len) != len)
-        goto error_1;
-
-    if (close(fd) < 0)
-        goto error_2;
-
-    snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
-    pathbuf[PATH_MAX - 1] = 0;
-    rename(tmppath, pathbuf);
     free(content);
-    return;
-
-error_1:
-    close(fd);
-error_2:
-    unlink(tmppath);
-    free(content);
-    return;
 #endif
 }
+
 static void periodicReadFromClient(struct client *c) {
     int nread, err;
     char buf[512];
 
     /* FIXME:  Not Win32 safe networking */
-    nread = read(c->fd, buf, sizeof(buf));
+    nread = read(c->fd, buf, sizeof (buf));
     err = errno;
 
     if (nread < 0 && (err == EAGAIN || err == EWOULDBLOCK)) {
-	return;
+        return;
     }
     if (nread <= 0) { // Other errors, or EOF
         fprintf(stderr, "%s: Socket Error: %s: %s port %s (fd %d)\n",
@@ -2225,6 +2800,7 @@ static void periodicReadFromClient(struct client *c) {
 // The handler returns 0 on success, or 1 to signal this function we should
 // close the connection with the client in case of non-recoverable errors.
 //
+
 static void modesReadFromClient(struct client *c) {
     int left;
     int nread;
@@ -2307,7 +2883,7 @@ static void modesReadFromClient(struct client *c) {
 
                 while (som < eod && ((p = memchr(som, (char) 0x1a, eod - som)) != NULL)) { // The first byte of buffer 'should' be 0x1a
 
-                    Modes.stats_current.remote_rejected_bad += ((p - som)/(8 + MODES_SHORT_MSG_BYTES));
+                    Modes.stats_current.remote_rejected_bad += ((p - som) / (8 + MODES_SHORT_MSG_BYTES));
                     som = p; // consume garbage up to the 0x1a
                     ++p; // skip 0x1a
 
@@ -2462,7 +3038,7 @@ static void writeFATSVPositionUpdate(float lat, float lon, float alt) {
 
     char *end = p + TSV_MAX_PACKET_SIZE;
 
-    p = appendFATSV(p, end, "_v",     "%s", TSV_VERSION);
+    p = appendFATSV(p, end, "_v", "%s", TSV_VERSION);
     p = appendFATSV(p, end, "clock", "%" PRIu64, messageNow() / 1000);
     p = appendFATSV(p, end, "type", "%s", "location_update");
     p = appendFATSV(p, end, "lat", "%.5f", lat);
@@ -2485,10 +3061,10 @@ static void writeFATSVEventMessage(struct modesMessage *mm, const char *datafiel
 
     char *end = p + TSV_MAX_PACKET_SIZE;
 
-    p = appendFATSV(p, end, "_v",    "%s", TSV_VERSION);
+    p = appendFATSV(p, end, "_v", "%s", TSV_VERSION);
     p = appendFATSV(p, end, "clock", "%" PRIu64, messageNow() / 1000);
     p = appendFATSV(p, end, (mm->addr & MODES_NON_ICAO_ADDRESS) ? "otherid" : "hexid", "%06X", mm->addr & 0xFFFFFF);
-    if (mm->addrtype != ADDR_ADSB_ICAO) {
+    if (mm->addrtype != AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO) {
         p = appendFATSV(p, end, "addrtype", "%s", addrtype_enum_string(mm->addrtype));
     }
 
@@ -2512,7 +3088,7 @@ static void writeFATSVEvent(struct modesMessage *mm, struct aircraft *a) {
         return; // not enabled or no active connections
     }
 
-    if (a->messages < 2) // basic filter for bad decodes
+    if (a->meta.messages < 2) // basic filter for bad decodes
         return;
 
     switch (mm->msgtype) {
@@ -2623,11 +3199,11 @@ __attribute__ ((format(printf, 6, 7))) static char *appendFATSVMeta(char *p, cha
     return p;
 }
 
-static const char *airground_enum_string(airground_t ag) {
+static const char *airground_enum_string(AircraftMeta__AirGround ag) {
     switch (ag) {
-        case AG_AIRBORNE:
+        case AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE:
             return "A+";
-        case AG_GROUND:
+        case AIRCRAFT_META__AIR_GROUND__AG_GROUND:
             return "G+";
         default:
             return "?";
@@ -2652,16 +3228,16 @@ static void writeFATSV() {
 
     for (int j = 0; j < AIRCRAFTS_BUCKETS; j++) {
         for (a = Modes.aircrafts[j]; a; a = a->next) {
-            if (a->messages < 2) // basic filter for bad decodes
+            if (a->meta.messages < 2) // basic filter for bad decodes
                 continue;
 
             // don't emit if it hasn't updated since last time
-            if (a->seen < a->fatsv_last_emitted) {
+            if (a->meta.seen < a->fatsv_last_emitted) {
                 continue;
             }
 
             // Pretend we are "processing a message" so the validity checks work as expected
-            _messageNow = a->seen;
+            _messageNow = a->meta.seen;
 
             // some special cases:
             int altValid = trackDataValid(&a->altitude_baro_valid);
@@ -2675,38 +3251,47 @@ static void writeFATSV() {
             // When on the ground, ADS-B transponders don't emit an ADS-B message that includes
             // altitude, so a corrupted Mode S altitude response from some other in-the-air AC
             // might be taken as the "best available altitude" and produce e.g. "airGround G+ alt 31000".
-            if (airgroundValid && a->airground == AG_GROUND && a->altitude_baro_valid.source < SOURCE_MODE_S_CHECKED)
+            if (airgroundValid && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND && a->altitude_baro_valid.source < SOURCE_MODE_S_CHECKED)
                 altValid = 0;
+
+            // Convert new nav modes message to old enum format.
+            nav_modes_t nm = 0;
+            if (a->nav_modes.has_autopilot) nm += NAV_MODE_AUTOPILOT;
+            if (a->nav_modes.has_vnav) nm += NAV_MODE_VNAV;
+            if (a->nav_modes.has_althold) nm += NAV_MODE_ALT_HOLD;
+            if (a->nav_modes.has_approach) nm += NAV_MODE_APPROACH;
+            if (a->nav_modes.has_lnav) nm += NAV_MODE_LNAV;
+            if (a->nav_modes.has_tcas) nm += NAV_MODE_TCAS;
 
             // if it hasn't changed altitude, heading, or speed much,
             // don't update so often
             int changed =
-                (altValid && abs(a->altitude_baro - a->fatsv_emitted_altitude_baro) >= 50) ||
-                (trackDataValid(&a->altitude_geom_valid) && abs(a->altitude_geom - a->fatsv_emitted_altitude_geom) >= 50) ||
-                (trackDataValid(&a->baro_rate_valid) && abs(a->baro_rate - a->fatsv_emitted_baro_rate) > 500) ||
-                (trackDataValid(&a->geom_rate_valid) && abs(a->geom_rate - a->fatsv_emitted_geom_rate) > 500) ||
-                (trackDataValid(&a->track_valid) && heading_difference(a->track, a->fatsv_emitted_track) >= 2) ||
-                (trackDataValid(&a->track_rate_valid) && fabs(a->track_rate - a->fatsv_emitted_track_rate) >= 0.5) ||
-                (trackDataValid(&a->roll_valid) && fabs(a->roll - a->fatsv_emitted_roll) >= 5.0) ||
-                (trackDataValid(&a->mag_heading_valid) && heading_difference(a->mag_heading, a->fatsv_emitted_mag_heading) >= 2) ||
-                (trackDataValid(&a->true_heading_valid) && heading_difference(a->true_heading, a->fatsv_emitted_true_heading) >= 2) ||
-                (gsValid && fabs(a->gs - a->fatsv_emitted_gs) >= 25) ||
-                (trackDataValid(&a->ias_valid) && unsigned_difference(a->ias, a->fatsv_emitted_ias) >= 25) ||
-                (trackDataValid(&a->tas_valid) && unsigned_difference(a->tas, a->fatsv_emitted_tas) >= 25) ||
-                (trackDataValid(&a->mach_valid) && fabs(a->mach - a->fatsv_emitted_mach) >= 0.02);
+                    (altValid && abs(a->meta.alt_baro - a->fatsv_emitted_altitude_baro) >= 50) ||
+                    (trackDataValid(&a->altitude_geom_valid) && abs(a->meta.alt_geom - a->fatsv_emitted_altitude_geom) >= 50) ||
+                    (trackDataValid(&a->baro_rate_valid) && abs(a->meta.baro_rate - a->fatsv_emitted_baro_rate) > 500) ||
+                    (trackDataValid(&a->geom_rate_valid) && abs(a->meta.geom_rate - a->fatsv_emitted_geom_rate) > 500) ||
+                    (trackDataValid(&a->track_valid) && heading_difference(a->meta.track, a->fatsv_emitted_track) >= 2) ||
+                    (trackDataValid(&a->track_rate_valid) && fabs(a->meta.track_rate - a->fatsv_emitted_track_rate) >= 0.5) ||
+                    (trackDataValid(&a->roll_valid) && fabs(a->meta.roll - a->fatsv_emitted_roll) >= 5.0) ||
+                    (trackDataValid(&a->mag_heading_valid) && heading_difference(a->meta.mag_heading, a->fatsv_emitted_mag_heading) >= 2) ||
+                    (trackDataValid(&a->true_heading_valid) && heading_difference(a->meta.true_heading, a->fatsv_emitted_true_heading) >= 2) ||
+                    (gsValid && fabs(a->meta.gs - a->fatsv_emitted_gs) >= 25) ||
+                    (trackDataValid(&a->ias_valid) && unsigned_difference(a->meta.ias, a->fatsv_emitted_ias) >= 25) ||
+                    (trackDataValid(&a->tas_valid) && unsigned_difference(a->meta.tas, a->fatsv_emitted_tas) >= 25) ||
+                    (trackDataValid(&a->mach_valid) && fabs(a->meta.mach - a->fatsv_emitted_mach) >= 0.02);
 
             int immediate =
-                (trackDataValid(&a->nav_altitude_mcp_valid) && unsigned_difference(a->nav_altitude_mcp, a->fatsv_emitted_nav_altitude_mcp) > 50) ||
-                (trackDataValid(&a->nav_altitude_fms_valid) && unsigned_difference(a->nav_altitude_fms, a->fatsv_emitted_nav_altitude_fms) > 50) ||
-                (trackDataValid(&a->nav_altitude_src_valid) && a->nav_altitude_src != a->fatsv_emitted_nav_altitude_src) ||
-                (trackDataValid(&a->nav_heading_valid) && heading_difference(a->nav_heading, a->fatsv_emitted_nav_heading) > 2) ||
-                (trackDataValid(&a->nav_modes_valid) && a->nav_modes != a->fatsv_emitted_nav_modes) ||
-                (trackDataValid(&a->nav_qnh_valid) && fabs(a->nav_qnh - a->fatsv_emitted_nav_qnh) > 0.8) || // 0.8 is the ES message resolution
-                (callsignValid && strcmp(a->callsign, a->fatsv_emitted_callsign) != 0) ||
-                (airgroundValid && a->airground == AG_AIRBORNE && a->fatsv_emitted_airground == AG_GROUND) ||
-                (airgroundValid && a->airground == AG_GROUND && a->fatsv_emitted_airground == AG_AIRBORNE) ||
-                (squawkValid && a->squawk != a->fatsv_emitted_squawk) ||
-                (trackDataValid(&a->emergency_valid) && a->emergency != a->fatsv_emitted_emergency);
+                    (trackDataValid(&a->nav_altitude_mcp_valid) && unsigned_difference(a->meta.nav_altitude_mcp, a->fatsv_emitted_nav_altitude_mcp) > 50) ||
+                    (trackDataValid(&a->nav_altitude_fms_valid) && unsigned_difference(a->meta.nav_altitude_fms, a->fatsv_emitted_nav_altitude_fms) > 50) ||
+                    (trackDataValid(&a->nav_altitude_src_valid) && a->nav_altitude_src != a->fatsv_emitted_nav_altitude_src) ||
+                    (trackDataValid(&a->nav_heading_valid) && heading_difference(a->meta.nav_heading, a->fatsv_emitted_nav_heading) > 2) ||
+                    (trackDataValid(&a->nav_modes_valid) && nm != a->fatsv_emitted_nav_modes) ||
+                    (trackDataValid(&a->nav_qnh_valid) && fabs(a->meta.nav_qnh - a->fatsv_emitted_nav_qnh) > 0.8) || // 0.8 is the ES message resolution
+                    (callsignValid && strcmp(a->callsign, a->fatsv_emitted_callsign) != 0) ||
+                    (airgroundValid && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE && a->fatsv_emitted_airground == AIRCRAFT_META__AIR_GROUND__AG_GROUND) ||
+                    (airgroundValid && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND && a->fatsv_emitted_airground == AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE) ||
+                    (squawkValid && a->meta.squawk != a->fatsv_emitted_squawk) ||
+                    (trackDataValid(&a->emergency_valid) && a->meta.emergency != a->fatsv_emitted_emergency);
 
             uint64_t minAge;
             if (immediate) {
@@ -2715,12 +3300,12 @@ static void writeFATSV() {
             } else if (!positionValid) {
                 // don't send mode S very often
                 minAge = 30000;
-            } else if ((airgroundValid && a->airground == AG_GROUND) ||
-                    (altValid && a->altitude_baro < 500 && (!gsValid || a->gs < 200)) ||
-                    (gsValid && a->gs < 100 && (!altValid || a->altitude_baro < 1000))) {
+            } else if ((airgroundValid && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND) ||
+                    (altValid && a->meta.alt_baro < 500 && (!gsValid || a->meta.gs < 200)) ||
+                    (gsValid && a->meta.gs < 100 && (!altValid || a->meta.alt_baro < 1000))) {
                 // we are probably on the ground, increase the update rate
                 minAge = 1000;
-            } else if (!altValid || a->altitude_baro < 10000) {
+            } else if (!altValid || a->meta.alt_baro < 10000) {
                 // Below 10000 feet, emit up to every 5s when changing, 10s otherwise
                 minAge = (changed ? 5000 : 10000);
             } else {
@@ -2736,38 +3321,38 @@ static void writeFATSV() {
                 return;
             char *end = p + TSV_MAX_PACKET_SIZE;
 
-            p = appendFATSV(p, end, "_v",    "%s", TSV_VERSION);
+            p = appendFATSV(p, end, "_v", "%s", TSV_VERSION);
             p = appendFATSV(p, end, "clock", "%" PRIu64, messageNow() / 1000);
-            p = appendFATSV(p, end, (a->addr & MODES_NON_ICAO_ADDRESS) ? "otherid" : "hexid", "%06X", a->addr & 0xFFFFFF);
+            p = appendFATSV(p, end, (a->meta.addr & MODES_NON_ICAO_ADDRESS) ? "otherid" : "hexid", "%06X", a->meta.addr & 0xFFFFFF);
 
             // for fields we only emit on change,
             // occasionally re-emit them all
             int forceEmit = (now - a->fatsv_last_force_emit) > 600000;
 
             // these don't change often / at all, only emit when they change
-            if (forceEmit || a->addrtype != a->fatsv_emitted_addrtype) {
-                p = appendFATSV(p, end, "addrtype", "%s", addrtype_enum_string(a->addrtype));
+            if (forceEmit || a->meta.addr_type != a->fatsv_emitted_addrtype) {
+                p = appendFATSV(p, end, "addrtype", "%s", addrtype_enum_string(a->meta.addr_type));
             }
             if (forceEmit || a->adsb_version != a->fatsv_emitted_adsb_version) {
                 p = appendFATSV(p, end, "adsb_version", "%d", a->adsb_version);
             }
-            if (forceEmit || a->category != a->fatsv_emitted_category) {
-                p = appendFATSV(p, end, "category", "%02X", a->category);
+            if (forceEmit || a->meta.category != a->fatsv_emitted_category) {
+                p = appendFATSV(p, end, "category", "%02X", a->meta.category);
             }
-            if (trackDataValid(&a->nac_p_valid) && (forceEmit || a->nac_p != a->fatsv_emitted_nac_p)) {
-                p = appendFATSVMeta(p, end, "nac_p", a, &a->nac_p_valid, "%u", a->nac_p);
+            if (trackDataValid(&a->nac_p_valid) && (forceEmit || a->meta.nac_p != a->fatsv_emitted_nac_p)) {
+                p = appendFATSVMeta(p, end, "nac_p", a, &a->nac_p_valid, "%u", a->meta.nac_p);
             }
-            if (trackDataValid(&a->nac_v_valid) && (forceEmit || a->nac_v != a->fatsv_emitted_nac_v)) {
-                p = appendFATSVMeta(p, end, "nac_v", a, &a->nac_v_valid, "%u", a->nac_v);
+            if (trackDataValid(&a->nac_v_valid) && (forceEmit || a->meta.nac_v != a->fatsv_emitted_nac_v)) {
+                p = appendFATSVMeta(p, end, "nac_v", a, &a->nac_v_valid, "%u", a->meta.nac_v);
             }
-            if (trackDataValid(&a->sil_valid) && (forceEmit || a->sil != a->fatsv_emitted_sil)) {
-                p = appendFATSVMeta(p, end, "sil", a, &a->sil_valid, "%u", a->sil);
+            if (trackDataValid(&a->sil_valid) && (forceEmit || a->meta.sil != a->fatsv_emitted_sil)) {
+                p = appendFATSVMeta(p, end, "sil", a, &a->sil_valid, "%u", a->meta.sil);
             }
-            if (trackDataValid(&a->sil_valid) && (forceEmit || a->sil_type != a->fatsv_emitted_sil_type)) {
-                p = appendFATSVMeta(p, end, "sil_type", a, &a->sil_valid, "%s", sil_type_enum_string(a->sil_type));
+            if (trackDataValid(&a->sil_valid) && (forceEmit || a->meta.sil_type != a->fatsv_emitted_sil_type)) {
+                p = appendFATSVMeta(p, end, "sil_type", a, &a->sil_valid, "%s", sil_type_enum_string(a->meta.sil_type));
             }
-            if (trackDataValid(&a->nic_baro_valid) && (forceEmit || a->nic_baro != a->fatsv_emitted_nic_baro)) {
-                p = appendFATSVMeta(p, end, "nic_baro", a, &a->nic_baro_valid, "%u", a->nic_baro);
+            if (trackDataValid(&a->nic_baro_valid) && (forceEmit || a->meta.nic_baro != a->fatsv_emitted_nic_baro)) {
+                p = appendFATSVMeta(p, end, "nic_baro", a, &a->nic_baro_valid, "%u", a->meta.nic_baro);
             }
 
             // only emit alt, speed, latlon, track etc if they have been received since the last time
@@ -2777,36 +3362,36 @@ static void writeFATSV() {
 
             // special cases
             if (airgroundValid)
-                p = appendFATSVMeta(p, end, "airGround", a, &a->airground_valid, "%s", airground_enum_string(a->airground));
+                p = appendFATSVMeta(p, end, "airGround", a, &a->airground_valid, "%s", airground_enum_string(a->meta.air_ground));
             if (squawkValid)
-                p = appendFATSVMeta(p, end, "squawk", a, &a->squawk_valid, "%04x", a->squawk);
+                p = appendFATSVMeta(p, end, "squawk", a, &a->squawk_valid, "%04x", a->meta.squawk);
             if (callsignValid)
                 p = appendFATSVMeta(p, end, "ident", a, &a->callsign_valid, "{%s}", a->callsign);
             if (altValid)
-                p = appendFATSVMeta(p, end, "alt", a, &a->altitude_baro_valid, "%d", a->altitude_baro);
+                p = appendFATSVMeta(p, end, "alt", a, &a->altitude_baro_valid, "%d", a->meta.alt_baro);
             if (positionValid) {
-                p = appendFATSVMeta(p, end, "position", a, &a->position_valid, "{%.5f %.5f %u %u}", a->lat, a->lon, a->pos_nic, a->pos_rc);
+                p = appendFATSVMeta(p, end, "position", a, &a->position_valid, "{%.5f %.5f %u %u}", a->meta.lat, a->meta.lon, a->meta.nic, a->meta.rc);
             }
 
-            p = appendFATSVMeta(p, end, "alt_gnss", a, &a->altitude_geom_valid, "%d", a->altitude_geom);
-            p = appendFATSVMeta(p, end, "vrate", a, &a->baro_rate_valid, "%d", a->baro_rate);
-            p = appendFATSVMeta(p, end, "vrate_geom", a, &a->geom_rate_valid, "%d", a->geom_rate);
-            p = appendFATSVMeta(p, end, "speed", a, &a->gs_valid, "%.1f", a->gs);
-            p = appendFATSVMeta(p, end, "speed_ias", a, &a->ias_valid, "%u", a->ias);
-            p = appendFATSVMeta(p, end, "speed_tas", a, &a->tas_valid, "%u", a->tas);
-            p = appendFATSVMeta(p, end, "mach", a, &a->mach_valid, "%.3f", a->mach);
-            p = appendFATSVMeta(p, end, "track", a, &a->track_valid, "%.1f", a->track);
-            p = appendFATSVMeta(p, end, "track_rate", a, &a->track_rate_valid, "%.2f", a->track_rate);
-            p = appendFATSVMeta(p, end, "roll", a, &a->roll_valid, "%.1f", a->roll);
-            p = appendFATSVMeta(p, end, "heading_magnetic", a, &a->mag_heading_valid, "%.1f", a->mag_heading);
-            p = appendFATSVMeta(p, end, "heading_true", a, &a->true_heading_valid,    "%.1f", a->true_heading);
-            p = appendFATSVMeta(p, end, "nav_alt_mcp", a, &a->nav_altitude_mcp_valid, "%u",   a->nav_altitude_mcp);
-            p = appendFATSVMeta(p, end, "nav_alt_fms", a, &a->nav_altitude_fms_valid, "%u",   a->nav_altitude_fms);
+            p = appendFATSVMeta(p, end, "alt_gnss", a, &a->altitude_geom_valid, "%d", a->meta.alt_geom);
+            p = appendFATSVMeta(p, end, "vrate", a, &a->baro_rate_valid, "%d", a->meta.baro_rate);
+            p = appendFATSVMeta(p, end, "vrate_geom", a, &a->geom_rate_valid, "%d", a->meta.geom_rate);
+            p = appendFATSVMeta(p, end, "speed", a, &a->gs_valid, "%d", a->meta.gs);
+            p = appendFATSVMeta(p, end, "speed_ias", a, &a->ias_valid, "%u", a->meta.ias);
+            p = appendFATSVMeta(p, end, "speed_tas", a, &a->tas_valid, "%u", a->meta.tas);
+            p = appendFATSVMeta(p, end, "mach", a, &a->mach_valid, "%.3f", a->meta.mach);
+            p = appendFATSVMeta(p, end, "track", a, &a->track_valid, "%d", a->meta.track);
+            p = appendFATSVMeta(p, end, "track_rate", a, &a->track_rate_valid, "%.2f", a->meta.track_rate);
+            p = appendFATSVMeta(p, end, "roll", a, &a->roll_valid, "%.1f", a->meta.roll);
+            p = appendFATSVMeta(p, end, "heading_magnetic", a, &a->mag_heading_valid, "%d", a->meta.mag_heading);
+            p = appendFATSVMeta(p, end, "heading_true", a, &a->true_heading_valid, "%d", a->meta.true_heading);
+            p = appendFATSVMeta(p, end, "nav_alt_mcp", a, &a->nav_altitude_mcp_valid, "%u", a->meta.nav_altitude_mcp);
+            p = appendFATSVMeta(p, end, "nav_alt_fms", a, &a->nav_altitude_fms_valid, "%u", a->meta.nav_altitude_fms);
             p = appendFATSVMeta(p, end, "nav_alt_src", a, &a->nav_altitude_src_valid, "%s", nav_altitude_source_enum_string(a->nav_altitude_src));
-            p = appendFATSVMeta(p, end, "nav_heading", a, &a->nav_heading_valid, "%.1f", a->nav_heading);
+            p = appendFATSVMeta(p, end, "nav_heading", a, &a->nav_heading_valid, "%d", a->meta.nav_heading);
             p = appendFATSVMeta(p, end, "nav_modes", a, &a->nav_modes_valid, "{%s}", nav_modes_flags_string(a->nav_modes));
-            p = appendFATSVMeta(p, end, "nav_qnh", a, &a->nav_qnh_valid, "%.1f", a->nav_qnh);
-            p = appendFATSVMeta(p, end, "emergency", a, &a->emergency_valid, "%s", emergency_enum_string(a->emergency));
+            p = appendFATSVMeta(p, end, "nav_qnh", a, &a->nav_qnh_valid, "%.1f", a->meta.nav_qnh);
+            p = appendFATSVMeta(p, end, "emergency", a, &a->emergency_valid, "%s", emergency_enum_string(a->meta.emergency));
 
             // if we didn't get anything interesting, bail out.
             // We don't need to do anything special to unwind prepareWrite().
@@ -2822,37 +3407,37 @@ static void writeFATSV() {
             else
                 fprintf(stderr, "fatsv: output too large (max %d, overran by %d)\n", TSV_MAX_PACKET_SIZE, (int) (p - end));
 
-            a->fatsv_emitted_altitude_baro = a->altitude_baro;
-            a->fatsv_emitted_altitude_geom = a->altitude_geom;
-            a->fatsv_emitted_baro_rate = a->baro_rate;
-            a->fatsv_emitted_geom_rate = a->geom_rate;
-            a->fatsv_emitted_gs = a->gs;
-            a->fatsv_emitted_ias = a->ias;
-            a->fatsv_emitted_tas = a->tas;
-            a->fatsv_emitted_mach = a->mach;
-            a->fatsv_emitted_track = a->track;
-            a->fatsv_emitted_track_rate = a->track_rate;
-            a->fatsv_emitted_roll = a->roll;
-            a->fatsv_emitted_mag_heading = a->mag_heading;
-            a->fatsv_emitted_true_heading = a->true_heading;
-            a->fatsv_emitted_airground = a->airground;
-            a->fatsv_emitted_nav_altitude_mcp = a->nav_altitude_mcp;
-            a->fatsv_emitted_nav_altitude_fms = a->nav_altitude_fms;
+            a->fatsv_emitted_altitude_baro = a->meta.alt_baro;
+            a->fatsv_emitted_altitude_geom = a->meta.alt_geom;
+            a->fatsv_emitted_baro_rate = a->meta.baro_rate;
+            a->fatsv_emitted_geom_rate = a->meta.geom_rate;
+            a->fatsv_emitted_gs = a->meta.gs;
+            a->fatsv_emitted_ias = a->meta.ias;
+            a->fatsv_emitted_tas = a->meta.tas;
+            a->fatsv_emitted_mach = a->meta.mach;
+            a->fatsv_emitted_track = a->meta.track;
+            a->fatsv_emitted_track_rate = a->meta.track_rate;
+            a->fatsv_emitted_roll = a->meta.roll;
+            a->fatsv_emitted_mag_heading = a->meta.mag_heading;
+            a->fatsv_emitted_true_heading = a->meta.true_heading;
+            a->fatsv_emitted_airground = a->meta.air_ground;
+            a->fatsv_emitted_nav_altitude_mcp = a->meta.nav_altitude_mcp;
+            a->fatsv_emitted_nav_altitude_fms = a->meta.nav_altitude_fms;
             a->fatsv_emitted_nav_altitude_src = a->nav_altitude_src;
-            a->fatsv_emitted_nav_heading = a->nav_heading;
-            a->fatsv_emitted_nav_modes = a->nav_modes;
-            a->fatsv_emitted_nav_qnh = a->nav_qnh;
+            a->fatsv_emitted_nav_heading = a->meta.nav_heading;
+            a->fatsv_emitted_nav_modes = nm;
+            a->fatsv_emitted_nav_qnh = a->meta.nav_qnh;
             memcpy(a->fatsv_emitted_callsign, a->callsign, sizeof (a->fatsv_emitted_callsign));
-            a->fatsv_emitted_addrtype = a->addrtype;
+            a->fatsv_emitted_addrtype = a->meta.addr_type;
             a->fatsv_emitted_adsb_version = a->adsb_version;
-            a->fatsv_emitted_category = a->category;
-            a->fatsv_emitted_squawk = a->squawk;
-            a->fatsv_emitted_nac_p = a->nac_p;
-            a->fatsv_emitted_nac_v = a->nac_v;
-            a->fatsv_emitted_sil = a->sil;
-            a->fatsv_emitted_sil_type = a->sil_type;
-            a->fatsv_emitted_nic_baro = a->nic_baro;
-            a->fatsv_emitted_emergency = a->emergency;
+            a->fatsv_emitted_category = a->meta.category;
+            a->fatsv_emitted_squawk = a->meta.squawk;
+            a->fatsv_emitted_nac_p = a->meta.nac_p;
+            a->fatsv_emitted_nac_v = a->meta.nac_v;
+            a->fatsv_emitted_sil = a->meta.sil;
+            a->fatsv_emitted_sil_type = a->meta.sil_type;
+            a->fatsv_emitted_nic_baro = a->meta.nic_baro;
+            a->fatsv_emitted_emergency = a->meta.emergency;
             a->fatsv_last_emitted = now;
             if (forceEmit) {
                 a->fatsv_last_force_emit = now;
@@ -2864,6 +3449,7 @@ static void writeFATSV() {
 //
 // Perform periodic network work
 //
+
 void modesNetPeriodicWork(void) {
     struct client *c, **prev;
     struct net_service *s;
@@ -2879,12 +3465,12 @@ void modesNetPeriodicWork(void) {
             continue;
         if (c->service->read_handler) {
             modesReadFromClient(c);
-	} else if ((c->last_read + 30000) <= now) {
-	    // This is called if there is no read handler - we just read and discard to try to trigger socket errors
-	    // (if 30 sec have passed)
-	    periodicReadFromClient(c);
-	    c->last_read = now;
-	}
+        } else if ((c->last_read + 30000) <= now) {
+            // This is called if there is no read handler - we just read and discard to try to trigger socket errors
+            // (if 30 sec have passed)
+            periodicReadFromClient(c);
+            c->last_read = now;
+        }
 
         // Only if there is a sendq do we check to see if we need to flush it.
         // 5ms XXX magic number XXX
@@ -2904,7 +3490,7 @@ void modesNetPeriodicWork(void) {
     // supply JSON to vrs_out writer
     if (Modes.vrs_out.service && Modes.vrs_out.service->connections && now >= next_tcp_json) {
         static int part;
-        int n_parts = 1<<3; // must be power of 2
+        int n_parts = 1 << 3; // must be power of 2
         writeJsonToNet(&Modes.vrs_out, generateVRS(part, n_parts));
         if (++part >= n_parts)
             part = 0;
@@ -3005,7 +3591,7 @@ struct char_buffer generateVRS(int part, int n_parts) {
     struct char_buffer cb;
     uint64_t now = mstime();
     struct aircraft *a;
-    int buflen = 256*1024; // The initial buffer is resized as needed
+    int buflen = 256 * 1024; // The initial buffer is resized as needed
     char *buf = (char *) malloc(buflen), *p = buf, *end = buf + buflen;
     char *line_start;
     int first = 1;
@@ -3019,14 +3605,14 @@ struct char_buffer generateVRS(int part, int n_parts) {
 
     for (int j = part_start; j < part_start + part_len; j++) {
         for (a = Modes.aircrafts[j]; a; a = a->next) {
-            if (a->messages < 2) { // basic filter for bad decodes
+            if (a->meta.messages < 2) { // basic filter for bad decodes
                 continue;
             }
-            if ((now - a->seen) > 5E3) // don't include stale aircraft in the JSON
+            if ((now - a->meta.seen) > 5E3) // don't include stale aircraft in the JSON
                 continue;
 
             // For now, suppress non-ICAO addresses
-            if (a->addr & MODES_NON_ICAO_ADDRESS)
+            if (a->meta.addr & MODES_NON_ICAO_ADDRESS)
                 continue;
 
             if (first)
@@ -3037,26 +3623,26 @@ struct char_buffer generateVRS(int part, int n_parts) {
 retry:
             line_start = p;
             p = safe_snprintf(p, end, "{\"Sig\":%.0f",
-                    255*((a->signalLevel[0] + a->signalLevel[1] + a->signalLevel[2] + a->signalLevel[3] +
-                            a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8));
+                    255 * ((a->signalLevel[0] + a->signalLevel[1] + a->signalLevel[2] + a->signalLevel[3] +
+                    a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8));
 
-            p = safe_snprintf(p, end, ",\"Icao\":\"%s%06X\"", (a->addr & MODES_NON_ICAO_ADDRESS) ? "~" : "", a->addr & 0xFFFFFF);
+            p = safe_snprintf(p, end, ",\"Icao\":\"%s%06X\"", (a->meta.addr & MODES_NON_ICAO_ADDRESS) ? "~" : "", a->meta.addr & 0xFFFFFF);
 
             if (trackDataValid(&a->altitude_baro_valid) && a->altitude_baro_reliable >= 3)
-                p = safe_snprintf(p, end, ",\"Alt\":%d", a->altitude_baro);
+                p = safe_snprintf(p, end, ",\"Alt\":%d", a->meta.alt_baro);
             if (trackDataValid(&a->altitude_geom_valid))
-                p = safe_snprintf(p, end, ",\"GAlt\":%d", a->altitude_geom);
+                p = safe_snprintf(p, end, ",\"GAlt\":%d", a->meta.alt_geom);
 
 
             if (trackDataValid(&a->nav_qnh_valid))
-                p = safe_snprintf(p, end, ",\"InHg\":%.2f", a->nav_qnh * 0.02952998307);
+                p = safe_snprintf(p, end, ",\"InHg\":%.2f", a->meta.nav_qnh * 0.02952998307);
 
             //p = safe_snprintf(p, end, ",\"AltT\":%d", 0);
 
             if (trackDataValid(&a->nav_altitude_mcp_valid)) {
-                p = safe_snprintf(p, end, ",\"TAlt\":%d", a->nav_altitude_mcp);
+                p = safe_snprintf(p, end, ",\"TAlt\":%d", a->meta.nav_altitude_mcp);
             } else if (trackDataValid(&a->nav_altitude_fms_valid)) {
-                p = safe_snprintf(p, end, ",\"TAlt\":%d", a->nav_altitude_fms);
+                p = safe_snprintf(p, end, ",\"TAlt\":%d", a->meta.nav_altitude_fms);
             }
 
             if (trackDataValid(&a->callsign_valid)) {
@@ -3065,7 +3651,7 @@ retry:
             }
 
             if (trackDataValid(&a->position_valid)) {
-                p = safe_snprintf(p, end, ",\"Lat\":%f,\"Long\":%f", a->lat, a->lon);
+                p = safe_snprintf(p, end, ",\"Lat\":%f,\"Long\":%f", a->meta.lat, a->meta.lon);
                 p = safe_snprintf(p, end, ",\"PosTime\":%"PRIu64, a->position_valid.updated);
             }
 
@@ -3080,43 +3666,43 @@ retry:
 
 
             if (trackDataValid(&a->gs_valid)) {
-                p = safe_snprintf(p, end, ",\"Spd\":%.1f", a->gs);
+                p = safe_snprintf(p, end, ",\"Spd\":%d", a->meta.gs);
                 p = safe_snprintf(p, end, ",\"SpdTyp\":0");
             } else if (trackDataValid(&a->ias_valid)) {
-                p = safe_snprintf(p, end, ",\"Spd\":%u", a->ias);
+                p = safe_snprintf(p, end, ",\"Spd\":%u", a->meta.ias);
                 p = safe_snprintf(p, end, ",\"SpdTyp\":2");
             } else if (trackDataValid(&a->tas_valid)) {
-                p = safe_snprintf(p, end, ",\"Spd\":%u", a->tas);
+                p = safe_snprintf(p, end, ",\"Spd\":%u", a->meta.tas);
                 p = safe_snprintf(p, end, ",\"SpdTyp\":3");
             }
 
             if (trackDataValid(&a->track_valid)) {
-                p = safe_snprintf(p, end, ",\"Trak\":%.1f", a->track);
+                p = safe_snprintf(p, end, ",\"Trak\":%d", a->meta.track);
                 p = safe_snprintf(p, end, ",\"TrkH\":false");
             } else if (trackDataValid(&a->mag_heading_valid)) {
-                p = safe_snprintf(p, end, ",\"Trak\":%.1f", a->mag_heading);
+                p = safe_snprintf(p, end, ",\"Trak\":%d", a->meta.mag_heading);
                 p = safe_snprintf(p, end, ",\"TrkH\":true");
             } else if (trackDataValid(&a->true_heading_valid)) {
-                p = safe_snprintf(p, end, ",\"Trak\":%.1f", a->true_heading);
+                p = safe_snprintf(p, end, ",\"Trak\":%d", a->meta.true_heading);
                 p = safe_snprintf(p, end, ",\"TrkH\":true");
             }
 
             if (trackDataValid(&a->nav_heading_valid))
-                p = safe_snprintf(p, end, ",\"TTrk\":%.1f", a->nav_heading);
+                p = safe_snprintf(p, end, ",\"TTrk\":%d", a->meta.nav_heading);
 
             if (trackDataValid(&a->squawk_valid))
-                p = safe_snprintf(p, end, ",\"Sqk\":\"%04x\"", a->squawk);
+                p = safe_snprintf(p, end, ",\"Sqk\":\"%04x\"", a->meta.squawk);
 
             if (trackDataValid(&a->geom_rate_valid)) {
-                p = safe_snprintf(p, end, ",\"Vsi\":%d", a->geom_rate);
+                p = safe_snprintf(p, end, ",\"Vsi\":%d", a->meta.geom_rate);
                 p = safe_snprintf(p, end, ",\"VsiT\":1");
             } else if (trackDataValid(&a->baro_rate_valid)) {
-                p = safe_snprintf(p, end, ",\"Vsi\":%d", a->baro_rate);
+                p = safe_snprintf(p, end, ",\"Vsi\":%d", a->meta.baro_rate);
                 p = safe_snprintf(p, end, ",\"VsiT\":0");
             }
 
 
-            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->airground == AG_GROUND)
+            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND)
                 p = safe_snprintf(p, end, ",\"Gnd\":true");
             else
                 p = safe_snprintf(p, end, ",\"Gnd\":false");
@@ -3127,7 +3713,7 @@ retry:
                 p = safe_snprintf(p, end, ",\"Trt\":%d", 1);
 
 
-            p = safe_snprintf(p, end, ",\"Cmsgs\":%ld", a->messages);
+            p = safe_snprintf(p, end, ",\"Cmsgs\":%ld", a->meta.messages);
 
             p = safe_snprintf(p, end, "}");
 

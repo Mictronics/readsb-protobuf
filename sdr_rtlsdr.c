@@ -2,7 +2,7 @@
 //
 // sdr_rtlsdr.c: rtlsdr dongle support
 //
-// Copyright (c) 2019 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
 //
 // This code is based on a detached fork of dump1090-fa.
 //
@@ -343,7 +343,7 @@ void rtlsdrRun() {
 
     rtlsdr_read_async(RTLSDR.dev, rtlsdrCallback, NULL, MODES_RTL_BUFFERS, MODES_RTL_BUF_SIZE);
     if (!Modes.exit) {
-        fprintf(stderr,"rtlsdr_read_async returned unexpectedly, probably lost the USB device, bailing out");
+        fprintf(stderr, "rtlsdr_read_async returned unexpectedly, probably lost the USB device, bailing out");
     }
 }
 
