@@ -69,6 +69,18 @@ To enable support in Firefox: Open URL 'about:config' search 'dom.indexedDB.enab
 
 *Note: In Android pre-loading the database takes a minute or two, so be patient. Don't stop the script.*
 
+### Protocol Buffer output
+
+Protocol buffer output is (still) disabled by default and JSON files are generated. Therefore this version 
+will not break existing installations.
+
+To enable prtocol buffer output run readsb with parameter:
+```
+--protobuf-out
+```
+
+The stats.json will be generated in any case to ensure compatibility with third-party statistic collectors.
+
 ### Push server support
 
 readsb tries to connect to a listening server, like a VRS push server.
