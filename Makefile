@@ -56,13 +56,11 @@ endif
 
 all: protoc readsb viewadsb
 
-protoc: readsb.proto database.proto
-	mkdir -p ./webapp/src/script/readsb/protobuf
-	protoc --js_out=./webapp/src/script/readsb/protobuf $^
+protoc: readsb.proto
 	protoc-c --c_out=. $<
 
 protoc-clean:
-	rm -rf readsb.pb-c.c readsb.pb-c.h ./webapp/src/script/readsb/protobuf
+	rm -rf readsb.pb-c.c readsb.pb-c.h
 
 %.o: %.c *.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
