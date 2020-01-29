@@ -18,7 +18,7 @@ PROTOBUF_C__BEGIN_DECLS
 typedef struct _AircraftMeta AircraftMeta;
 typedef struct _AircraftMeta__NavModes AircraftMeta__NavModes;
 typedef struct _AircraftMeta__ValidSource AircraftMeta__ValidSource;
-typedef struct _AircraftCollection AircraftCollection;
+typedef struct _AircraftsUpdate AircraftsUpdate;
 typedef struct _Receiver Receiver;
 typedef struct _StatisticEntry StatisticEntry;
 typedef struct _Statistics Statistics;
@@ -423,7 +423,7 @@ struct  _AircraftMeta
  **
  * Collection of tracked aircrafts.
  */
-struct  _AircraftCollection
+struct  _AircraftsUpdate
 {
   ProtobufCMessage base;
   /*
@@ -442,8 +442,8 @@ struct  _AircraftCollection
   size_t n_aircraft;
   AircraftMeta **aircraft;
 };
-#define AIRCRAFT_COLLECTION__INIT \
- { PROTOBUF_C_MESSAGE_INIT (&aircraft_collection__descriptor) \
+#define AIRCRAFTS_UPDATE__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&aircrafts_update__descriptor) \
     , 0,0, 0,0, 0,NULL }
 
 
@@ -618,24 +618,24 @@ AircraftMeta *
 void   aircraft_meta__free_unpacked
                      (AircraftMeta *message,
                       ProtobufCAllocator *allocator);
-/* AircraftCollection methods */
-void   aircraft_collection__init
-                     (AircraftCollection         *message);
-size_t aircraft_collection__get_packed_size
-                     (const AircraftCollection   *message);
-size_t aircraft_collection__pack
-                     (const AircraftCollection   *message,
+/* AircraftsUpdate methods */
+void   aircrafts_update__init
+                     (AircraftsUpdate         *message);
+size_t aircrafts_update__get_packed_size
+                     (const AircraftsUpdate   *message);
+size_t aircrafts_update__pack
+                     (const AircraftsUpdate   *message,
                       uint8_t             *out);
-size_t aircraft_collection__pack_to_buffer
-                     (const AircraftCollection   *message,
+size_t aircrafts_update__pack_to_buffer
+                     (const AircraftsUpdate   *message,
                       ProtobufCBuffer     *buffer);
-AircraftCollection *
-       aircraft_collection__unpack
+AircraftsUpdate *
+       aircrafts_update__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data);
-void   aircraft_collection__free_unpacked
-                     (AircraftCollection *message,
+void   aircrafts_update__free_unpacked
+                     (AircraftsUpdate *message,
                       ProtobufCAllocator *allocator);
 /* Receiver methods */
 void   receiver__init
@@ -705,8 +705,8 @@ typedef void (*AircraftMeta__ValidSource_Closure)
 typedef void (*AircraftMeta_Closure)
                  (const AircraftMeta *message,
                   void *closure_data);
-typedef void (*AircraftCollection_Closure)
-                 (const AircraftCollection *message,
+typedef void (*AircraftsUpdate_Closure)
+                 (const AircraftsUpdate *message,
                   void *closure_data);
 typedef void (*Receiver_Closure)
                  (const Receiver *message,
@@ -730,7 +730,7 @@ extern const ProtobufCEnumDescriptor    aircraft_meta__air_ground__descriptor;
 extern const ProtobufCEnumDescriptor    aircraft_meta__addr_type__descriptor;
 extern const ProtobufCEnumDescriptor    aircraft_meta__emergency__descriptor;
 extern const ProtobufCEnumDescriptor    aircraft_meta__sil_type__descriptor;
-extern const ProtobufCMessageDescriptor aircraft_collection__descriptor;
+extern const ProtobufCMessageDescriptor aircrafts_update__descriptor;
 extern const ProtobufCMessageDescriptor receiver__descriptor;
 extern const ProtobufCMessageDescriptor statistic_entry__descriptor;
 extern const ProtobufCMessageDescriptor statistics__descriptor;

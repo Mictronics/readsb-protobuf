@@ -1942,7 +1942,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     struct aircraft *a;
     size_t j;
     // The entire collection of tracked aircrafts. Equal to aircraft.json content.
-    AircraftCollection msg = AIRCRAFT_COLLECTION__INIT;
+    AircraftsUpdate msg = AIRCRAFTS_UPDATE__INIT;
     // Source type collection of parameters received through MLAT, if any.
     AircraftMeta__ValidSource **mlat = NULL;
     unsigned n_mlat = 0;
@@ -2124,9 +2124,9 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
         }
     }
     // Pack and serialize entire aicraft collection.
-    unsigned len = aircraft_collection__get_packed_size(&msg);
+    unsigned len = aircrafts_update__get_packed_size(&msg);
     void *buf = malloc(len);
-    aircraft_collection__pack(&msg, buf);
+    aircrafts_update__pack(&msg, buf);
     // Write aircraft collection to file.
     mask = umask(0);
     umask(mask);

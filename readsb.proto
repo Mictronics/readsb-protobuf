@@ -169,7 +169,7 @@ message AircraftMeta {
 /**
  * Collection of tracked aircrafts.
  */
-message AircraftCollection {
+message AircraftsUpdate {
 	uint64 now = 1; // The time this file was generated, in seconds since Unix epoch.
 	uint64 messages = 2; // The total number of Mode S messages processed since readsb started.
 	reserved 3 to 14; // Reserved for future use.

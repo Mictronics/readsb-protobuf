@@ -62,47 +62,47 @@ void   aircraft_meta__free_unpacked
   assert(message->base.descriptor == &aircraft_meta__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
-void   aircraft_collection__init
-                     (AircraftCollection         *message)
+void   aircrafts_update__init
+                     (AircraftsUpdate         *message)
 {
-  static AircraftCollection init_value = AIRCRAFT_COLLECTION__INIT;
+  static AircraftsUpdate init_value = AIRCRAFTS_UPDATE__INIT;
   *message = init_value;
 }
-size_t aircraft_collection__get_packed_size
-                     (const AircraftCollection *message)
+size_t aircrafts_update__get_packed_size
+                     (const AircraftsUpdate *message)
 {
-  assert(message->base.descriptor == &aircraft_collection__descriptor);
+  assert(message->base.descriptor == &aircrafts_update__descriptor);
   return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
 }
-size_t aircraft_collection__pack
-                     (const AircraftCollection *message,
+size_t aircrafts_update__pack
+                     (const AircraftsUpdate *message,
                       uint8_t       *out)
 {
-  assert(message->base.descriptor == &aircraft_collection__descriptor);
+  assert(message->base.descriptor == &aircrafts_update__descriptor);
   return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
 }
-size_t aircraft_collection__pack_to_buffer
-                     (const AircraftCollection *message,
+size_t aircrafts_update__pack_to_buffer
+                     (const AircraftsUpdate *message,
                       ProtobufCBuffer *buffer)
 {
-  assert(message->base.descriptor == &aircraft_collection__descriptor);
+  assert(message->base.descriptor == &aircrafts_update__descriptor);
   return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
 }
-AircraftCollection *
-       aircraft_collection__unpack
+AircraftsUpdate *
+       aircrafts_update__unpack
                      (ProtobufCAllocator  *allocator,
                       size_t               len,
                       const uint8_t       *data)
 {
-  return (AircraftCollection *)
-     protobuf_c_message_unpack (&aircraft_collection__descriptor,
+  return (AircraftsUpdate *)
+     protobuf_c_message_unpack (&aircrafts_update__descriptor,
                                 allocator, len, data);
 }
-void   aircraft_collection__free_unpacked
-                     (AircraftCollection *message,
+void   aircrafts_update__free_unpacked
+                     (AircraftsUpdate *message,
                       ProtobufCAllocator *allocator)
 {
-  assert(message->base.descriptor == &aircraft_collection__descriptor);
+  assert(message->base.descriptor == &aircrafts_update__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   receiver__init
@@ -1540,15 +1540,15 @@ const ProtobufCMessageDescriptor aircraft_meta__descriptor =
   (ProtobufCMessageInit) aircraft_meta__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor aircraft_collection__field_descriptors[3] =
+static const ProtobufCFieldDescriptor aircrafts_update__field_descriptors[3] =
 {
   {
     "now",
     1,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(AircraftCollection, has_now),
-    offsetof(AircraftCollection, now),
+    offsetof(AircraftsUpdate, has_now),
+    offsetof(AircraftsUpdate, now),
     NULL,
     NULL,
     0,             /* flags */
@@ -1559,8 +1559,8 @@ static const ProtobufCFieldDescriptor aircraft_collection__field_descriptors[3] 
     2,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(AircraftCollection, has_messages),
-    offsetof(AircraftCollection, messages),
+    offsetof(AircraftsUpdate, has_messages),
+    offsetof(AircraftsUpdate, messages),
     NULL,
     NULL,
     0,             /* flags */
@@ -1571,38 +1571,38 @@ static const ProtobufCFieldDescriptor aircraft_collection__field_descriptors[3] 
     15,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
-    offsetof(AircraftCollection, n_aircraft),
-    offsetof(AircraftCollection, aircraft),
+    offsetof(AircraftsUpdate, n_aircraft),
+    offsetof(AircraftsUpdate, aircraft),
     &aircraft_meta__descriptor,
     NULL,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
 };
-static const unsigned aircraft_collection__field_indices_by_name[] = {
+static const unsigned aircrafts_update__field_indices_by_name[] = {
   2,   /* field[2] = aircraft */
   1,   /* field[1] = messages */
   0,   /* field[0] = now */
 };
-static const ProtobufCIntRange aircraft_collection__number_ranges[2 + 1] =
+static const ProtobufCIntRange aircrafts_update__number_ranges[2 + 1] =
 {
   { 1, 0 },
   { 15, 2 },
   { 0, 3 }
 };
-const ProtobufCMessageDescriptor aircraft_collection__descriptor =
+const ProtobufCMessageDescriptor aircrafts_update__descriptor =
 {
   PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
-  "AircraftCollection",
-  "AircraftCollection",
-  "AircraftCollection",
+  "AircraftsUpdate",
+  "AircraftsUpdate",
+  "AircraftsUpdate",
   "",
-  sizeof(AircraftCollection),
+  sizeof(AircraftsUpdate),
   3,
-  aircraft_collection__field_descriptors,
-  aircraft_collection__field_indices_by_name,
-  2,  aircraft_collection__number_ranges,
-  (ProtobufCMessageInit) aircraft_collection__init,
+  aircrafts_update__field_descriptors,
+  aircrafts_update__field_indices_by_name,
+  2,  aircrafts_update__number_ranges,
+  (ProtobufCMessageInit) aircrafts_update__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
 static const ProtobufCFieldDescriptor receiver__field_descriptors[5] =
