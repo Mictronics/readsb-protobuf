@@ -100,9 +100,7 @@ Building the package with `dpkg-buildpackage -b` or by `make all` requires the f
 * dh-systemd 
 * libncurses5-dev
 * libprotobuf-c-dev
-* libprotobuf-dev
 * protobuf-c-compiler
-* protobuf-compiler
 
 ### Dependencies - PlutoSDR (ADALM-PLUTO)
 
