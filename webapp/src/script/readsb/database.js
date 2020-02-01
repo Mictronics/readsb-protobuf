@@ -1,7 +1,7 @@
 "use strict";
 var READSB;
 (function (READSB) {
-    class Database {
+    class DatabaseFrontend {
         static Init() {
             if (READSB.AppSettings.OnlineDatabaseUrl !== undefined && READSB.AppSettings.OnlineDatabaseUrl !== null) {
                 this.OnlineDatabaseUrl = READSB.AppSettings.OnlineDatabaseUrl;
@@ -247,7 +247,6 @@ var READSB;
             return new Promise((resolve, reject) => {
                 request.onsuccess = (e) => {
                     this.db = request.result;
-                    console.info("Successfully open database: " + this.databaseName);
                     resolve();
                 };
                 request.onupgradeneeded = (e) => {
@@ -378,10 +377,10 @@ var READSB;
             });
         }
     }
-    Database.DatabaseVersion = 1;
-    Database.OnlineDatabaseUrl = ".";
-    Database.databaseName = "Readsb";
-    Database.idxDB = window.indexedDB;
-    READSB.Database = Database;
+    DatabaseFrontend.DatabaseVersion = 1;
+    DatabaseFrontend.OnlineDatabaseUrl = ".";
+    DatabaseFrontend.databaseName = "Readsb";
+    DatabaseFrontend.idxDB = window.indexedDB;
+    READSB.DatabaseFrontend = DatabaseFrontend;
 })(READSB || (READSB = {}));
 //# sourceMappingURL=database.js.map

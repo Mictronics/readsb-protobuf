@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace READSB {
-    export class Database {
+    export class DatabaseFrontend {
         public static DatabaseVersion: number = 1;
         public static OnlineDatabaseUrl: string = ".";
         /**
@@ -334,7 +334,6 @@ namespace READSB {
             return new Promise((resolve, reject) => {
                 request.onsuccess = (e) => {
                     this.db = request.result;
-                    console.info("Successfully open database: " + this.databaseName);
                     resolve();
                 };
 
