@@ -27,12 +27,15 @@
   --alt-legend-brightness: brightness(1);
   --lock-icon: url('../images/icons/lock-fill.svg');
   --unlocklock-icon: url('../images/icons/unlock-fill.svg');
+  --filter-selected-icon: url('../images/icons/filter.svg');
   --sidebar-reverse-icon: url('../images/icons/layout-sidebar-reverse.svg');
   --sidebar-icon: url('../images/icons/layout-sidebar.svg');
   --geo-icon: url('../images/icons/geo.svg');
   --checkbox-icon: url('../images/icons/check-box.svg');
   --x-square-icon: url('../images/icons/x-square.svg');
   --map-icon: url('../images/icons/map.svg');
+  --map-dim: brightness(1);
+  --overlay-dim: brightness(1);
 }
 
 [data-theme='dark'] {
@@ -64,12 +67,15 @@
   --alt-legend-brightness: brightness(0.5);
   --lock-icon: url('../images/icons-dark/lock-fill.svg');
   --unlocklock-icon: url('../images/icons-dark/unlock-fill.svg');
+  --filter-selected-icon: url('../images/icons-dark/filter.svg');
   --sidebar-reverse-icon: url('../images/icons-dark/layout-sidebar-reverse.svg');
   --sidebar-icon: url('../images/icons-dark/layout-sidebar.svg');
   --geo-icon: url('../images/icons-dark/geo.svg');
   --checkbox-icon: url('../images/icons-dark/check-box.svg');
   --x-square-icon: url('../images/icons-dark/x-square.svg');
   --map-icon: url('../images/icons-dark/map.svg');
+  --map-dim: brightness(0.35);
+  --overlay-dim: brightness(0.75);
 }
 
 html,
@@ -93,27 +99,6 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--card-header-background-color);
   border-radius: 5px;
-}
-
-div#loading {
-  z-index: 2000;
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  background: var(--background-color);
-  opacity: 0.8;
-  filter: alpha(opacity=80);
-}
-
-#spinner {
-  width: 6em;
-  height: 6em;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: -3em 0 0 -3em;
 }
 
 #layoutContainer {
@@ -143,6 +128,15 @@ div#loading {
 }
 
 .hidden {
+  display: none;
+}
+
+.showFlags {
+  display: initial;
+  filter: var(--map-dim);
+}
+
+.hideFlags {
   display: none;
 }
 
@@ -343,8 +337,8 @@ span#selectedWindDirection {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  width: 16px;
-  height: 16px;
+  width: 25px;
+  height: 25px;
 }
 
 /* Style of follow aircraft icon in selected infoblock */
@@ -353,8 +347,18 @@ span#selectedWindDirection {
   background-position: center;
   background-size: contain;
   background-repeat: no-repeat;
-  width: 16px;
-  height: 16px;
+  width: 25px;
+  height: 25px;
+}
+
+/* Style of filter aircraft icon in selected infoblock */
+#filter-selected-icon {
+  background-image: var(--filter-selected-icon);
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
 }
 
 /* Basic style of custom leaflet control buttons */
@@ -545,6 +549,15 @@ span#selectedWindDirection {
   color: var(--form-control-color);
 }
 
+.leaflet-tile-pane {
+  filter: var(--map-dim);
+}
+
+.leaflet-overlay-pane,
+.leaflet-marker-pane {
+  filter: var(--overlay-dim);
+}
+
 /* Overwrite bootstrap defaults */
 .col-form-label-sm {
   padding-top: 0px;
@@ -563,16 +576,6 @@ span#selectedWindDirection {
 .card {
   background-color: var(--background-color);
   border-color: var(--card-border-color);
-}
-
-/* Override style of progress bar */
-.progress {
-  top: 65vh;
-  left: 50%;
-  position: absolute;
-  width: 30%;
-  height: 2vh;
-  margin-left: -15%;
 }
 
 /* Override style for toast used as error indicator */
