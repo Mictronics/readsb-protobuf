@@ -22,7 +22,7 @@ namespace READSB {
         /**
          * Initialize all setting checkboxes in GUI.
          */
-        public static InitializeCheckboxes() {
+        public static Init() {
             document.getElementById("showFlagsCheck").addEventListener("change", this.OnSettingsCheckChanged);
             (document.getElementById("showFlagsCheck") as HTMLInputElement).checked = AppSettings.ShowFlags;
             document.getElementById("showAircraftCountCheck").addEventListener("change", this.OnSettingsCheckChanged);
@@ -33,15 +33,15 @@ namespace READSB {
             (document.getElementById("showAdditionalDataCheck") as HTMLInputElement).checked = AppSettings.ShowAdditionalData;
             document.getElementById("hideAircraftNotInViewCheck").addEventListener("change", this.OnSettingsCheckChanged);
             (document.getElementById("hideAircraftNotInViewCheck") as HTMLInputElement).checked = AppSettings.HideAircraftsNotInView;
+            document.getElementById("showTraceDetailsCheck").addEventListener("change", this.OnSettingsCheckChanged);
+            (document.getElementById("showTraceDetailsCheck") as HTMLInputElement).checked = AppSettings.ShowTraceDetails;
+            document.getElementById("useDarkThemeCheck").addEventListener("change", this.OnSettingsCheckChanged);
             document.getElementById("useDarkThemeCheck").addEventListener("change", this.OnSettingsCheckChanged);
             (document.getElementById("useDarkThemeCheck") as HTMLInputElement).checked = AppSettings.UseDarkTheme;
+            document.getElementById("dimMapCheck").addEventListener("change", this.OnSettingsCheckChanged);
+            (document.getElementById("dimMapCheck") as HTMLInputElement).checked = AppSettings.DimMap;
             document.getElementById("saveSettingsButton").addEventListener("click", this.OnSaveSettingsButtonClick);
-        }
 
-        /**
-         * Fill site circles distances into settings input form field.
-         */
-        public static SetSiteCirclesDistancesInput() {
             if (AppSettings.SiteCirclesDistances.length !== 0) {
                 let s = "";
                 for (const c of AppSettings.SiteCirclesDistances) {
@@ -50,6 +50,8 @@ namespace READSB {
                 s = s.substr(0, s.length - 1);
                 (document.getElementById("inputSiteCirclesDistance") as HTMLInputElement).value = s;
             }
+
+            (document.getElementById("inputSkyVectorApiKey") as HTMLInputElement).value = AppSettings.SkyVectorAPIKey;
         }
 
         /**
@@ -67,28 +69,24 @@ namespace READSB {
         private static OnSettingsCheckChanged(e: any) {
             const id = (e.target as HTMLInputElement).id;
             const checked = (e.target as HTMLInputElement).checked;
+            const p = document.getElementsByClassName("leaflet-tile-pane") as HTMLCollection;
             switch (id) {
                 case "showFlagsCheck":
                     AppSettings.ShowFlags = checked;
                     Body.ShowFlags(checked);
                     break;
-
                 case "showAircraftCountCheck":
                     AppSettings.ShowAircraftCountInTitle = checked;
                     break;
-
                 case "showMessageRateCheck":
                     AppSettings.ShowMessageRateInTitle = checked;
                     break;
-
                 case "showAdditionalDataCheck":
                     AppSettings.ShowAdditionalData = checked;
                     break;
-
                 case "hideAircraftNotInViewCheck":
                     AppSettings.HideAircraftsNotInView = checked;
                     break;
-
                 case "useDarkThemeCheck":
                     AppSettings.UseDarkTheme = checked;
                     if (checked) {
@@ -100,10 +98,23 @@ namespace READSB {
                         }
                     } else {
                         document.documentElement.setAttribute("data-theme", "light");
+                        if (AppSettings.DimMap) {
+                            (p[0] as HTMLDivElement).style.filter = "brightness(0.5)";
+                        }
                     }
                     LMap.CreateSiteCircles();
                     break;
-
+                case "showTraceDetailsCheck":
+                    AppSettings.ShowTraceDetails = checked;
+                    break;
+                case "dimMapCheck":
+                    AppSettings.DimMap = checked;
+                    if (checked) {
+                        (p[0] as HTMLDivElement).style.filter = "brightness(0.5)";
+                    } else {
+                        (p[0] as HTMLDivElement).style.filter = "";
+                    }
+                    break;
                 default:
                     break;
             }
@@ -115,6 +126,7 @@ namespace READSB {
          */
         private static OnSaveSettingsButtonClick(e: any) {
             let input = (document.getElementById("inputPageName") as HTMLInputElement);
+            let backendSetSitePosition = false;
             input.classList.remove("is-invalid", "is-valid");
             if (input.value !== "") {
                 const name = input.value.trim().substring(0, 30);
@@ -131,6 +143,7 @@ namespace READSB {
                 lat = Number.parseFloat(input.value);
                 if (lat !== Number.NaN && lat >= -90.0 && lat <= 90.0) {
                     AppSettings.SiteLat = lat;
+                    backendSetSitePosition = true;
                     input.classList.add("is-valid");
                 } else {
                     input.classList.add("is-invalid");
@@ -140,13 +153,20 @@ namespace READSB {
             input.classList.remove("is-invalid", "is-valid");
             if (input.value !== "") {
                 lon = Number.parseFloat(input.value);
-                if (lon !== Number.NaN && lon >= -180.0 && lon <= 180.0) {
+                if (lon !== Number.NaN && lon >= -90.0 && lon <= 90.0) {
                     AppSettings.SiteLon = lon;
+                    backendSetSitePosition = true;
                     input.classList.add("is-valid");
                 } else {
                     input.classList.add("is-invalid");
                 }
             }
+
+            // Forward new site position to backend worker.
+            if (backendSetSitePosition) {
+                Body.SetSitePosition();
+            }
+
             input = (document.getElementById("inputSiteCirclesDistance") as HTMLInputElement);
             input.classList.remove("is-invalid", "is-valid");
             if (input.value !== "") {
@@ -169,6 +189,11 @@ namespace READSB {
                     input.classList.add("is-invalid");
                 }
             }
+
+            input = (document.getElementById("inputSkyVectorApiKey") as HTMLInputElement);
+            input.classList.remove("is-invalid", "is-valid");
+            AppSettings.SkyVectorAPIKey = input.value;
+            input.classList.add("is-valid");
         }
     }
 }
