@@ -110,5 +110,43 @@ var READSB;
         eSideBarVisibility[eSideBarVisibility["Expanded"] = 2] = "Expanded";
         eSideBarVisibility[eSideBarVisibility["Hidden"] = 3] = "Hidden";
     })(eSideBarVisibility = READSB.eSideBarVisibility || (READSB.eSideBarVisibility = {}));
+    let eAirGround;
+    (function (eAirGround) {
+        eAirGround[eAirGround["invalid"] = 0] = "invalid";
+        eAirGround[eAirGround["ground"] = 1] = "ground";
+        eAirGround[eAirGround["airborne"] = 2] = "airborne";
+        eAirGround[eAirGround["uncertain"] = 3] = "uncertain";
+    })(eAirGround = READSB.eAirGround || (READSB.eAirGround = {}));
+    let eAddrType;
+    (function (eAddrType) {
+        eAddrType[eAddrType["adsb_icao"] = 0] = "adsb_icao";
+        eAddrType[eAddrType["adsb_icao_nt"] = 1] = "adsb_icao_nt";
+        eAddrType[eAddrType["adsr_icao"] = 2] = "adsr_icao";
+        eAddrType[eAddrType["tisb_icao"] = 3] = "tisb_icao";
+        eAddrType[eAddrType["adsb_other"] = 4] = "adsb_other";
+        eAddrType[eAddrType["adsr_other"] = 5] = "adsr_other";
+        eAddrType[eAddrType["tisb_trackfile"] = 6] = "tisb_trackfile";
+        eAddrType[eAddrType["tisb_other"] = 7] = "tisb_other";
+        eAddrType[eAddrType["mode_a"] = 8] = "mode_a";
+        eAddrType[eAddrType["unknown"] = 9] = "unknown";
+    })(eAddrType = READSB.eAddrType || (READSB.eAddrType = {}));
+    let eEmergency;
+    (function (eEmergency) {
+        eEmergency[eEmergency["none"] = 0] = "none";
+        eEmergency[eEmergency["general"] = 1] = "general";
+        eEmergency[eEmergency["lifeguard"] = 2] = "lifeguard";
+        eEmergency[eEmergency["minfuel"] = 3] = "minfuel";
+        eEmergency[eEmergency["nordo"] = 4] = "nordo";
+        eEmergency[eEmergency["unlawful"] = 5] = "unlawful";
+        eEmergency[eEmergency["downed"] = 6] = "downed";
+        eEmergency[eEmergency["reserved"] = 7] = "reserved";
+    })(eEmergency = READSB.eEmergency || (READSB.eEmergency = {}));
+    let eSilType;
+    (function (eSilType) {
+        eSilType[eSilType["invalid"] = 0] = "invalid";
+        eSilType[eSilType["unknown"] = 1] = "unknown";
+        eSilType[eSilType["persample"] = 2] = "persample";
+        eSilType[eSilType["perhour"] = 3] = "perhour";
+    })(eSilType = READSB.eSilType || (READSB.eSilType = {}));
 })(READSB || (READSB = {}));
 //# sourceMappingURL=enums.js.map

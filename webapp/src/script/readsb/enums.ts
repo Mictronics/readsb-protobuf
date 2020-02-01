@@ -126,4 +126,42 @@ namespace READSB {
         Expanded = 2,
         Hidden = 3,
     }
+
+    export enum eAirGround {
+        "invalid" = 0,
+        "ground" = 1,
+        "airborne" = 2,
+        "uncertain" = 3,
+    }
+
+    export enum eAddrType {
+        "adsb_icao" = 0,
+        "adsb_icao_nt" = 1,
+        "adsr_icao" = 2,
+        "tisb_icao" = 3,
+        "adsb_other" = 4,
+        "adsr_other" = 5,
+        "tisb_trackfile" = 6,
+        "tisb_other" = 7,
+        "mode_a" = 8,
+        "unknown" = 9,
+    }
+
+    export enum eEmergency {
+        "none" = 0,
+        "general" = 1,
+        "lifeguard" = 2,
+        "minfuel" = 3,
+        "nordo" = 4,
+        "unlawful" = 5,
+        "downed" = 6,
+        "reserved" = 7,
+    }
+
+    export enum eSilType {
+        "invalid" = 0,
+        "unknown" = 1,
+        "persample" = 2,
+        "perhour" = 3,
+    }
 }
