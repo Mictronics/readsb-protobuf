@@ -19,7 +19,6 @@
 
 namespace READSB {
     export class AppSettings {
-
         static get Settings(): IAppSettings {
             return this.appSettings;
         }
@@ -32,7 +31,7 @@ namespace READSB {
         }
         static set ShowAltitudeChart(value: boolean) {
             this.appSettings.ShowAltitudeChart = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get CenterLat(): number {
@@ -40,7 +39,7 @@ namespace READSB {
         }
         static set CenterLat(value: number) {
             this.appSettings.CenterLat = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get CenterLon(): number {
@@ -48,7 +47,7 @@ namespace READSB {
         }
         static set CenterLon(value: number) {
             this.appSettings.CenterLon = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowSite(): boolean {
@@ -56,7 +55,7 @@ namespace READSB {
         }
         static set ShowSite(value: boolean) {
             this.appSettings.ShowSite = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get SiteLat(): number {
@@ -64,7 +63,7 @@ namespace READSB {
         }
         static set SiteLat(value: number) {
             this.appSettings.SiteLat = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get SiteLon(): number {
@@ -72,7 +71,7 @@ namespace READSB {
         }
         static set SiteLon(value: number) {
             this.appSettings.SiteLon = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get DisplayUnits(): string {
@@ -80,7 +79,7 @@ namespace READSB {
         }
         static set DisplayUnits(value: string) {
             this.appSettings.DisplayUnits = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get PageName(): string {
@@ -88,7 +87,7 @@ namespace READSB {
         }
         static set PageName(value: string) {
             this.appSettings.PageName = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowAdditionalData(): boolean {
@@ -96,7 +95,7 @@ namespace READSB {
         }
         static set ShowAdditionalData(value: boolean) {
             this.appSettings.ShowAdditionalData = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowFlags(): boolean {
@@ -104,7 +103,7 @@ namespace READSB {
         }
         static set ShowFlags(value: boolean) {
             this.appSettings.ShowFlags = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowSiteCircles(): boolean {
@@ -112,7 +111,7 @@ namespace READSB {
         }
         static set ShowSiteCircles(value: boolean) {
             this.appSettings.ShowSiteCircles = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ZoomLevel(): number {
@@ -123,7 +122,7 @@ namespace READSB {
         }
         static set ZoomLevel(value: number) {
             this.appSettings.ZoomLevel = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get SiteCirclesDistances(): number[] {
@@ -131,19 +130,23 @@ namespace READSB {
         }
         static set SiteCirclesDistances(value: number[]) {
             this.appSettings.SiteCirclesDistances = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get FlagPath(): string {
             if (this.appSettings.FlagPath === undefined || this.appSettings.FlagPath === null) {
                 this.appSettings.FlagPath = "images/flags-tiny/";
-                Database.PutSetting("MapSettings", this.appSettings);
+                DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
             }
             return this.appSettings.FlagPath;
         }
 
         static get SkyVectorAPIKey(): string {
             return this.appSettings.SkyVectorAPIKey;
+        }
+        static set SkyVectorAPIKey(value: string) {
+            this.appSettings.SkyVectorAPIKey = value.trim().substring(0, 25);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get OnlineDatabaseUrl(): string {
@@ -155,7 +158,7 @@ namespace READSB {
         }
         static set ShowChartBundleLayers(value: boolean) {
             this.appSettings.ShowChartBundleLayers = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowAdditionalMaps(): boolean {
@@ -163,7 +166,7 @@ namespace READSB {
         }
         static set ShowAdditionalMaps(value: boolean) {
             this.appSettings.ShowAdditionalMaps = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowMessageRateInTitle(): boolean {
@@ -171,7 +174,7 @@ namespace READSB {
         }
         static set ShowMessageRateInTitle(value: boolean) {
             this.appSettings.ShowMessageRateInTitle = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowAircraftCountInTitle(): boolean {
@@ -179,7 +182,7 @@ namespace READSB {
         }
         static set ShowAircraftCountInTitle(value: boolean) {
             this.appSettings.ShowAircraftCountInTitle = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowEULayers(): boolean {
@@ -187,7 +190,7 @@ namespace READSB {
         }
         static set ShowEULayers(value: boolean) {
             this.appSettings.ShowEULayers = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowUSLayers(): boolean {
@@ -195,7 +198,7 @@ namespace READSB {
         }
         static set ShowUSLayers(value: boolean) {
             this.appSettings.ShowUSLayers = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get ShowHoverOverLabels(): boolean {
@@ -203,7 +206,7 @@ namespace READSB {
         }
         static set ShowHoverOverLabels(value: boolean) {
             this.appSettings.ShowHoverOverLabels = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get EnableFilter(): boolean {
@@ -211,7 +214,7 @@ namespace READSB {
         }
         static set EnableFilter(value: boolean) {
             this.appSettings.EnableFilter = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get EnableHighlightFilter(): boolean {
@@ -219,7 +222,7 @@ namespace READSB {
         }
         static set EnableHighlightFilter(value: boolean) {
             this.appSettings.EnableHighlightFilter = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get BaseLayer(): string {
@@ -227,7 +230,7 @@ namespace READSB {
         }
         static set BaseLayer(value: string) {
             this.appSettings.BaseLayer = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get OverlayLayers(): string[] {
@@ -238,7 +241,7 @@ namespace READSB {
         }
         static set OverlayLayers(value: string[]) {
             this.appSettings.OverlayLayers = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get AppLanguage(): string {
@@ -249,7 +252,7 @@ namespace READSB {
         }
         static set AppLanguage(value: string) {
             this.appSettings.AppLanguage = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get HideAircraftsNotInView(): boolean {
@@ -260,7 +263,7 @@ namespace READSB {
         }
         static set HideAircraftsNotInView(value: boolean) {
             this.appSettings.HideAircraftsNotInView = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         static get UseDarkTheme(): boolean {
@@ -271,21 +274,44 @@ namespace READSB {
         }
         static set UseDarkTheme(value: boolean) {
             this.appSettings.UseDarkTheme = value;
-            Database.PutSetting("MapSettings", this.appSettings);
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
+        }
+
+        static get ShowTraceDetails(): boolean {
+            if (this.appSettings.ShowTraceDetails === undefined) {
+                this.appSettings.ShowTraceDetails = false;
+            }
+            return this.appSettings.ShowTraceDetails;
+        }
+        static set ShowTraceDetails(value: boolean) {
+            this.appSettings.ShowTraceDetails = value;
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
+        }
+
+        static get DimMap(): boolean {
+            if (this.appSettings.DimMap === undefined) {
+                this.appSettings.DimMap = false;
+            }
+            return this.appSettings.DimMap;
+        }
+        static set DimMap(value: boolean) {
+            this.appSettings.DimMap = value;
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
         public static ReadSettings() {
-            Database.GetSetting("MapSettings")
+            DatabaseFrontend.GetSetting("MapSettings")
                 .then((result: any) => {
                     if (result !== null && result !== undefined) {
                         AppSettings.Settings = result;
                     }
                     // We read application static settings, now initialize app.
-                    Main.Initialize();
+                    Body.Init();
                     console.info("MapSettings loaded.");
                 })
                 .catch((error) => {
-                    Main.Initialize();
+                    // TODO Store default settings in database. But must be initialized before!
+                    Body.Init();
                 });
         }
 
@@ -313,6 +339,7 @@ namespace READSB {
                         BaseLayer: ("BaseLayer" in data) ? data.BaseLayer : "osm",
                         CenterLat: ("CenterLat" in data) ? data.CenterLat : 45.0,
                         CenterLon: ("CenterLon" in data) ? data.CenterLon : 9.0,
+                        DimMap: ("DimMap" in data) ? data.DimMap : false,
                         DisplayUnits: ("DisplayUnits" in data) ? data.DisplayUnits : "nautical",
                         EnableFilter: ("EnableFilter" in data) ? data.EnableFilter : false,
                         EnableHighlightFilter: ("EnableHighlightFilter" in data) ? data.EnableHighlightFilter : false,
@@ -332,6 +359,7 @@ namespace READSB {
                         ShowMessageRateInTitle: ("ShowMessageRateInTitle" in data) ? data.ShowMessageRateInTitle : true,
                         ShowSite: ("ShowSite" in data) ? data.ShowSite : true,
                         ShowSiteCircles: ("ShowSiteCircles" in data) ? data.ShowSiteCircles : true,
+                        ShowTraceDetails: ("ShowTraceDetails" in data) ? data.ShowTraceDetails : false,
                         ShowUSLayers: ("ShowUSLayers" in data) ? data.ShowUSLayers : true,
                         SiteCirclesDistances: [],
                         SiteLat: ("SiteLat" in data) ? data.SiteLat : 45.0,
@@ -365,6 +393,7 @@ namespace READSB {
                         BaseLayer: "osm",
                         CenterLat: 45.0,
                         CenterLon: 9.0,
+                        DimMap: false,
                         DisplayUnits: "nautical",
                         EnableFilter: false,
                         EnableHighlightFilter: false,
@@ -384,6 +413,7 @@ namespace READSB {
                         ShowMessageRateInTitle: true,
                         ShowSite: true,
                         ShowSiteCircles: true,
+                        ShowTraceDetails: false,
                         ShowUSLayers: true,
                         SiteCirclesDistances: [100, 150, 200],
                         SiteLat: 45.0,
@@ -394,7 +424,7 @@ namespace READSB {
                     };
                 })
                 .finally(() => {
-                    Database.Init();
+                    DatabaseFrontend.Init();
                 });
         }
 

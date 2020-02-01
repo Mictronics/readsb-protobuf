@@ -13,77 +13,77 @@ var READSB;
         }
         static set ShowAltitudeChart(value) {
             this.appSettings.ShowAltitudeChart = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get CenterLat() {
             return this.appSettings.CenterLat;
         }
         static set CenterLat(value) {
             this.appSettings.CenterLat = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get CenterLon() {
             return this.appSettings.CenterLon;
         }
         static set CenterLon(value) {
             this.appSettings.CenterLon = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowSite() {
             return this.appSettings.ShowSite;
         }
         static set ShowSite(value) {
             this.appSettings.ShowSite = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get SiteLat() {
             return this.appSettings.SiteLat;
         }
         static set SiteLat(value) {
             this.appSettings.SiteLat = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get SiteLon() {
             return this.appSettings.SiteLon;
         }
         static set SiteLon(value) {
             this.appSettings.SiteLon = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get DisplayUnits() {
             return this.appSettings.DisplayUnits;
         }
         static set DisplayUnits(value) {
             this.appSettings.DisplayUnits = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get PageName() {
             return this.appSettings.PageName;
         }
         static set PageName(value) {
             this.appSettings.PageName = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowAdditionalData() {
             return this.appSettings.ShowAdditionalData;
         }
         static set ShowAdditionalData(value) {
             this.appSettings.ShowAdditionalData = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowFlags() {
             return this.appSettings.ShowFlags;
         }
         static set ShowFlags(value) {
             this.appSettings.ShowFlags = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowSiteCircles() {
             return this.appSettings.ShowSiteCircles;
         }
         static set ShowSiteCircles(value) {
             this.appSettings.ShowSiteCircles = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ZoomLevel() {
             if (this.appSettings.ZoomLevel === undefined) {
@@ -93,24 +93,28 @@ var READSB;
         }
         static set ZoomLevel(value) {
             this.appSettings.ZoomLevel = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get SiteCirclesDistances() {
             return this.appSettings.SiteCirclesDistances;
         }
         static set SiteCirclesDistances(value) {
             this.appSettings.SiteCirclesDistances = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get FlagPath() {
             if (this.appSettings.FlagPath === undefined || this.appSettings.FlagPath === null) {
                 this.appSettings.FlagPath = "images/flags-tiny/";
-                READSB.Database.PutSetting("MapSettings", this.appSettings);
+                READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
             }
             return this.appSettings.FlagPath;
         }
         static get SkyVectorAPIKey() {
             return this.appSettings.SkyVectorAPIKey;
+        }
+        static set SkyVectorAPIKey(value) {
+            this.appSettings.SkyVectorAPIKey = value.trim().substring(0, 25);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get OnlineDatabaseUrl() {
             return this.appSettings.OnlineDatabaseUrl;
@@ -120,70 +124,70 @@ var READSB;
         }
         static set ShowChartBundleLayers(value) {
             this.appSettings.ShowChartBundleLayers = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowAdditionalMaps() {
             return this.appSettings.ShowAdditionalMaps;
         }
         static set ShowAdditionalMaps(value) {
             this.appSettings.ShowAdditionalMaps = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowMessageRateInTitle() {
             return this.appSettings.ShowMessageRateInTitle;
         }
         static set ShowMessageRateInTitle(value) {
             this.appSettings.ShowMessageRateInTitle = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowAircraftCountInTitle() {
             return this.appSettings.ShowAircraftCountInTitle;
         }
         static set ShowAircraftCountInTitle(value) {
             this.appSettings.ShowAircraftCountInTitle = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowEULayers() {
             return this.appSettings.ShowEULayers;
         }
         static set ShowEULayers(value) {
             this.appSettings.ShowEULayers = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowUSLayers() {
             return this.appSettings.ShowUSLayers;
         }
         static set ShowUSLayers(value) {
             this.appSettings.ShowUSLayers = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get ShowHoverOverLabels() {
             return this.appSettings.ShowHoverOverLabels;
         }
         static set ShowHoverOverLabels(value) {
             this.appSettings.ShowHoverOverLabels = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get EnableFilter() {
             return this.appSettings.EnableFilter;
         }
         static set EnableFilter(value) {
             this.appSettings.EnableFilter = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get EnableHighlightFilter() {
             return this.appSettings.EnableHighlightFilter;
         }
         static set EnableHighlightFilter(value) {
             this.appSettings.EnableHighlightFilter = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get BaseLayer() {
             return this.appSettings.BaseLayer;
         }
         static set BaseLayer(value) {
             this.appSettings.BaseLayer = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get OverlayLayers() {
             if (this.appSettings.OverlayLayers === undefined) {
@@ -193,7 +197,7 @@ var READSB;
         }
         static set OverlayLayers(value) {
             this.appSettings.OverlayLayers = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get AppLanguage() {
             if (this.appSettings.AppLanguage === undefined) {
@@ -203,7 +207,7 @@ var READSB;
         }
         static set AppLanguage(value) {
             this.appSettings.AppLanguage = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get HideAircraftsNotInView() {
             if (this.appSettings.HideAircraftsNotInView === undefined) {
@@ -213,7 +217,7 @@ var READSB;
         }
         static set HideAircraftsNotInView(value) {
             this.appSettings.HideAircraftsNotInView = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static get UseDarkTheme() {
             if (this.appSettings.UseDarkTheme === undefined) {
@@ -223,19 +227,39 @@ var READSB;
         }
         static set UseDarkTheme(value) {
             this.appSettings.UseDarkTheme = value;
-            READSB.Database.PutSetting("MapSettings", this.appSettings);
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
+        }
+        static get ShowTraceDetails() {
+            if (this.appSettings.ShowTraceDetails === undefined) {
+                this.appSettings.ShowTraceDetails = false;
+            }
+            return this.appSettings.ShowTraceDetails;
+        }
+        static set ShowTraceDetails(value) {
+            this.appSettings.ShowTraceDetails = value;
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
+        }
+        static get DimMap() {
+            if (this.appSettings.DimMap === undefined) {
+                this.appSettings.DimMap = false;
+            }
+            return this.appSettings.DimMap;
+        }
+        static set DimMap(value) {
+            this.appSettings.DimMap = value;
+            READSB.DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
         static ReadSettings() {
-            READSB.Database.GetSetting("MapSettings")
+            READSB.DatabaseFrontend.GetSetting("MapSettings")
                 .then((result) => {
                 if (result !== null && result !== undefined) {
                     AppSettings.Settings = result;
                 }
-                READSB.Main.Initialize();
+                READSB.Body.Init();
                 console.info("MapSettings loaded.");
             })
                 .catch((error) => {
-                READSB.Main.Initialize();
+                READSB.Body.Init();
             });
         }
         static ReadDefaultSettings() {
@@ -261,6 +285,7 @@ var READSB;
                     BaseLayer: ("BaseLayer" in data) ? data.BaseLayer : "osm",
                     CenterLat: ("CenterLat" in data) ? data.CenterLat : 45.0,
                     CenterLon: ("CenterLon" in data) ? data.CenterLon : 9.0,
+                    DimMap: ("DimMap" in data) ? data.DimMap : false,
                     DisplayUnits: ("DisplayUnits" in data) ? data.DisplayUnits : "nautical",
                     EnableFilter: ("EnableFilter" in data) ? data.EnableFilter : false,
                     EnableHighlightFilter: ("EnableHighlightFilter" in data) ? data.EnableHighlightFilter : false,
@@ -280,6 +305,7 @@ var READSB;
                     ShowMessageRateInTitle: ("ShowMessageRateInTitle" in data) ? data.ShowMessageRateInTitle : true,
                     ShowSite: ("ShowSite" in data) ? data.ShowSite : true,
                     ShowSiteCircles: ("ShowSiteCircles" in data) ? data.ShowSiteCircles : true,
+                    ShowTraceDetails: ("ShowTraceDetails" in data) ? data.ShowTraceDetails : false,
                     ShowUSLayers: ("ShowUSLayers" in data) ? data.ShowUSLayers : true,
                     SiteCirclesDistances: [],
                     SiteLat: ("SiteLat" in data) ? data.SiteLat : 45.0,
@@ -311,6 +337,7 @@ var READSB;
                     BaseLayer: "osm",
                     CenterLat: 45.0,
                     CenterLon: 9.0,
+                    DimMap: false,
                     DisplayUnits: "nautical",
                     EnableFilter: false,
                     EnableHighlightFilter: false,
@@ -330,6 +357,7 @@ var READSB;
                     ShowMessageRateInTitle: true,
                     ShowSite: true,
                     ShowSiteCircles: true,
+                    ShowTraceDetails: false,
                     ShowUSLayers: true,
                     SiteCirclesDistances: [100, 150, 200],
                     SiteLat: 45.0,
@@ -340,7 +368,7 @@ var READSB;
                 };
             })
                 .finally(() => {
-                READSB.Database.Init();
+                READSB.DatabaseFrontend.Init();
             });
         }
     }
