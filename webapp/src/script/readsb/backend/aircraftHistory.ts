@@ -52,7 +52,7 @@ namespace READSB {
         let loaded = 0;
         if (historySize > 0) {
             for (let i = 0; i < historySize; i++) {
-                fetch(`http://192.168.178.25/radar/data/history_${i}.pb`, {
+                fetch(`../../../data/history_${i}.pb`, {
                     cache: "no-cache",
                     method: "GET",
                     mode: "cors",

@@ -26,7 +26,7 @@ var READSB;
             this.aircraftHistoryLoader.postMessage({ type: "Port", data: this.subWorkerMessageChannel.port2 }, [this.subWorkerMessageChannel.port2]);
             this.worker.postMessage({ type: "Port", data: this.frontEndMessageChannel.port1 }, [this.frontEndMessageChannel.port1]);
             this.aircraftTraceCollector.postMessage({ type: "FrontendPort", data: this.frontEndMessageChannel.port2 }, [this.frontEndMessageChannel.port2]);
-            fetch("http://192.168.178.25/radar/data/receiver.pb", {
+            fetch("../../../data/receiver.pb", {
                 cache: "no-cache",
                 method: "GET",
                 mode: "cors",
@@ -98,7 +98,7 @@ var READSB;
                 return;
             }
             this.fetchPending = true;
-            fetch("http://192.168.178.25/radar/data/aircraft.pb", {
+            fetch("../../../data/aircraft.pb", {
                 cache: "no-cache",
                 method: "GET",
                 mode: "cors",

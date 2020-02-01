@@ -54,7 +54,7 @@ namespace READSB {
             this.aircraftTraceCollector.postMessage({ type: "FrontendPort", data: this.frontEndMessageChannel.port2 }, [this.frontEndMessageChannel.port2]);
 
             // Get receiver metadata, then continue with initialization
-            fetch("http://192.168.178.25/radar/data/receiver.pb", {
+            fetch("../../../data/receiver.pb", {
                 cache: "no-cache",
                 method: "GET",
                 mode: "cors",
@@ -181,7 +181,7 @@ namespace READSB {
             }
 
             this.fetchPending = true;
-            fetch("http://192.168.178.25/radar/data/aircraft.pb", {
+            fetch("../../../data/aircraft.pb", {
                 cache: "no-cache",
                 method: "GET",
                 mode: "cors",
