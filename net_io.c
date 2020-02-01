@@ -2127,7 +2127,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
         }
     }  
     // Pack and serialize entire aicraft collection.
-    unsigned len = aircrafts_update__get_packed_size(&msg);
+    ssize_t len = aircrafts_update__get_packed_size(&msg);
     void *buf = malloc(len);
     aircrafts_update__pack(&msg, buf);
     // Write aircraft collection to file.
@@ -2598,7 +2598,7 @@ void generateStatsProtoBuf(const char *file) {
     stats.last_15min = &last_15min;
     stats.total = &total;
     // Pack and serialize entire aicraft collection.
-    unsigned len = statistics__get_packed_size(&stats);
+    ssize_t len = statistics__get_packed_size(&stats);
     void *buf = malloc(len);
     statistics__pack(&stats, buf);
     // Write aircraft collection to file.
@@ -2698,7 +2698,7 @@ void generateReceiverProtoBuf(const char *file) {
     }
 
     // Pack and serialize entire aicraft collection.
-    unsigned len = receiver__get_packed_size(&msg);
+    ssize_t len = receiver__get_packed_size(&msg);
     void *buf = malloc(len);
     receiver__pack(&msg, buf);
     // Write aircraft collection to file.
