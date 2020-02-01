@@ -29,6 +29,7 @@
   "selected": {
     "title": {
       "follow": "Map center follows aircraft position.",
+      "filter": "Show only this aircraft.",
       "type": "ICAO aircraft type description.",
       "reg": "The alphanumeric registration code assigned by the country in which the aircraft is registered.",
       "operator": "Registered FAA operator description.",
@@ -131,6 +132,7 @@
     "showMessageRate": "Message Rate in Title",
     "showFlags": "Flags",
     "showAdditionalData": "Additional Data",
+    "showTraceDetails": "Trace Details",
     "hideAircraftNotInView": "Hide Aircraft not in map view",
     "pageName": "Page name",
     "siteLat": "Site Latitude",
@@ -139,7 +141,9 @@
     "siteCirclesDist": "Site Circles Distances",
     "siteCirclesDistHelp": "Comma separated values",
     "databaseLegend": "Aircraft Database",
-    "darkTheme": "Dark Theme"
+    "darkTheme": "Dark Theme",
+    "dimMap": "Darken map",
+    "skyVectorApiKey": "SkyVector API key"
   },
   "filter": {
     "enable": "Enable filter",
