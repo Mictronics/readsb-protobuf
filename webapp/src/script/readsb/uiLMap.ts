@@ -23,7 +23,7 @@ namespace READSB {
      */
     export class LMap {
         public static AircraftPositions = new L.FeatureGroup();
-        public static AircraftTrails = new L.FeatureGroup();
+        public static AircraftTraces = new L.FeatureGroup();
         public static Initialized: boolean = false;
 
         public static Init() {
@@ -104,7 +104,7 @@ namespace READSB {
 
             // Add aircraft positions and trails layers to map
             this.AircraftPositions.addTo(this.lMap);
-            this.AircraftTrails.addTo(this.lMap);
+            this.AircraftTraces.addTo(this.lMap);
 
             // Add event listeners to map.
             this.lMap.addEventListener("click dblclick", this.OnMapClick);
@@ -112,6 +112,12 @@ namespace READSB {
             this.lMap.addEventListener("zoomend", this.OnMapZoomEnd.bind(this));
             this.lMap.addEventListener("overlayadd overlayremove layeradd", this.OnMapLayerChange);
             this.mapViewBounds = this.lMap.getBounds();
+
+            // Dim map if set.
+            if (AppSettings.DimMap) {
+                (document.getElementsByClassName("leaflet-tile-pane")[0] as HTMLDivElement).style.filter = "brightness(0.5)";
+            }
+
             this.Initialized = true;
         }
 
@@ -248,7 +254,7 @@ namespace READSB {
          * @param e Mouse Event
          */
         private static OnSelectAllButtonClick(e: MouseEvent) {
-            AircraftCollection.SelectAll = true;
+            Body.SelectAll(true);
             e.stopImmediatePropagation();
         }
 
@@ -257,7 +263,7 @@ namespace READSB {
          * @param e Mouse Event
          */
         private static OnDeSelectAllButtonClick(e: MouseEvent) {
-            AircraftCollection.SelectAll = false;
+            Body.SelectAll(false);
             e.stopImmediatePropagation();
         }
 
@@ -266,7 +272,7 @@ namespace READSB {
          * @param e LMap object
          */
         private static OnMapClick(e: L.LeafletMouseEvent) {
-            AircraftCollection.SelectAll = false;
+            Body.SelectAll(false);
             e.originalEvent.stopImmediatePropagation();
         }
 

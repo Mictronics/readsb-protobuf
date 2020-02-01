@@ -62,12 +62,15 @@ var READSB;
                 position: "topright",
             }).addTo(this.lMap);
             this.AircraftPositions.addTo(this.lMap);
-            this.AircraftTrails.addTo(this.lMap);
+            this.AircraftTraces.addTo(this.lMap);
             this.lMap.addEventListener("click dblclick", this.OnMapClick);
             this.lMap.addEventListener("moveend", this.OnMapMoveEnd.bind(this));
             this.lMap.addEventListener("zoomend", this.OnMapZoomEnd.bind(this));
             this.lMap.addEventListener("overlayadd overlayremove layeradd", this.OnMapLayerChange);
             this.mapViewBounds = this.lMap.getBounds();
+            if (READSB.AppSettings.DimMap) {
+                document.getElementsByClassName("leaflet-tile-pane")[0].style.filter = "brightness(0.5)";
+            }
             this.Initialized = true;
         }
         static CreateSiteCircles() {
@@ -152,15 +155,15 @@ var READSB;
             e.stopImmediatePropagation();
         }
         static OnSelectAllButtonClick(e) {
-            READSB.AircraftCollection.SelectAll = true;
+            READSB.Body.SelectAll(true);
             e.stopImmediatePropagation();
         }
         static OnDeSelectAllButtonClick(e) {
-            READSB.AircraftCollection.SelectAll = false;
+            READSB.Body.SelectAll(false);
             e.stopImmediatePropagation();
         }
         static OnMapClick(e) {
-            READSB.AircraftCollection.SelectAll = false;
+            READSB.Body.SelectAll(false);
             e.originalEvent.stopImmediatePropagation();
         }
         static OnMapMoveEnd(e) {
@@ -218,7 +221,7 @@ var READSB;
         }
     }
     LMap.AircraftPositions = new L.FeatureGroup();
-    LMap.AircraftTrails = new L.FeatureGroup();
+    LMap.AircraftTraces = new L.FeatureGroup();
     LMap.Initialized = false;
     LMap.lMap = null;
     LMap.lMapLayers = {};
