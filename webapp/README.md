@@ -22,6 +22,7 @@ Visual Studio Code (VSC) is used as development IDE with the following extension
 ### Typings
 * leaflet.extend.d.ts contains all type definitions that are used in this web application to extend Leaflet.
 * typedefs.d.ts contains all web application internal type definitions.
+* readsb-pb.d.ts contains type definitions for protocol buffer messages.
 
 ### Setup development evironment
 1) Get a repository copy: `git clone https://github.com/Mictronics/readsb.git`

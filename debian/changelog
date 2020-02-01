@@ -1,11 +1,17 @@
 readsb (4.0.0~dev) UNRELEASED; urgency=medium
 
   * In development
+  * Version bump: v4.0.0 and later will use protocol buffer instead of JSON.
+  * Add switch to activate trace details while mouse hovering along trace segments.
+  * Add quick filter switch that shows only selected aircraft.
+  * Add SkyVector API key input in GUI to prevent key leakage through JSON file.
+  * Add switch to dim map independent of GUI dark mode.
+  * Use SVG element of aircraft icon directly in DOM for easy manipulation.
   * Fixed latest statistics.
   * Storing and exchanging aircraft meta data using Protocol Buffer.
   * Webapp: History loading and trace collection moved to background worker.
 
- -- Michael Wolf <michael@mictronics.de>  Tue, 28 Jan 2020 14:59:21 +0200
+ -- Michael Wolf <michael@mictronics.de>  Sat, 01 Feb 2020 14:49:17 +0200
 
 readsb (3.8.1) stable; urgency=medium
 

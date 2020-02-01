@@ -52,6 +52,8 @@ declare namespace READSB {
         AppLanguage: string;
         HideAircraftsNotInView: boolean;
         UseDarkTheme: boolean;
+        ShowTraceDetails: boolean;
+        DimMap: boolean;
     }
 
     /*
@@ -61,6 +63,7 @@ declare namespace READSB {
         ShowAltitudeChart: boolean;
         CenterLat: number;
         CenterLon: number;
+        DimMap: boolean,
         DisplayUnits: string;
         ZoomLevel: number;
         SiteLat: number,
@@ -88,6 +91,7 @@ declare namespace READSB {
         AppLanguage: string;
         HideAircraftsNotInView: boolean;
         UseDarkTheme: boolean;
+        ShowTraceDetails: boolean;
     }
 
     /**
@@ -95,7 +99,7 @@ declare namespace READSB {
      */
     export interface IShape {
         NoRotate?: boolean;
-        Size: L.PointExpression;
+        Size: L.PointTuple;
         Svg: string;
     }
 
@@ -161,8 +165,9 @@ declare namespace READSB {
     /**
      * Extend table row by visibily variables.
      */
-    interface IExtHTMLTableRowElement extends HTMLTableRowElement {
-        Visible?: boolean; // True if row is visible in aircraft list.
+    interface IAircraftListRow {
+        Html: string;
+        Visible: boolean; // True if row is visible in aircraft list.
     }
 
     /**
@@ -173,22 +178,17 @@ declare namespace READSB {
         IcaoRange: IIcaoRange;
         Flight: string;
         Squawk: string;
-        Selected: boolean;
         Category: string;
         Operator: string;
         Callsign: string;
         AddrType: string;
-
-        // Basic location information
         Altitude: number;
         AltBaro: number;
         AltGeom: number;
-
         Speed: number;
         Gs: number;
         Ias: number;
         Tas: number;
-
         Track: number;
         TrackRate: number;
         MagHeading: number;
@@ -205,35 +205,20 @@ declare namespace READSB {
         NicBaro: number;
         SilType: string;
         Sil: number;
-
         BaroRate: number;
         GeomRate: number;
         VertRate: number;
-
         Version: number;
-
         Position: L.LatLng;
         PositionFromMlat: boolean;
         SiteDist: number;
-
-        // Data packet numbers
         Messages: number;
         Rssi: number;
-
-        // Track history as a series of line segments
         HistorySize: number;
-
-        // When was this last updated (seconds before last update)
         Seen: number;
         SeenPos: number;
         LastMessageTime: number;
-
-        // Display info
-        Visible: boolean;
-        TableRow: IExtHTMLTableRowElement;
-
-        // start from a computed registration, let the DB override it
-        // if it has something else.
+        VisibleInList: boolean;
         Registration: string;
         IcaoType: string;
         TypeDescription: string;
@@ -241,22 +226,14 @@ declare namespace READSB {
         Wtc: string;
         CivilMil: boolean;
         Interesting: boolean;
-        Highlight: boolean;
-
-        // Sorting information
         SortPos: number;
         SortValue: number;
-
         DataSource: string;
-        IsFiltered: boolean;
-        FlightAwareLink: string;
-
-        Destroy(): void;
-        UpdateTick(receiverTimestamp: number, lastTimestamp: number): void;
-        UpdateData(receiverTimestamp: number, data: IJsonData): void;
-        UpdateMarker(moved: boolean): void;
-        UpdateTrace(trace: number[][]): void;
-        ClearLines(): void;
+        ExternalInfoLink: string;
+        Alert: boolean;
+        SPIdent: boolean;
+        UpdateData(receiverTimestamp: number, data: IAircraftMeta): void;
+        UpdateVisibility(receiverTimestamp: number): boolean;
     }
 
     /**
@@ -268,72 +245,6 @@ declare namespace READSB {
         Line: L.Polyline;
         Ground: boolean;
         UpdateTime: number;
-    }
-
-    /**
-     * A data record for an single aircraft we receive from readsb backend service.
-     * Not in camel-case to match with JSON records from readsb and stay compatible with dump1090-fa.
-     */
-    export interface IJsonData {
-        alt_baro?: number;
-        alt_geom?: number;
-        gs?: number;
-        ias?: number;
-        tas?: number;
-        track?: number;
-        track_rate?: number;
-        mag_heading?: number;
-        true_heading?: number;
-        mach?: number;
-        roll?: number;
-        nav_heading?: number;
-        nav_modes?: string[];
-        nac_p?: number;
-        nac_v?: number;
-        nic_baro?: number;
-        sil_type?: string;
-        sil?: number;
-        nav_qnh?: number;
-        baro_rate?: number;
-        geom_rate?: number;
-        rc?: number;
-        squawk?: string;
-        category?: string;
-        version?: number;
-        type?: string;
-        hex?: string;
-        flight?: string;
-        lat?: number;
-        lon?: number;
-        messages?: number;
-        rssi?: number;
-        seen?: number;
-        emergency?: string;
-        mlat?: string[];
-        tisb?: string[];
-        seen_pos?: number;
-        nav_altitude_fms?: number;
-        nav_altitude_mcp?: number;
-        alert?: number;
-        spi?: number;
-    }
-
-    /**
-     * A JSON record of aircraft history data.
-     */
-    export interface IHistoryData {
-        now: number;
-        messages: number;
-        aircraft: IJsonData[];
-    }
-
-    /**
-     * A complete JSON record of incoming aircraft data.
-     */
-    export interface IAircraftData {
-        now: number;
-        messages: number;
-        aircraft: IJsonData[];
     }
 
     /**
@@ -400,13 +311,16 @@ declare namespace READSB {
     }
 
     /**
-     * Structure of receiver.json
+     * Statistics of aircraft collection.
      */
-    export interface IReceiverJson {
-        version: string;
-        refresh: number;
-        history: number;
-        lat: number;
-        lon: number;
+    export interface ICollectionStatistics {
+        Version: string;
+        Refresh: number;
+        MessageRate: number;
+        Now: number;
+        TrackedAircrafts: number;
+        TrackedAircraftPositions: number;
+        TrackedAircraftUnknown: number;
+        TrackedHistorySize: number;
     }
 }

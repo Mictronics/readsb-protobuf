@@ -123,9 +123,11 @@ declare namespace L {
         anchor?: PointExpression;
         scale?: number;
         icao: string,
-        imgSize?: [number, number],
+        icon: AircraftSvgIcon,
         rotation?: number;
         rotateWithView?: boolean;
+        fillColor: string;
+        strokeColor: string;
     }
 
     /**
@@ -133,11 +135,27 @@ declare namespace L {
      */
     export class AircraftMarker extends Marker {
         constructor(options?: AircraftMarkerOptions);
-        SetLatLngScaleRotation(latlng: LatLng, scale: number, rotation: number): void;
+        SetLatLngScaleRotationColor(latlng: L.LatLng, scale: number, rotation: number, fillColor: string, strokeColor: string): void;
         SelectAlertIdent(selected: boolean, alert: boolean, ident: boolean): void;
     }
 
     export function aircraftMarker(latlng: LatLngExpression, options: AircraftMarkerOptions): AircraftMarker;
+
+    export interface IAircraftSvgIconOptions extends BaseIconOptions {
+        category: string;
+        class?: string;
+        id: string;
+        noRotate?: boolean;
+        typeDesignator: string;
+        typeDescription: string;
+        wtc: string;
+    }
+
+    export class AircraftSvgIcon extends Icon<IAircraftSvgIconOptions> {
+        constructor(options?: IAircraftSvgIconOptions);
+    }
+
+    export function aircraftSvgIcon(options?: IAircraftSvgIconOptions): AircraftSvgIcon;
 
     /**
      * Heat map layer options.

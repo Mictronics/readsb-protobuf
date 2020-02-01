@@ -20,7 +20,6 @@
     "@types/jquery": "^3.3.31",
     "@types/node": "^12.12.6"
   },
-  "dependencies": {},
   "engines": {
     "node": ">= 13.1.0",
     "npm": ">= 6.13.0",
