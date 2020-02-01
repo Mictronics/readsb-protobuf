@@ -26,12 +26,12 @@
     <script src="script/loc-i18next.js" type="text/javascript"></script>
     <script src="script/filesaver.js" type="text/javascript"></script>
     <script src="script/leaflet-src.js" type="text/javascript"></script>
+    <script src="script/readsb/database.js" type="text/javascript"></script>
     <script src="script/readsb/settings.js" type="text/javascript"></script>
     <script src="script/readsb/enums.js" type="text/javascript"></script>
     <script src="script/readsb/strings.js" type="text/javascript"></script>
     <script src="script/readsb/uiDraggable.js" type="text/javascript"></script>
     <script src="script/readsb/uiInput.js" type="text/javascript"></script>
-    <script src="script/readsb/uiBody.js" type="text/javascript"></script>
     <script src="script/readsb/uiLMapLayers.js" type="text/javascript"></script>
     <script
       src="script/readsb/uiLMapControls.js"
@@ -44,20 +44,11 @@
     <script src="script/readsb/uiLMap.js" type="text/javascript"></script>
     <script src="script/readsb/uiFilter.js" type="text/javascript"></script>
     <script src="script/readsb/format.js" type="text/javascript"></script>
-    <script src="script/readsb/database.js" type="text/javascript"></script>
-    <script src="script/readsb/registration.js" type="text/javascript"></script>
-    <script src="script/readsb/flags.js" type="text/javascript"></script>
-    <script src="script/readsb/markers.js" type="text/javascript"></script>
     <script
       src="script/readsb/aircraftFilter.js"
       type="text/javascript"
     ></script>
-    <script src="script/readsb/aircraft.js" type="text/javascript"></script>
-    <script
-      src="script/readsb/aircraftCollection.js"
-      type="text/javascript"
-    ></script>
-    <script src="script/readsb/readsb.js" type="text/javascript"></script>
+    <script src="script/readsb/uiBody.js" type="text/javascript"></script>
     <script src="script/readsb/loader.js" type="text/javascript"></script>
   </head>
   <body class="localized">
@@ -238,13 +229,17 @@
               <a href="#" target="_blank" id="selectedIcao"></a>
               <span id="selectedEmergency"></span>
             </div>
-            <div class="col p-0">
-              <span
+            <div class="col p-0" style="text-align: right;">
+              <button
+                id="filter-selected-icon"
+                class="btn btn-outline-info btn-sm"
+                data-i18n="[title]selected.title.filter"
+              ></button>
+              <button
                 id="toggle-follow-icon"
-                class="follow-unlock-icon"
-                style="float:right; margin-top: .25em;"
+                class="follow-unlock-icon btn btn-outline-info btn-sm"
                 data-i18n="[title]selected.title.follow"
-              ></span>
+              ></button>
             </div>
           </div>
 
@@ -271,11 +266,7 @@
               <span id="selectedRegistration"></span>&nbsp;
               <span id="selectedCountry"></span>
               <span id="selectedFlag">
-                <img
-                  style="width: 20px; height: 12px"
-                  src=""
-                  alt="Flag"
-                />
+                <img style="width: 20px; height: 12px" src="" alt="Flag" />
               </span>
             </div>
           </div>
@@ -678,7 +669,7 @@
                     </div>
                     <div class="col-sm" data-i18n="[prepend]info.messages">
                       <span id="infoblockMessageRate">n/a</span>/s
-                      <!-- FIXME Unit Translation-->
+                      <!--FIXME unit translation-->
                     </div>
                   </div>
                   <div class="row">
@@ -730,9 +721,24 @@
                     class="dropdown-menu"
                     aria-labelledby="dropdownMenuButton"
                   >
-                    <button id="de" type="button" class="dropdown-item"><img src="./images/flags-tiny/Germany.png" class="mr-1">Deutsch</button>
-                    <button id="en" type="button" class="dropdown-item"><img src="./images/flags-tiny/United_States_of_America.png" class="mr-1">English</button>
-                    <button id="ru" type="button" class="dropdown-item"><img src="./images/flags-tiny/Russian_Federation.png" class="mr-1">Pусский</button>
+                    <button id="de" type="button" class="dropdown-item">
+                      <img
+                        src="./images/flags-tiny/Germany.png"
+                        class="mr-1"
+                      />Deutsch
+                    </button>
+                    <button id="en" type="button" class="dropdown-item">
+                      <img
+                        src="./images/flags-tiny/United_States_of_America.png"
+                        class="mr-1"
+                      />English
+                    </button>
+                    <button id="ru" type="button" class="dropdown-item">
+                      <img
+                        src="./images/flags-tiny/Russian_Federation.png"
+                        class="mr-1"
+                      />Pусский
+                    </button>
                   </div>
                 </div>
                 <fieldset class="form-group p-1">
@@ -757,9 +763,7 @@
                   ></label>
                 </fieldset>
                 <fieldset class="form-group p-1">
-                  <div
-                    class="custom-control custom-switch custom-control-inline col-auto"
-                  >
+                  <div class="custom-control custom-switch col-auto">
                     <input
                       type="checkbox"
                       class="custom-control-input"
@@ -771,9 +775,7 @@
                       data-i18n="settings.showAircraftCount"
                     ></label>
                   </div>
-                  <div
-                    class="custom-control custom-switch custom-control-inline col-auto"
-                  >
+                  <div class="custom-control custom-switch col-auto">
                     <input
                       type="checkbox"
                       class="custom-control-input"
@@ -785,9 +787,7 @@
                       data-i18n="settings.showMessageRate"
                     ></label>
                   </div>
-                  <div
-                    class="custom-control custom-switch custom-control-inline col-auto"
-                  >
+                  <div class="custom-control custom-switch col-auto">
                     <input
                       type="checkbox"
                       class="custom-control-input"
@@ -799,9 +799,7 @@
                       data-i18n="settings.showFlags"
                     ></label>
                   </div>
-                  <div
-                    class="custom-control custom-switch custom-control-inline col-auto"
-                  >
+                  <div class="custom-control custom-switch col-auto">
                     <input
                       type="checkbox"
                       class="custom-control-input"
@@ -813,23 +811,19 @@
                       data-i18n="settings.showAdditionalData"
                     ></label>
                   </div>
-                  <div
-                    class="custom-control custom-switch custom-control-inline col-auto"
-                  >
+                  <div class="custom-control custom-switch col-auto">
                     <input
                       type="checkbox"
                       class="custom-control-input"
-                      id="useDarkThemeCheck"
+                      id="showTraceDetailsCheck"
                     />
                     <label
                       class="custom-control-label col-form-label-sm"
-                      for="useDarkThemeCheck"
-                      data-i18n="settings.darkTheme"
+                      for="showTraceDetailsCheck"
+                      data-i18n="settings.showTraceDetails"
                     ></label>
                   </div>
-                  <div
-                    class="custom-control custom-switch custom-control-inline col-auto"
-                  >
+                  <div class="custom-control custom-switch col-auto">
                     <input
                       type="checkbox"
                       class="custom-control-input"
@@ -839,6 +833,30 @@
                       class="custom-control-label col-form-label-sm"
                       for="hideAircraftNotInViewCheck"
                       data-i18n="settings.hideAircraftNotInView"
+                    ></label>
+                  </div>
+                  <div class="custom-control custom-switch col-auto">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="dimMapCheck"
+                    />
+                    <label
+                      class="custom-control-label col-form-label-sm"
+                      for="dimMapCheck"
+                      data-i18n="settings.dimMap"
+                    ></label>
+                  </div>
+                  <div class="custom-control custom-switch col-auto">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input"
+                      id="useDarkThemeCheck"
+                    />
+                    <label
+                      class="custom-control-label col-form-label-sm"
+                      for="useDarkThemeCheck"
+                      data-i18n="settings.darkTheme"
                     ></label>
                   </div>
                 </fieldset>
@@ -912,7 +930,18 @@
                     >
                     </small>
                   </div>
-
+                  <div class="form-group form-inline">
+                    <label
+                      for="inputSkyVectorApiKey"
+                      class="col-form-label-sm"
+                      data-i18n="settings.skyVectorApiKey"
+                    ></label>
+                    <input
+                      type="text"
+                      id="inputSkyVectorApiKey"
+                      class="form-control form-control-sm col-sm-4 mx-sm-1"
+                    />
+                  </div>
                   <div class="form-group">
                     <button
                       id="saveSettingsButton"
@@ -1119,29 +1148,25 @@
             </thead>
             <tbody>
               <tr id="aircraftListRowTemplate" class="aircraftListRow hidden">
-                <td class="aircraftListIcaoCodeColumn prio-3">ICAO</td>
+                <td class="aircraftListIcaoCodeColumn prio-3"></td>
                 <td class="prio-2">
-                  <img
-                    style="width: 20px; height: 12px"
-                    src=""
-                    alt="Flag"
-                  />
+                  <img style="width: 20px; height: 12px" src="" alt="Flag" />
                 </td>
-                <td>FLIGHT</td>
-                <td class="hidden prio-3">REGISTRATION</td>
-                <td class="text-center prio-2">CIVIL_MIL</td>
-                <td class="prio-5">AIRCRAFT_TYPE</td>
-                <td class="text-right prio-3">SQUAWK</td>
-                <td class="text-right">ALTITUDE</td>
-                <td class="text-right">SPEED</td>
-                <td class="text-right hidden prio-4">VERT_RATE</td>
-                <td class="text-right">DISTANCE</td>
-                <td class="text-right hidden prio-4">TRACK</td>
-                <td class="text-right hidden prio-4">MSGS</td>
-                <td class="text-right hidden prio-4">SEEN</td>
-                <td class="text-right hidden prio-5">RSSI</td>
-                <td class="text-right hidden prio-5">LAT</td>
-                <td class="text-right hidden prio-5">LON</td>
+                <td></td>
+                <td class="hidden prio-3"></td>
+                <td class="text-center prio-2"></td>
+                <td class="prio-5"></td>
+                <td class="text-right prio-3"></td>
+                <td class="text-right"></td>
+                <td class="text-right"></td>
+                <td class="text-right hidden prio-4"></td>
+                <td class="text-right"></td>
+                <td class="text-right hidden prio-4"></td>
+                <td class="text-right hidden prio-4"></td>
+                <td class="text-right hidden prio-4"></td>
+                <td class="text-right hidden prio-5"></td>
+                <td class="text-right hidden prio-5"></td>
+                <td class="text-right hidden prio-5"></td>
               </tr>
             </tbody>
           </table>
