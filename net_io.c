@@ -1951,7 +1951,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     unsigned n_tisb = 0;
 
     msg.n_aircraft = 0;
-    msg.now = now / 1000;
+    msg.now = (uint64_t)(now / 1000);
     msg.has_now = true;
     msg.messages = Modes.stats_current.messages_total + Modes.stats_alltime.messages_total;
     msg.has_messages = true;
@@ -2026,6 +2026,9 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
                 msg.aircraft[msg.n_aircraft]->has_rssi = false;
                 msg.aircraft[msg.n_aircraft]->has_mag_heading = false;
                 msg.aircraft[msg.n_aircraft]->has_true_heading = false;
+                msg.aircraft[msg.n_aircraft]->nav_modes = NULL;
+                msg.aircraft[msg.n_aircraft]->mlat = NULL;
+                msg.aircraft[msg.n_aircraft]->tisb = NULL;
                 msg.n_aircraft += 1;
                 continue;
             }
@@ -2122,7 +2125,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
             msg.aircraft[msg.n_aircraft]->has_rssi = true;
             msg.n_aircraft += 1;
         }
-    }
+    }  
     // Pack and serialize entire aicraft collection.
     unsigned len = aircrafts_update__get_packed_size(&msg);
     void *buf = malloc(len);
