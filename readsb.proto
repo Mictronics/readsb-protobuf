@@ -34,7 +34,7 @@ message AircraftMeta {
 	double lat = 8; // Aircraft position latitude in decimal degrees.
 	double lon = 9; // Aircraft position longitude in decimal degrees.
 	uint64 messages = 10;  // Total number of Mode S messages received from this aircraft.
-	uint64 seen = 11; // How long ago (in seconds before "now") a message was last received from this aircraft.
+	uint64 seen = 11; // When a message was last received from this aircraft. (in milliseconds!!!)
 	float rssi = 12; // Recent average RSSI (signal power), in dbFS; this will always be negative.
 
 	reserved 13 to 14;

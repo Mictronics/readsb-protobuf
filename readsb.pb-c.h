@@ -263,7 +263,7 @@ struct  _AircraftMeta
   protobuf_c_boolean has_messages;
   uint64_t messages;
   /*
-   * How long ago (in seconds before "now") a message was last received from this aircraft.
+   * When a message was last received from this aircraft. (in milliseconds!!!)
    */
   protobuf_c_boolean has_seen;
   uint64_t seen;
