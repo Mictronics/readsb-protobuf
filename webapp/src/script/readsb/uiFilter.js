@@ -2,7 +2,7 @@
 var READSB;
 (function (READSB) {
     class Filter {
-        static Initialize() {
+        static Init() {
             READSB.AircraftFilterCollection.forEach((value, index) => {
                 const opt = new Option();
                 opt.value = index.toString();
@@ -12,14 +12,12 @@ var READSB;
             document.getElementById("enableFilterCheck").checked = READSB.AppSettings.EnableFilter;
             document.getElementById("enableFilterCheck").addEventListener("change", (e) => {
                 READSB.AppSettings.EnableFilter = e.target.checked;
-                READSB.AircraftCollection.Refresh();
-                READSB.Body.RefreshSelectedAircraft();
+                READSB.Body.GetAircraft("*");
             });
             document.getElementById("highlightFilterCheck").checked = READSB.AppSettings.EnableHighlightFilter;
             document.getElementById("highlightFilterCheck").addEventListener("change", (e) => {
                 READSB.AppSettings.EnableHighlightFilter = e.target.checked;
-                READSB.AircraftCollection.Refresh();
-                READSB.Body.RefreshSelectedAircraft();
+                READSB.Body.GetAircraft("*");
             });
             document.getElementById("addFilterButton").addEventListener("click", this.OnFilterAddClick.bind(this));
             document.getElementById("filterSelector").addEventListener("change", this.OnFilterSelectorChange);
@@ -52,8 +50,9 @@ var READSB;
             });
         }
         static RestoreSessionFilters() {
-            for (const v of Object.values(READSB.eAircraftFilterType)) {
-                READSB.Database.GetSetting(v)
+            const keys = Object.keys(READSB.eAircraftFilterType).filter(k => typeof READSB.eAircraftFilterType[k] === "number");
+            for (const v of keys.map(k => READSB.eAircraftFilterType[k])) {
+                READSB.DatabaseFrontend.GetSetting(`Filter${v}`)
                     .then((result) => {
                     const filterHandler = READSB.AircraftFilterCollection[result.key];
                     if (result.condition !== undefined) {
@@ -68,8 +67,18 @@ var READSB;
                     if (result.Value2 !== undefined) {
                         filterHandler.Value2 = result.Value2;
                     }
-                    this.AddFilterListEntry(result.key, filterHandler.Condition, filterHandler.Value1, filterHandler.Value2);
+                    this.AddFilterListEntry(result.key, filterHandler.Condition, filterHandler.Value1, filterHandler.Value2, true);
+                }, (res) => {
                 });
+            }
+        }
+        static AircraftByAddress(addr) {
+            if (addr && addr !== "") {
+                this.AddFilterListEntry(READSB.eAircraftFilterType.Icao, READSB.eCondition.Equals, addr, "");
+                const ev = new Event("change");
+                document.getElementById("inputValue1").dispatchEvent(ev);
+                document.getElementById("enableFilterCheck").checked = true;
+                document.getElementById("enableFilterCheck").dispatchEvent(ev);
             }
         }
         static OnFilterAddClick() {
@@ -80,7 +89,7 @@ var READSB;
             }
             this.AddFilterListEntry(Number.parseInt(v, 10), null, "", "");
         }
-        static AddFilterListEntry(key, condition, v1, v2) {
+        static AddFilterListEntry(key, condition, v1, v2, restore = false) {
             let i;
             let l;
             let tb;
@@ -89,7 +98,7 @@ var READSB;
                 return;
             }
             const filterHandler = READSB.AircraftFilterCollection[key];
-            if (filterHandler.IsActive === true) {
+            if (filterHandler.IsActive === true && !restore) {
                 return;
             }
             const li = document.createElement("li");
@@ -220,9 +229,8 @@ var READSB;
                 document.getElementById("addFilterButton").removeAttribute("disabled");
             }
             e.target.parentNode.remove();
-            READSB.Database.DeleteSetting(`Filter${v}`);
-            READSB.AircraftCollection.Refresh();
-            READSB.Body.RefreshSelectedAircraft();
+            READSB.DatabaseFrontend.DeleteSetting(`Filter${v}`);
+            READSB.Body.GetAircraft("*");
         }
         static OnFilterChange(e) {
             const id = e.target.id;
@@ -260,10 +268,9 @@ var READSB;
                     Value1: filterHandler.Value1,
                     Value2: filterHandler.Value2,
                 };
-                READSB.Database.PutSetting(`Filter${filterHandler.Type}`, f);
+                READSB.DatabaseFrontend.PutSetting(`Filter${filterHandler.Type}`, f);
             }
-            READSB.AircraftCollection.Refresh();
-            READSB.Body.RefreshSelectedAircraft();
+            READSB.Body.GetAircraft("*");
         }
     }
     READSB.Filter = Filter;

@@ -19,7 +19,7 @@
 
 namespace READSB {
     export class Filter {
-        public static Initialize() {
+        public static Init() {
             AircraftFilterCollection.forEach((value: AircraftFilter, index: number) => {
                 const opt = new Option();
                 opt.value = index.toString();
@@ -30,17 +30,15 @@ namespace READSB {
             (document.getElementById("enableFilterCheck") as HTMLInputElement).checked = AppSettings.EnableFilter;
             document.getElementById("enableFilterCheck").addEventListener("change", (e: any) => {
                 AppSettings.EnableFilter = e.target.checked;
-                // Refresh screen
-                AircraftCollection.Refresh();
-                Body.RefreshSelectedAircraft();
+                // Refresh aircraft list
+                Body.GetAircraft("*");
             });
 
             (document.getElementById("highlightFilterCheck") as HTMLInputElement).checked = AppSettings.EnableHighlightFilter;
             document.getElementById("highlightFilterCheck").addEventListener("change", (e: any) => {
                 AppSettings.EnableHighlightFilter = e.target.checked;
-                // Refresh screen
-                AircraftCollection.Refresh();
-                Body.RefreshSelectedAircraft();
+                // Refresh aircraft list
+                Body.GetAircraft("*");
             });
             document.getElementById("addFilterButton").addEventListener("click", this.OnFilterAddClick.bind(this));
             document.getElementById("filterSelector").addEventListener("change", this.OnFilterSelectorChange);
@@ -78,8 +76,9 @@ namespace READSB {
 
         /* Restore filters from last session */
         public static RestoreSessionFilters() {
-            for (const v of Object.values(eAircraftFilterType)) {
-                Database.GetSetting(v)
+            const keys = Object.keys(eAircraftFilterType).filter(k => typeof eAircraftFilterType[k as any] === "number");
+            for (const v of keys.map(k => eAircraftFilterType[k as any])) {
+                DatabaseFrontend.GetSetting(`Filter${v}`)
                     .then((result: any) => {
                         const filterHandler = AircraftFilterCollection[result.key];
                         if (result.condition !== undefined) {
@@ -94,8 +93,21 @@ namespace READSB {
                         if (result.Value2 !== undefined) {
                             filterHandler.Value2 = result.Value2;
                         }
-                        this.AddFilterListEntry(result.key, filterHandler.Condition, filterHandler.Value1, filterHandler.Value2);
+                        this.AddFilterListEntry(result.key, filterHandler.Condition, filterHandler.Value1, filterHandler.Value2, true);
+                    }, (res: any) => {
+                        /* empty*/
                     });
+            }
+        }
+
+        /* Add a filter for specific aicraft address. */
+        public static AircraftByAddress(addr: string) {
+            if (addr && addr !== "") {
+                this.AddFilterListEntry(eAircraftFilterType.Icao, eCondition.Equals, addr, "");
+                const ev = new Event("change");
+                document.getElementById("inputValue1").dispatchEvent(ev);
+                (document.getElementById("enableFilterCheck") as HTMLInputElement).checked = true;
+                document.getElementById("enableFilterCheck").dispatchEvent(ev);
             }
         }
 
@@ -118,7 +130,7 @@ namespace READSB {
          * @param v1 Filter value 1.
          * @param v2 Filter value 2.
          */
-        private static AddFilterListEntry(key: eAircraftFilterType, condition: eCondition, v1: any, v2: any) {
+        private static AddFilterListEntry(key: eAircraftFilterType, condition: eCondition, v1: any, v2: any, restore = false) {
             let i;
             let l;
             let tb; // Textbox DOM element
@@ -130,7 +142,7 @@ namespace READSB {
 
             const filterHandler = AircraftFilterCollection[key];
 
-            if (filterHandler.IsActive === true) {
+            if (filterHandler.IsActive === true && !restore) {
                 return;
             }
 
@@ -276,10 +288,9 @@ namespace READSB {
                 document.getElementById("addFilterButton").removeAttribute("disabled");
             }
             e.target.parentNode.remove();
-            Database.DeleteSetting(`Filter${v}`);
-            // Refresh screen
-            AircraftCollection.Refresh();
-            Body.RefreshSelectedAircraft();
+            DatabaseFrontend.DeleteSetting(`Filter${v}`);
+            // Refresh aircraft list
+            Body.GetAircraft("*");
         }
 
         /* Validate inputs and update filter list on user input */
@@ -322,12 +333,11 @@ namespace READSB {
                     Value1: filterHandler.Value1,
                     Value2: filterHandler.Value2,
                 };
-                Database.PutSetting(`Filter${filterHandler.Type}`, f);
+                DatabaseFrontend.PutSetting(`Filter${filterHandler.Type}`, f);
 
             }
-            // Refresh screen
-            AircraftCollection.Refresh();
-            Body.RefreshSelectedAircraft();
+            // Refresh aircraft list
+            Body.GetAircraft("*");
         }
     }
 }
