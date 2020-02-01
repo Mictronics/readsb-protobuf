@@ -3,6 +3,7 @@
   "BaseLayer": "osm",
   "CenterLat": 45.0,
   "CenterLon": 9.0,
+  "DimMap": false,
   "DisplayUnits": "nautical",
   "EnableFilter": false,
   "EnableHighlightFilter": false,
@@ -22,11 +23,11 @@
   "ShowMessageRateInTitle": true,
   "ShowSite": true,
   "ShowSiteCircles": true,
+  "ShowTraceDetails": false,
   "ShowUSLayers": true,
   "SiteCirclesDistances": "100,150,200",
   "SiteLat": 45.0,
   "SiteLon": 9.0,
-  "SkyVectorAPIKey": "",
   "UseDarkTheme": false,
   "ZoomLevel": 7
 }
