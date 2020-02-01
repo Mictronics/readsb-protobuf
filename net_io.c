@@ -2275,7 +2275,7 @@ retry:
             p = safe_snprintf(p, end, ",\"tisb\":");
             p = append_flags(p, end, a, SOURCE_TISB);
 
-            p = safe_snprintf(p, end, ",\"messages\":%ld,\"seen\":%.1f,\"rssi\":%.1f}",
+            p = safe_snprintf(p, end, ",\"messages\":%" PRIu64 ",\"seen\":%.1f,\"rssi\":%.1f}",
                     a->meta.messages, (now - a->meta.seen) / 1000.0,
                     10 * log10((a->signalLevel[0] + a->signalLevel[1] + a->signalLevel[2] + a->signalLevel[3] +
                     a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8));
@@ -3716,7 +3716,7 @@ retry:
                 p = safe_snprintf(p, end, ",\"Trt\":%d", 1);
 
 
-            p = safe_snprintf(p, end, ",\"Cmsgs\":%ld", a->meta.messages);
+            p = safe_snprintf(p, end, ",\"Cmsgs\":%" PRIu64, a->meta.messages);
 
             p = safe_snprintf(p, end, "}");
 
