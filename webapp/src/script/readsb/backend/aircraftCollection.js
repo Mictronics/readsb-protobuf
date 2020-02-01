@@ -195,7 +195,7 @@ var READSB;
             this.collectionStatistic.TrackedAircraftPositions = 0;
             this.collectionStatistic.TrackedHistorySize = 0;
             for (const ac of data.aircraft) {
-                const hex = ac.addr.toString(16);
+                const hex = ac.addr.toString(16).padStart(6, "0");
                 let entry = null;
                 if (hex === "000000") {
                     continue;
