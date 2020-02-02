@@ -974,10 +974,13 @@ var READSB;
                 last_1min: undefined,
                 last_5min: undefined,
                 last_15min: undefined,
+                polar_range: [],
+                polar_range_length: 0,
                 total: undefined,
             }, end);
         },
         _readField(tag, obj, pbf) {
+            let entry;
             if (tag === 1) {
                 obj.latest = READSB.StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos);
             }
@@ -992,6 +995,13 @@ var READSB;
             }
             else if (tag === 5) {
                 obj.total = READSB.StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos);
+            }
+            else if (tag === 6) {
+                obj.polar_range_length = READSB.StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos);
+            }
+            else if (tag === 7) {
+                entry = READSB.Statistics.PolarRangeEntry.read(pbf, pbf.readVarint() + pbf.pos);
+                obj.polar_range[entry.key] = entry.value;
             }
         },
         write(obj, pbf) {
@@ -1010,6 +1020,40 @@ var READSB;
             if (obj.total) {
                 pbf.writeMessage(5, READSB.StatisticEntry.write, obj.total);
             }
+            if (obj.polar_range_length) {
+                pbf.writeFloatField(6, obj.polar_range_length);
+            }
+            if (obj.polar_range) {
+                for (const i in obj.polar_range) {
+                    if (Object.prototype.hasOwnProperty.call(obj.polar_range, i)) {
+                        pbf.writeMessage(7, READSB.Statistics.PolarRangeEntry.write, { key: parseInt(i, 10), value: obj.polar_range[i] });
+                    }
+                }
+            }
+        },
+        PolarRangeEntry: {
+            read(pbf, end) {
+                return pbf.readFields(READSB.Statistics.PolarRangeEntry._readField, {
+                    key: 0,
+                    value: 0,
+                }, end);
+            },
+            _readField(tag, obj, pbf) {
+                if (tag === 1) {
+                    obj.key = pbf.readVarint();
+                }
+                else if (tag === 2) {
+                    obj.value = pbf.readVarint();
+                }
+            },
+            write(obj, pbf) {
+                if (obj.key) {
+                    pbf.writeVarintField(1, obj.key);
+                }
+                if (obj.value) {
+                    pbf.writeVarintField(2, obj.value);
+                }
+            },
         },
     };
 })(READSB || (READSB = {}));

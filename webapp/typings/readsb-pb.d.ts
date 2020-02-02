@@ -170,5 +170,12 @@ declare namespace READSB {
         last_5min?: IStatisticEntry;
         last_15min?: IStatisticEntry;
         total?: IStatisticEntry;
+        polar_range_length: number;
+        polar_range?: number[];
+    }
+
+    export interface IStatistics_PolarRangeEntry {
+        key?: number;
+        value?: number;
     }
 }
