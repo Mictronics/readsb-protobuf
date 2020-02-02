@@ -141,8 +141,8 @@ var READSB;
                 this.LastPositionTime = receiverTimestamp - data.seen_pos;
                 this.PositionFromMlat = false;
                 this.DataSource = this.AddrType;
-                if (typeof data.mlat !== "undefined") {
-                    if (data.mlat.lat && data.mlat.lon) {
+                if (typeof data.valid_source !== "undefined") {
+                    if (data.valid_source.lat === READSB.eDataSource.Mlat && data.valid_source.lon === READSB.eDataSource.Mlat) {
                         this.PositionFromMlat = true;
                         this.DataSource = "mlat";
                     }
