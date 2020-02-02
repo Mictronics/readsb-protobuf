@@ -122,8 +122,9 @@ struct range_stats {
 #define RANGE_BUCKET_COUNT 76
     uint32_t range_histogram[RANGE_BUCKET_COUNT];
     // Maximum polar ranges
-#define POLAR_RANGE_RESOLUTION 5 // degree    
-    uint32_t polar_range[360 / POLAR_RANGE_RESOLUTION];
+#define POLAR_RANGE_RESOLUTION 5 // degree
+#define POLAR_RANGE_BUCKETS (360 / POLAR_RANGE_RESOLUTION)
+    uint32_t polar_range[POLAR_RANGE_BUCKETS];
 };
 
 void add_stats(const struct stats *st1, const struct stats *st2, struct stats *target);

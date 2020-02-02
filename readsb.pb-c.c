@@ -191,6 +191,12 @@ void   statistic_entry__free_unpacked
   assert(message->base.descriptor == &statistic_entry__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   statistics__polar_range_entry__init
+                     (Statistics__PolarRangeEntry         *message)
+{
+  static Statistics__PolarRangeEntry init_value = STATISTICS__POLAR_RANGE_ENTRY__INIT;
+  *message = init_value;
+}
 void   statistics__init
                      (Statistics         *message)
 {
@@ -2258,7 +2264,58 @@ const ProtobufCMessageDescriptor statistic_entry__descriptor =
   (ProtobufCMessageInit) statistic_entry__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor statistics__field_descriptors[5] =
+static const ProtobufCFieldDescriptor statistics__polar_range_entry__field_descriptors[2] =
+{
+  {
+    "key",
+    1,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Statistics__PolarRangeEntry, has_key),
+    offsetof(Statistics__PolarRangeEntry, key),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "value",
+    2,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Statistics__PolarRangeEntry, has_value),
+    offsetof(Statistics__PolarRangeEntry, value),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned statistics__polar_range_entry__field_indices_by_name[] = {
+  0,   /* field[0] = key */
+  1,   /* field[1] = value */
+};
+static const ProtobufCIntRange statistics__polar_range_entry__number_ranges[1 + 1] =
+{
+  { 1, 0 },
+  { 0, 2 }
+};
+const ProtobufCMessageDescriptor statistics__polar_range_entry__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "Statistics.PolarRangeEntry",
+  "PolarRangeEntry",
+  "Statistics__PolarRangeEntry",
+  "",
+  sizeof(Statistics__PolarRangeEntry),
+  2,
+  statistics__polar_range_entry__field_descriptors,
+  statistics__polar_range_entry__field_indices_by_name,
+  1,  statistics__polar_range_entry__number_ranges,
+  (ProtobufCMessageInit) statistics__polar_range_entry__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor statistics__field_descriptors[7] =
 {
   {
     "latest",
@@ -2320,18 +2377,44 @@ static const ProtobufCFieldDescriptor statistics__field_descriptors[5] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "polar_range_length",
+    6,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Statistics, has_polar_range_length),
+    offsetof(Statistics, polar_range_length),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "polar_range",
+    7,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(Statistics, n_polar_range),
+    offsetof(Statistics, polar_range),
+    &statistics__polar_range_entry__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned statistics__field_indices_by_name[] = {
   3,   /* field[3] = last_15min */
   1,   /* field[1] = last_1min */
   2,   /* field[2] = last_5min */
   0,   /* field[0] = latest */
+  6,   /* field[6] = polar_range */
+  5,   /* field[5] = polar_range_length */
   4,   /* field[4] = total */
 };
 static const ProtobufCIntRange statistics__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 5 }
+  { 0, 7 }
 };
 const ProtobufCMessageDescriptor statistics__descriptor =
 {
@@ -2341,7 +2424,7 @@ const ProtobufCMessageDescriptor statistics__descriptor =
   "Statistics",
   "",
   sizeof(Statistics),
-  5,
+  7,
   statistics__field_descriptors,
   statistics__field_indices_by_name,
   1,  statistics__number_ranges,

@@ -243,4 +243,6 @@ message Statistics {
     StatisticEntry last_5min = 3;
     StatisticEntry last_15min = 4;
     StatisticEntry total = 5;
+    uint32 polar_range_length = 6;
+    map<uint32, uint32> polar_range = 7;
 }

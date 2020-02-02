@@ -22,6 +22,7 @@ typedef struct _AircraftsUpdate AircraftsUpdate;
 typedef struct _Receiver Receiver;
 typedef struct _StatisticEntry StatisticEntry;
 typedef struct _Statistics Statistics;
+typedef struct _Statistics__PolarRangeEntry Statistics__PolarRangeEntry;
 
 
 /* --- enums --- */
@@ -580,6 +581,19 @@ struct  _StatisticEntry
     , 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
 
 
+struct  _Statistics__PolarRangeEntry
+{
+  ProtobufCMessage base;
+  protobuf_c_boolean has_key;
+  uint32_t key;
+  protobuf_c_boolean has_value;
+  uint32_t value;
+};
+#define STATISTICS__POLAR_RANGE_ENTRY__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&statistics__polar_range_entry__descriptor) \
+    , 0,0, 0,0 }
+
+
 /*
  **
  * Readsb receiver statistics.
@@ -592,10 +606,14 @@ struct  _Statistics
   StatisticEntry *last_5min;
   StatisticEntry *last_15min;
   StatisticEntry *total;
+  protobuf_c_boolean has_polar_range_length;
+  uint32_t polar_range_length;
+  size_t n_polar_range;
+  Statistics__PolarRangeEntry **polar_range;
 };
 #define STATISTICS__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&statistics__descriptor) \
-    , NULL, NULL, NULL, NULL, NULL }
+    , NULL, NULL, NULL, NULL, NULL, 0,0, 0,NULL }
 
 
 /* AircraftMeta__NavModes methods */
@@ -680,6 +698,9 @@ StatisticEntry *
 void   statistic_entry__free_unpacked
                      (StatisticEntry *message,
                       ProtobufCAllocator *allocator);
+/* Statistics__PolarRangeEntry methods */
+void   statistics__polar_range_entry__init
+                     (Statistics__PolarRangeEntry         *message);
 /* Statistics methods */
 void   statistics__init
                      (Statistics         *message);
@@ -719,6 +740,9 @@ typedef void (*Receiver_Closure)
 typedef void (*StatisticEntry_Closure)
                  (const StatisticEntry *message,
                   void *closure_data);
+typedef void (*Statistics__PolarRangeEntry_Closure)
+                 (const Statistics__PolarRangeEntry *message,
+                  void *closure_data);
 typedef void (*Statistics_Closure)
                  (const Statistics *message,
                   void *closure_data);
@@ -739,6 +763,7 @@ extern const ProtobufCMessageDescriptor aircrafts_update__descriptor;
 extern const ProtobufCMessageDescriptor receiver__descriptor;
 extern const ProtobufCMessageDescriptor statistic_entry__descriptor;
 extern const ProtobufCMessageDescriptor statistics__descriptor;
+extern const ProtobufCMessageDescriptor statistics__polar_range_entry__descriptor;
 
 PROTOBUF_C__END_DECLS
 

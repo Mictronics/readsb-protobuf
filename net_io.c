@@ -1848,14 +1848,14 @@ static void generateValidSourceMessage(struct aircraft *a) {
     a->valid_source.tas = a->valid_source.has_tas = a->tas_valid.source;
     a->valid_source.mach = a->valid_source.has_mach = a->mach_valid.source;
     a->valid_source.track = a->valid_source.has_track = a->track_valid.source;
-    a->valid_source.track_rate = a->valid_source.has_track_rate =  a->track_rate_valid.source;
+    a->valid_source.track_rate = a->valid_source.has_track_rate = a->track_rate_valid.source;
     a->valid_source.roll = a->valid_source.has_roll = a->roll_valid.source;
     a->valid_source.mag_heading = a->valid_source.has_mag_heading = a->mag_heading_valid.source;
     a->valid_source.true_heading = a->valid_source.has_true_heading = a->true_heading_valid.source;
     a->valid_source.baro_rate = a->valid_source.has_baro_rate = a->baro_rate_valid.source;
     a->valid_source.geom_rate = a->valid_source.has_geom_rate = a->geom_rate_valid.source;
     a->valid_source.squawk = a->valid_source.has_squawk = a->squawk_valid.source;
-    a->valid_source.emergency = a->valid_source.has_emergency =  a->emergency_valid.source;
+    a->valid_source.emergency = a->valid_source.has_emergency = a->emergency_valid.source;
     a->valid_source.nav_qnh = a->valid_source.has_nav_qnh = a->nav_qnh_valid.source;
     a->valid_source.nav_altitude_mcp = a->valid_source.has_nav_altitude_mcp = a->nav_altitude_mcp_valid.source;
     a->valid_source.nav_altitude_fms = a->valid_source.has_nav_altitude_fms = a->nav_altitude_fms_valid.source;
@@ -1903,11 +1903,11 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     AircraftsUpdate msg = AIRCRAFTS_UPDATE__INIT;
 
     msg.n_aircraft = 0;
-    msg.now = (uint64_t)(now / 1000);
+    msg.now = (uint64_t) (now / 1000);
     msg.has_now = true;
     msg.messages = Modes.stats_current.messages_total + Modes.stats_alltime.messages_total;
     msg.has_messages = true;
-    
+
     Modes.stats_current.with_positions = 0;
     Modes.stats_current.mlat_positions = 0;
     Modes.stats_current.tisb_positions = 0;
@@ -2040,9 +2040,9 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
                 msg.aircraft[msg.n_aircraft]->has_seen_pos = true;
                 // Update position statistics.
                 Modes.stats_current.with_positions += 1;
-                if(a->position_valid.source == SOURCE_MLAT) {
+                if (a->position_valid.source == SOURCE_MLAT) {
                     Modes.stats_current.mlat_positions += 1;
-                } else if(a->position_valid.source == SOURCE_TISB) {
+                } else if (a->position_valid.source == SOURCE_TISB) {
                     Modes.stats_current.tisb_positions += 1;
                 }
             }
@@ -2065,7 +2065,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
             msg.aircraft[msg.n_aircraft]->has_rssi = true;
             msg.n_aircraft += 1;
         }
-    }  
+    }
     // Pack and serialize entire aicraft collection.
     ssize_t len = aircrafts_update__get_packed_size(&msg);
     void *buf = malloc(len);
@@ -2182,9 +2182,9 @@ retry:
                 p = safe_snprintf(p, end, ",\"lat\":%f,\"lon\":%f,\"nic\":%u,\"rc\":%u,\"seen_pos\":%.1f", a->meta.lat, a->meta.lon, a->meta.nic, a->meta.rc, (now - a->position_valid.updated) / 1000.0);
                 // Update position statistics.
                 Modes.stats_current.with_positions += 1;
-                if(a->position_valid.source == SOURCE_MLAT) {
+                if (a->position_valid.source == SOURCE_MLAT) {
                     Modes.stats_current.mlat_positions += 1;
-                } else if(a->position_valid.source == SOURCE_TISB) {
+                } else if (a->position_valid.source == SOURCE_TISB) {
                     Modes.stats_current.tisb_positions += 1;
                 }
             }
@@ -2514,7 +2514,7 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
 void generateStatsProtoBuf(const char *file) {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
-    int fd;
+    int fd, b;
     mode_t mask;
 
     if (!Modes.json_dir) {
@@ -2548,6 +2548,22 @@ void generateStatsProtoBuf(const char *file) {
     stats.last_5min = &last_5min;
     stats.last_15min = &last_15min;
     stats.total = &total;
+
+    // Inlcude maximum range polar values if enabled
+    if (Modes.stats_range_histo) {
+        stats.polar_range = malloc(sizeof (Statistics__PolarRangeEntry*) * POLAR_RANGE_BUCKETS);
+        for (b = 0; b < POLAR_RANGE_BUCKETS; b++) {
+            stats.polar_range[b] = malloc(sizeof (Statistics__PolarRangeEntry));
+            statistics__polar_range_entry__init(stats.polar_range[b]);
+            stats.polar_range[b]->key = b;
+            stats.polar_range[b]->has_key = true;
+            stats.polar_range[b]->value = Modes.stats_range.polar_range[b];
+            stats.polar_range[b]->has_value = true;
+        }
+        stats.n_polar_range =  stats.polar_range_length = POLAR_RANGE_BUCKETS;
+        stats.has_polar_range_length = true;
+    }
+
     // Pack and serialize entire aicraft collection.
     ssize_t len = statistics__get_packed_size(&stats);
     void *buf = malloc(len);
@@ -2570,6 +2586,12 @@ void generateStatsProtoBuf(const char *file) {
     }
     // Free up all allocated memory.
     free(buf);
+    if (Modes.stats_range_histo) {
+        for (b = 0; b < POLAR_RANGE_BUCKETS; b++) {
+            free(stats.polar_range[b]);
+        }
+        free(stats.polar_range);
+    }
 }
 
 /**
