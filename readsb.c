@@ -377,8 +377,10 @@ static void backgroundTasks(void) {
             reset_stats(&Modes.stats_current);
             Modes.stats_current.start = Modes.stats_current.end = now;
 
-            if (Modes.json_dir)
+            if (Modes.json_dir) {
                 writeJsonToFile("stats.json", generateStatsJson());
+                generateStatsProtoBuf("stats.pb");
+            }
 
             next_stats_update += 60000;
         }
