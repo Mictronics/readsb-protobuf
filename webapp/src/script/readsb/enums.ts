@@ -164,4 +164,15 @@ namespace READSB {
         "persample" = 2,
         "perhour" = 3,
     }
+
+    export enum eDataSource {
+        Invalid = 0, /* data is not valid */
+        ModeAC = 1, /* A/C message */
+        Mlat = 2, /* derived from mlat */
+        ModeS = 3, /* data from a Mode S message, no full CRC */
+        ModeSchecked = 4, /* data from a Mode S message with full CRC */
+        TISB = 5, /* data from a TIS-B extended squitter message */
+        ADSR = 6, /* data from a ADS-R extended squitter message */
+        ADSB = 7, /* data from a ADS-B extended squitter message */
+    }
 }

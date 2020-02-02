@@ -148,5 +148,16 @@ var READSB;
         eSilType[eSilType["persample"] = 2] = "persample";
         eSilType[eSilType["perhour"] = 3] = "perhour";
     })(eSilType = READSB.eSilType || (READSB.eSilType = {}));
+    let eDataSource;
+    (function (eDataSource) {
+        eDataSource[eDataSource["Invalid"] = 0] = "Invalid";
+        eDataSource[eDataSource["ModeAC"] = 1] = "ModeAC";
+        eDataSource[eDataSource["Mlat"] = 2] = "Mlat";
+        eDataSource[eDataSource["ModeS"] = 3] = "ModeS";
+        eDataSource[eDataSource["ModeSchecked"] = 4] = "ModeSchecked";
+        eDataSource[eDataSource["TISB"] = 5] = "TISB";
+        eDataSource[eDataSource["ADSR"] = 6] = "ADSR";
+        eDataSource[eDataSource["ADSB"] = 7] = "ADSB";
+    })(eDataSource = READSB.eDataSource || (READSB.eDataSource = {}));
 })(READSB || (READSB = {}));
 //# sourceMappingURL=enums.js.map
