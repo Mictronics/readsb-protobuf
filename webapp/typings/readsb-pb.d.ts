@@ -27,38 +27,38 @@ declare namespace READSB {
     }
 
     export interface IValidSource {
-        alt_geom?: boolean;
-        altitude?: boolean;
-        baro_rate?: boolean;
-        callsign?: boolean;
-        emergency?: boolean;
-        geom_rate?: boolean;
-        gs?: boolean;
-        gva?: boolean;
-        ias?: boolean;
-        lat?: boolean;
-        lon?: boolean;
-        mach?: boolean;
-        mag_heading?: boolean;
-        nac_p?: boolean;
-        nac_v?: boolean;
-        nav_altitude_fms?: boolean;
-        nav_altitude_mcp?: boolean;
-        nav_heading?: boolean;
-        nav_modes?: boolean;
-        nav_qnh?: boolean;
-        nic?: boolean;
-        nic_baro?: boolean;
-        rc?: boolean;
-        roll?: boolean;
-        sda?: boolean;
-        sil?: boolean;
-        sil_type?: boolean;
-        squawk?: boolean;
-        tas?: boolean;
-        track?: boolean;
-        track_rate?: boolean;
-        true_heading?: boolean;
+        alt_geom?: eDataSource;
+        altitude?: eDataSource;
+        baro_rate?: eDataSource;
+        callsign?: eDataSource;
+        emergency?: eDataSource;
+        geom_rate?: eDataSource;
+        gs?: eDataSource;
+        gva?: eDataSource;
+        ias?: eDataSource;
+        lat?: eDataSource;
+        lon?: eDataSource;
+        mach?: eDataSource;
+        mag_heading?: eDataSource;
+        nac_p?: eDataSource;
+        nac_v?: eDataSource;
+        nav_altitude_fms?: eDataSource;
+        nav_altitude_mcp?: eDataSource;
+        nav_heading?: eDataSource;
+        nav_modes?: eDataSource;
+        nav_qnh?: eDataSource;
+        nic?: eDataSource;
+        nic_baro?: eDataSource;
+        rc?: eDataSource;
+        roll?: eDataSource;
+        sda?: eDataSource;
+        sil?: eDataSource;
+        sil_type?: eDataSource;
+        squawk?: eDataSource;
+        tas?: eDataSource;
+        track?: eDataSource;
+        track_rate?: eDataSource;
+        true_heading?: eDataSource;
     }
 
     export interface IAircraftMeta {
@@ -81,7 +81,6 @@ declare namespace READSB {
         mach?: number;
         mag_heading?: number;
         messages?: number;
-        mlat?: IValidSource;
         nac_p?: number;
         nac_v?: number;
         nav_altitude_fms?: number;
@@ -102,10 +101,10 @@ declare namespace READSB {
         spi?: boolean;
         squawk?: number;
         tas?: number;
-        tisb?: IValidSource;
         track?: number;
         track_rate?: number;
         true_heading?: number;
+        valid_source?: IValidSource;
         version?: number;
     }
 
