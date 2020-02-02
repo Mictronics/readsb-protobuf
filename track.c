@@ -279,7 +279,7 @@ static double greatcircle(double lat0, double lon0, double lat1, double lon1) {
 }
 
 static void update_range_histogram(double lat, double lon) {
-    double range = 0, bearing = 0;
+    double range = 0;
     int valid_latlon = Modes.bUserFlags & MODES_USER_LATLON_VALID;
 
     if (!valid_latlon)
@@ -302,8 +302,7 @@ static void update_range_histogram(double lat, double lon) {
         ++Modes.stats_range.range_histogram[bucket];
 
         // Round bearing to polarplot resolution.
-        bearing = getBearing(Modes.fUserLat, Modes.fUserLon, lat, lon);
-        bucket = ((bearing + POLAR_RANGE_RESOLUTION - 1) / POLAR_RANGE_RESOLUTION) * POLAR_RANGE_RESOLUTION;
+        bucket = round(getBearing(Modes.fUserLat, Modes.fUserLon, lat, lon) / POLAR_RANGE_RESOLUTION);
         if (Modes.stats_range.polar_range[bucket] < range) {
             Modes.stats_range.polar_range[bucket] = (uint32_t) range;
         }
