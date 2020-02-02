@@ -357,6 +357,7 @@ struct { // Internal state
     struct stats stats_1min[15];
     struct stats stats_5min;
     struct stats stats_15min;
+    struct range_stats stats_range;
     struct timespec reader_cpu_accumulator; // CPU time used by the reader thread, copied out and reset by the main thread under the mutex
     struct mag_buf mag_buffers[MODES_MAG_BUFFERS]; // Converted magnitude buffers from RTL or file input
 } Modes;

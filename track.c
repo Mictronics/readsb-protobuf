@@ -227,6 +227,28 @@ static int compare_validity(const data_validity *lhs, const data_validity *rhs) 
         return 0;
 }
 
+/**
+ * Calculate bearing of two coordinates
+ * @param lat0 Latitude start
+ * @param lon0 Longitude start
+ * @param lat1 Latitude end
+ * @param lon1 Longitude end
+ * @return Bearing in degree.
+ */
+static double getBearing(double lat0, double lon0, double lat1, double lon1) {
+    lat0 = lat0 * M_PI / 180.0;
+    lon0 = lon0 * M_PI / 180.0;
+    lat1 = lat1 * M_PI / 180.0;
+    lon1 = lon1 * M_PI / 180.0;
+
+    double dlon = fabs(lon1 - lon0);
+    double x = cos(lat0) * sin(dlon);
+    double y = cos(lat1) * sin(lat0) - sin(lat1) * cos(lat0) * cos(dlon);
+    double b = atan2(x, y);
+    double bearing = 180 / M_PI * b;
+    return bearing;
+}
+
 //
 // CPR position updating
 //
@@ -257,7 +279,7 @@ static double greatcircle(double lat0, double lon0, double lat1, double lon1) {
 }
 
 static void update_range_histogram(double lat, double lon) {
-    double range = 0;
+    double range = 0, bearing = 0;
     int valid_latlon = Modes.bUserFlags & MODES_USER_LATLON_VALID;
 
     if (!valid_latlon)
@@ -277,7 +299,14 @@ static void update_range_histogram(double lat, double lon) {
         else if (bucket >= RANGE_BUCKET_COUNT)
             bucket = RANGE_BUCKET_COUNT - 1;
 
-        ++Modes.stats_current.range_histogram[bucket];
+        ++Modes.stats_range.range_histogram[bucket];
+
+        // Round bearing to polarplot resolution.
+        bearing = getBearing(Modes.fUserLat, Modes.fUserLon, lat, lon);
+        bucket = ((bearing + POLAR_RANGE_RESOLUTION - 1) / POLAR_RANGE_RESOLUTION) * POLAR_RANGE_RESOLUTION;
+        if (Modes.stats_range.polar_range[bucket] < range) {
+            Modes.stats_range.polar_range[bucket] = (uint32_t) range;
+        }
     }
 }
 
