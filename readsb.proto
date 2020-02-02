@@ -127,43 +127,42 @@ message AircraftMeta {
 	}
 	NavModes nav_modes = 150;
     
-	// List of valid source fields derived from MLAT or TISB data.
+	// List of valid source fields for each parameter.
 	message ValidSource {
-        bool callsign = 100;
-        bool altitude = 101;
-        bool alt_geom = 102;
-        bool gs = 103;
-        bool ias = 104;
-        bool tas = 105;
-        bool mach = 106;
-        bool track = 107;
-        bool track_rate = 108;
-        bool roll = 109;
-        bool mag_heading = 110;
-        bool true_heading = 111;
-        bool baro_rate = 112;
-        bool geom_rate = 113;
-        bool squawk = 114;
-        bool emergency = 115;
-        bool nav_qnh = 116;
-        bool nav_altitude_mcp = 117;
-        bool nav_altitude_fms = 118;
-        bool nav_heading = 119;
-        bool nav_modes = 120;
-        bool lat = 121;
-        bool lon = 122;
-        bool nic = 123;
-        bool rc = 124;
-        bool nic_baro = 125;
-        bool nac_p = 126;
-        bool nac_v = 127;
-        bool sil = 128;
-        bool sil_type = 129;
-        bool gva = 130; 
-        bool sda = 131;
+        uint32 callsign = 100;
+        uint32 altitude = 101;
+        uint32 alt_geom = 102;
+        uint32 gs = 103;
+        uint32 ias = 104;
+        uint32 tas = 105;
+        uint32 mach = 106;
+        uint32 track = 107;
+        uint32 track_rate = 108;
+        uint32 roll = 109;
+        uint32 mag_heading = 110;
+        uint32 true_heading = 111;
+        uint32 baro_rate = 112;
+        uint32 geom_rate = 113;
+        uint32 squawk = 114;
+        uint32 emergency = 115;
+        uint32 nav_qnh = 116;
+        uint32 nav_altitude_mcp = 117;
+        uint32 nav_altitude_fms = 118;
+        uint32 nav_heading = 119;
+        uint32 nav_modes = 120;
+        uint32 lat = 121;
+        uint32 lon = 122;
+        uint32 nic = 123;
+        uint32 rc = 124;
+        uint32 nic_baro = 125;
+        uint32 nac_p = 126;
+        uint32 nac_v = 127;
+        uint32 sil = 128;
+        uint32 sil_type = 129;
+        uint32 gva = 130; 
+        uint32 sda = 131;
 	}
-	ValidSource mlat = 151;
-    ValidSource tisb = 152;
+	ValidSource valid_source = 151;
 }
 
 /**

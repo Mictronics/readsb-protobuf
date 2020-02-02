@@ -131,75 +131,75 @@ struct  _AircraftMeta__NavModes
 
 
 /*
- * List of valid source fields derived from MLAT or TISB data.
+ * List of valid source fields for each parameter.
  */
 struct  _AircraftMeta__ValidSource
 {
   ProtobufCMessage base;
   protobuf_c_boolean has_callsign;
-  protobuf_c_boolean callsign;
+  uint32_t callsign;
   protobuf_c_boolean has_altitude;
-  protobuf_c_boolean altitude;
+  uint32_t altitude;
   protobuf_c_boolean has_alt_geom;
-  protobuf_c_boolean alt_geom;
+  uint32_t alt_geom;
   protobuf_c_boolean has_gs;
-  protobuf_c_boolean gs;
+  uint32_t gs;
   protobuf_c_boolean has_ias;
-  protobuf_c_boolean ias;
+  uint32_t ias;
   protobuf_c_boolean has_tas;
-  protobuf_c_boolean tas;
+  uint32_t tas;
   protobuf_c_boolean has_mach;
-  protobuf_c_boolean mach;
+  uint32_t mach;
   protobuf_c_boolean has_track;
-  protobuf_c_boolean track;
+  uint32_t track;
   protobuf_c_boolean has_track_rate;
-  protobuf_c_boolean track_rate;
+  uint32_t track_rate;
   protobuf_c_boolean has_roll;
-  protobuf_c_boolean roll;
+  uint32_t roll;
   protobuf_c_boolean has_mag_heading;
-  protobuf_c_boolean mag_heading;
+  uint32_t mag_heading;
   protobuf_c_boolean has_true_heading;
-  protobuf_c_boolean true_heading;
+  uint32_t true_heading;
   protobuf_c_boolean has_baro_rate;
-  protobuf_c_boolean baro_rate;
+  uint32_t baro_rate;
   protobuf_c_boolean has_geom_rate;
-  protobuf_c_boolean geom_rate;
+  uint32_t geom_rate;
   protobuf_c_boolean has_squawk;
-  protobuf_c_boolean squawk;
+  uint32_t squawk;
   protobuf_c_boolean has_emergency;
-  protobuf_c_boolean emergency;
+  uint32_t emergency;
   protobuf_c_boolean has_nav_qnh;
-  protobuf_c_boolean nav_qnh;
+  uint32_t nav_qnh;
   protobuf_c_boolean has_nav_altitude_mcp;
-  protobuf_c_boolean nav_altitude_mcp;
+  uint32_t nav_altitude_mcp;
   protobuf_c_boolean has_nav_altitude_fms;
-  protobuf_c_boolean nav_altitude_fms;
+  uint32_t nav_altitude_fms;
   protobuf_c_boolean has_nav_heading;
-  protobuf_c_boolean nav_heading;
+  uint32_t nav_heading;
   protobuf_c_boolean has_nav_modes;
-  protobuf_c_boolean nav_modes;
+  uint32_t nav_modes;
   protobuf_c_boolean has_lat;
-  protobuf_c_boolean lat;
+  uint32_t lat;
   protobuf_c_boolean has_lon;
-  protobuf_c_boolean lon;
+  uint32_t lon;
   protobuf_c_boolean has_nic;
-  protobuf_c_boolean nic;
+  uint32_t nic;
   protobuf_c_boolean has_rc;
-  protobuf_c_boolean rc;
+  uint32_t rc;
   protobuf_c_boolean has_nic_baro;
-  protobuf_c_boolean nic_baro;
+  uint32_t nic_baro;
   protobuf_c_boolean has_nac_p;
-  protobuf_c_boolean nac_p;
+  uint32_t nac_p;
   protobuf_c_boolean has_nac_v;
-  protobuf_c_boolean nac_v;
+  uint32_t nac_v;
   protobuf_c_boolean has_sil;
-  protobuf_c_boolean sil;
+  uint32_t sil;
   protobuf_c_boolean has_sil_type;
-  protobuf_c_boolean sil_type;
+  uint32_t sil_type;
   protobuf_c_boolean has_gva;
-  protobuf_c_boolean gva;
+  uint32_t gva;
   protobuf_c_boolean has_sda;
-  protobuf_c_boolean sda;
+  uint32_t sda;
 };
 #define AIRCRAFT_META__VALID_SOURCE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&aircraft_meta__valid_source__descriptor) \
@@ -411,12 +411,11 @@ struct  _AircraftMeta
   protobuf_c_boolean has_sil_type;
   AircraftMeta__SilType sil_type;
   AircraftMeta__NavModes *nav_modes;
-  AircraftMeta__ValidSource *mlat;
-  AircraftMeta__ValidSource *tisb;
+  AircraftMeta__ValidSource *valid_source;
 };
 #define AIRCRAFT_META__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&aircraft_meta__descriptor) \
-    , 0,0, NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, NULL, NULL, NULL }
+    , 0,0, NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, NULL, NULL }
 
 
 /*

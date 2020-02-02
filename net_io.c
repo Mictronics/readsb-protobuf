@@ -1836,84 +1836,42 @@ static const char *nav_altitude_source_enum_string(nav_altitude_source_t src) {
 }
 
 /**
- * Create valid source message for MLAT or TISB parameters if one or more are valid.
+ * Create valid source message indicating the source type of each parameter.
  * @param a Single aicraft data.
- * @param source Source type.
- * @return Pointer to valid source message or NULL when no parameter was found valid.
  */
-static AircraftMeta__ValidSource *generateValidSourceMessage(struct aircraft *a, datasource_t source) {
-    AircraftMeta__ValidSource msg = AIRCRAFT_META__VALID_SOURCE__INIT;
-    bool has_valid = false;
-
-    if (a->callsign_valid.source == source)
-        msg.callsign = msg.has_callsign = has_valid = true;
-    if (a->altitude_baro_valid.source == source)
-        msg.altitude = msg.has_altitude = has_valid = true;
-    if (a->altitude_geom_valid.source == source)
-        msg.alt_geom = msg.has_alt_geom = has_valid = true;
-    if (a->gs_valid.source == source)
-        msg.gs = msg.has_gs = has_valid = true;
-    if (a->ias_valid.source == source)
-        msg.ias = msg.has_ias = has_valid = true;
-    if (a->tas_valid.source == source)
-        msg.tas = msg.has_tas = has_valid = true;
-    if (a->mach_valid.source == source)
-        msg.mach = msg.has_mach = has_valid = true;
-    if (a->track_valid.source == source)
-        msg.track = msg.has_track = has_valid = true;
-    if (a->track_rate_valid.source == source)
-        msg.track_rate = msg.has_track_rate = has_valid = true;
-    if (a->roll_valid.source == source)
-        msg.roll = msg.has_roll = has_valid = true;
-    if (a->mag_heading_valid.source == source)
-        msg.mag_heading = msg.has_mag_heading = has_valid = true;
-    if (a->true_heading_valid.source == source)
-        msg.true_heading = msg.has_true_heading = has_valid = true;
-    if (a->baro_rate_valid.source == source)
-        msg.baro_rate = msg.has_baro_rate = has_valid = true;
-    if (a->geom_rate_valid.source == source)
-        msg.geom_rate = msg.has_geom_rate = has_valid = true;
-    if (a->squawk_valid.source == source)
-        msg.squawk = msg.has_squawk = has_valid = true;
-    if (a->emergency_valid.source == source)
-        msg.emergency = msg.has_emergency = has_valid = true;
-    if (a->nav_qnh_valid.source == source)
-        msg.nav_qnh = msg.has_nav_qnh = has_valid = true;
-    if (a->nav_altitude_mcp_valid.source == source)
-        msg.nav_altitude_mcp = msg.has_nav_altitude_mcp = has_valid = true;
-    if (a->nav_altitude_fms_valid.source == source)
-        msg.nav_altitude_fms = msg.has_nav_altitude_fms = has_valid = true;
-    if (a->nav_heading_valid.source == source)
-        msg.nav_heading = msg.has_nav_heading = has_valid = true;
-    if (a->nav_modes_valid.source == source)
-        msg.nav_modes = msg.has_nav_modes = has_valid = true;
-    if (a->position_valid.source == source) {
-        msg.lat = msg.has_lat = has_valid = true;
-        msg.lon = msg.has_lon = has_valid = true;
-        msg.nic = msg.has_nic = has_valid = true;
-        msg.rc = msg.has_rc = has_valid = true;
-    }
-    if (a->nic_baro_valid.source == source)
-        msg.nic_baro = msg.has_nic_baro = has_valid = true;
-    if (a->nac_p_valid.source == source)
-        msg.nac_p = msg.has_nac_p = has_valid = true;
-    if (a->nac_v_valid.source == source)
-        msg.nac_v = msg.has_nac_v = has_valid = true;
-    if (a->sil_valid.source == source) {
-        msg.sil = msg.has_sil = has_valid = true;
-        msg.sil_type = msg.has_sil_type = has_valid = true;
-    }
-    if (a->gva_valid.source == source)
-        msg.gva = msg.has_gva = has_valid = true;
-    if (a->sda_valid.source == source)
-        msg.sda = msg.has_sda = has_valid = true;
-
-    if (has_valid) {
-        AircraftMeta__ValidSource *p = malloc(sizeof (AircraftMeta__ValidSource));
-        return memcpy(p, &msg, sizeof (AircraftMeta__ValidSource));
-    }
-
-    return NULL;
+static void generateValidSourceMessage(struct aircraft *a) {
+    a->valid_source.callsign = a->valid_source.has_callsign = a->callsign_valid.source;
+    a->valid_source.altitude = a->valid_source.has_altitude = a->altitude_baro_valid.source;
+    a->valid_source.alt_geom = a->valid_source.has_alt_geom = a->altitude_geom_valid.source;
+    a->valid_source.gs = a->valid_source.has_gs = a->gs_valid.source;
+    a->valid_source.ias = a->valid_source.has_ias = a->ias_valid.source;
+    a->valid_source.tas = a->valid_source.has_tas = a->tas_valid.source;
+    a->valid_source.mach = a->valid_source.has_mach = a->mach_valid.source;
+    a->valid_source.track = a->valid_source.has_track = a->track_valid.source;
+    a->valid_source.track_rate = a->valid_source.has_track_rate =  a->track_rate_valid.source;
+    a->valid_source.roll = a->valid_source.has_roll = a->roll_valid.source;
+    a->valid_source.mag_heading = a->valid_source.has_mag_heading = a->mag_heading_valid.source;
+    a->valid_source.true_heading = a->valid_source.has_true_heading = a->true_heading_valid.source;
+    a->valid_source.baro_rate = a->valid_source.has_baro_rate = a->baro_rate_valid.source;
+    a->valid_source.geom_rate = a->valid_source.has_geom_rate = a->geom_rate_valid.source;
+    a->valid_source.squawk = a->valid_source.has_squawk = a->squawk_valid.source;
+    a->valid_source.emergency = a->valid_source.has_emergency =  a->emergency_valid.source;
+    a->valid_source.nav_qnh = a->valid_source.has_nav_qnh = a->nav_qnh_valid.source;
+    a->valid_source.nav_altitude_mcp = a->valid_source.has_nav_altitude_mcp = a->nav_altitude_mcp_valid.source;
+    a->valid_source.nav_altitude_fms = a->valid_source.has_nav_altitude_fms = a->nav_altitude_fms_valid.source;
+    a->valid_source.nav_heading = a->valid_source.has_nav_heading = a->nav_heading_valid.source;
+    a->valid_source.nav_modes = a->valid_source.has_nav_modes = a->nav_modes_valid.source;
+    a->valid_source.lat = a->valid_source.has_lat = a->position_valid.source;
+    a->valid_source.lon = a->valid_source.has_lon = a->position_valid.source;
+    a->valid_source.nic = a->valid_source.has_nic = a->position_valid.source;
+    a->valid_source.rc = a->valid_source.has_rc = a->position_valid.source;
+    a->valid_source.nic_baro = a->valid_source.has_nic_baro = a->nic_baro_valid.source;
+    a->valid_source.nac_p = a->valid_source.has_nac_p = a->nac_p_valid.source;
+    a->valid_source.nac_v = a->valid_source.has_nac_v = a->nac_v_valid.source;
+    a->valid_source.sil = a->valid_source.has_sil = a->sil_valid.source;
+    a->valid_source.sil_type = a->valid_source.has_sil_type = a->sil_valid.source;
+    a->valid_source.gva = a->valid_source.has_gva = a->gva_valid.source;
+    a->valid_source.sda = a->valid_source.has_sda = a->sda_valid.source;
 }
 
 /**
@@ -1943,12 +1901,6 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     size_t j;
     // The entire collection of tracked aircrafts. Equal to aircraft.json content.
     AircraftsUpdate msg = AIRCRAFTS_UPDATE__INIT;
-    // Source type collection of parameters received through MLAT, if any.
-    AircraftMeta__ValidSource **mlat = NULL;
-    unsigned n_mlat = 0;
-    // Same for parameters received through TISB.
-    AircraftMeta__ValidSource **tisb = NULL;
-    unsigned n_tisb = 0;
 
     msg.n_aircraft = 0;
     msg.now = (uint64_t)(now / 1000);
@@ -2027,8 +1979,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
                 msg.aircraft[msg.n_aircraft]->has_mag_heading = false;
                 msg.aircraft[msg.n_aircraft]->has_true_heading = false;
                 msg.aircraft[msg.n_aircraft]->nav_modes = NULL;
-                msg.aircraft[msg.n_aircraft]->mlat = NULL;
-                msg.aircraft[msg.n_aircraft]->tisb = NULL;
+                msg.aircraft[msg.n_aircraft]->valid_source = NULL;
                 msg.n_aircraft += 1;
                 continue;
             }
@@ -2092,31 +2043,9 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
                 msg.aircraft[msg.n_aircraft]->has_sil_type = true;
             }
 
-            // Create MLAT valid source information
-            AircraftMeta__ValidSource *vs = generateValidSourceMessage(a, SOURCE_MLAT);
-            if (vs != NULL) {
-                if (mlat == NULL) {
-                    mlat = malloc(sizeof (AircraftMeta__ValidSource*));
-                } else {
-                    mlat = realloc(mlat, sizeof (AircraftMeta__ValidSource*) * (n_mlat + 1));
-                }
-                mlat[n_mlat] = vs;
-                msg.aircraft[msg.n_aircraft]->mlat = mlat[n_mlat];
-                n_mlat += 1;
-            }
-
-            // Create TISB valid source information
-            vs = generateValidSourceMessage(a, SOURCE_TISB);
-            if (vs != NULL) {
-                if (tisb == NULL) {
-                    tisb = malloc(sizeof (AircraftMeta__ValidSource*));
-                } else {
-                    tisb = realloc(tisb, sizeof (AircraftMeta__ValidSource*) * (n_tisb + 1));
-                }
-                tisb[n_tisb] = vs;
-                msg.aircraft[msg.n_aircraft]->tisb = tisb[n_tisb];
-                n_tisb += 1;
-            }
+            // Create valid source information
+            generateValidSourceMessage(a);
+            msg.aircraft[msg.n_aircraft]->valid_source = &a->valid_source;
 
             msg.aircraft[msg.n_aircraft]->has_messages = true;
             msg.aircraft[msg.n_aircraft]->has_seen = true;
@@ -2148,15 +2077,6 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     }
     // Free up all allocated memory.
     free(buf);
-    for (j = 0; j < n_tisb; j++) {
-        free(tisb[j]);
-    }
-
-    for (j = 0; j < n_mlat; j++) {
-        free(mlat[j]);
-    }
-    free(mlat);
-    free(tisb);
     free(msg.aircraft);
 }
 

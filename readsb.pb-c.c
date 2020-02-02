@@ -343,7 +343,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "callsign",
     100,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_callsign),
     offsetof(AircraftMeta__ValidSource, callsign),
     NULL,
@@ -355,7 +355,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "altitude",
     101,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_altitude),
     offsetof(AircraftMeta__ValidSource, altitude),
     NULL,
@@ -367,7 +367,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "alt_geom",
     102,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_alt_geom),
     offsetof(AircraftMeta__ValidSource, alt_geom),
     NULL,
@@ -379,7 +379,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "gs",
     103,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_gs),
     offsetof(AircraftMeta__ValidSource, gs),
     NULL,
@@ -391,7 +391,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "ias",
     104,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_ias),
     offsetof(AircraftMeta__ValidSource, ias),
     NULL,
@@ -403,7 +403,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "tas",
     105,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_tas),
     offsetof(AircraftMeta__ValidSource, tas),
     NULL,
@@ -415,7 +415,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "mach",
     106,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_mach),
     offsetof(AircraftMeta__ValidSource, mach),
     NULL,
@@ -427,7 +427,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "track",
     107,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_track),
     offsetof(AircraftMeta__ValidSource, track),
     NULL,
@@ -439,7 +439,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "track_rate",
     108,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_track_rate),
     offsetof(AircraftMeta__ValidSource, track_rate),
     NULL,
@@ -451,7 +451,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "roll",
     109,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_roll),
     offsetof(AircraftMeta__ValidSource, roll),
     NULL,
@@ -463,7 +463,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "mag_heading",
     110,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_mag_heading),
     offsetof(AircraftMeta__ValidSource, mag_heading),
     NULL,
@@ -475,7 +475,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "true_heading",
     111,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_true_heading),
     offsetof(AircraftMeta__ValidSource, true_heading),
     NULL,
@@ -487,7 +487,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "baro_rate",
     112,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_baro_rate),
     offsetof(AircraftMeta__ValidSource, baro_rate),
     NULL,
@@ -499,7 +499,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "geom_rate",
     113,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_geom_rate),
     offsetof(AircraftMeta__ValidSource, geom_rate),
     NULL,
@@ -511,7 +511,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "squawk",
     114,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_squawk),
     offsetof(AircraftMeta__ValidSource, squawk),
     NULL,
@@ -523,7 +523,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "emergency",
     115,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_emergency),
     offsetof(AircraftMeta__ValidSource, emergency),
     NULL,
@@ -535,7 +535,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nav_qnh",
     116,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nav_qnh),
     offsetof(AircraftMeta__ValidSource, nav_qnh),
     NULL,
@@ -547,7 +547,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nav_altitude_mcp",
     117,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nav_altitude_mcp),
     offsetof(AircraftMeta__ValidSource, nav_altitude_mcp),
     NULL,
@@ -559,7 +559,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nav_altitude_fms",
     118,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nav_altitude_fms),
     offsetof(AircraftMeta__ValidSource, nav_altitude_fms),
     NULL,
@@ -571,7 +571,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nav_heading",
     119,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nav_heading),
     offsetof(AircraftMeta__ValidSource, nav_heading),
     NULL,
@@ -583,7 +583,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nav_modes",
     120,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nav_modes),
     offsetof(AircraftMeta__ValidSource, nav_modes),
     NULL,
@@ -595,7 +595,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "lat",
     121,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_lat),
     offsetof(AircraftMeta__ValidSource, lat),
     NULL,
@@ -607,7 +607,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "lon",
     122,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_lon),
     offsetof(AircraftMeta__ValidSource, lon),
     NULL,
@@ -619,7 +619,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nic",
     123,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nic),
     offsetof(AircraftMeta__ValidSource, nic),
     NULL,
@@ -631,7 +631,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "rc",
     124,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_rc),
     offsetof(AircraftMeta__ValidSource, rc),
     NULL,
@@ -643,7 +643,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nic_baro",
     125,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nic_baro),
     offsetof(AircraftMeta__ValidSource, nic_baro),
     NULL,
@@ -655,7 +655,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nac_p",
     126,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nac_p),
     offsetof(AircraftMeta__ValidSource, nac_p),
     NULL,
@@ -667,7 +667,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "nac_v",
     127,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_nac_v),
     offsetof(AircraftMeta__ValidSource, nac_v),
     NULL,
@@ -679,7 +679,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "sil",
     128,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_sil),
     offsetof(AircraftMeta__ValidSource, sil),
     NULL,
@@ -691,7 +691,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "sil_type",
     129,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_sil_type),
     offsetof(AircraftMeta__ValidSource, sil_type),
     NULL,
@@ -703,7 +703,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "gva",
     130,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_gva),
     offsetof(AircraftMeta__ValidSource, gva),
     NULL,
@@ -715,7 +715,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     "sda",
     131,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_BOOL,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta__ValidSource, has_sda),
     offsetof(AircraftMeta__ValidSource, sda),
     NULL,
@@ -926,7 +926,7 @@ const ProtobufCEnumDescriptor aircraft_meta__sil_type__descriptor =
   aircraft_meta__sil_type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[45] =
+static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[44] =
 {
   {
     "addr",
@@ -1445,24 +1445,12 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[45] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "mlat",
+    "valid_source",
     151,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
-    offsetof(AircraftMeta, mlat),
-    &aircraft_meta__valid_source__descriptor,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
-    "tisb",
-    152,
-    PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_MESSAGE,
-    0,   /* quantifier_offset */
-    offsetof(AircraftMeta, tisb),
+    offsetof(AircraftMeta, valid_source),
     &aircraft_meta__valid_source__descriptor,
     NULL,
     0,             /* flags */
@@ -1489,7 +1477,6 @@ static const unsigned aircraft_meta__field_indices_by_name[] = {
   18,   /* field[18] = mach */
   5,   /* field[5] = mag_heading */
   9,   /* field[9] = messages */
-  43,   /* field[43] = mlat */
   31,   /* field[31] = nac_p */
   32,   /* field[32] = nac_v */
   25,   /* field[25] = nav_altitude_fms */
@@ -1510,10 +1497,10 @@ static const unsigned aircraft_meta__field_indices_by_name[] = {
   36,   /* field[36] = spi */
   2,   /* field[2] = squawk */
   17,   /* field[17] = tas */
-  44,   /* field[44] = tisb */
   20,   /* field[20] = track */
   21,   /* field[21] = track_rate */
   19,   /* field[19] = true_heading */
+  43,   /* field[43] = valid_source */
   29,   /* field[29] = version */
 };
 static const ProtobufCIntRange aircraft_meta__number_ranges[5 + 1] =
@@ -1523,7 +1510,7 @@ static const ProtobufCIntRange aircraft_meta__number_ranges[5 + 1] =
   { 20, 13 },
   { 100, 39 },
   { 150, 42 },
-  { 0, 45 }
+  { 0, 44 }
 };
 const ProtobufCMessageDescriptor aircraft_meta__descriptor =
 {
@@ -1533,7 +1520,7 @@ const ProtobufCMessageDescriptor aircraft_meta__descriptor =
   "AircraftMeta",
   "",
   sizeof(AircraftMeta),
-  45,
+  44,
   aircraft_meta__field_descriptors,
   aircraft_meta__field_indices_by_name,
   5,  aircraft_meta__number_ranges,

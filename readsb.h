@@ -129,14 +129,14 @@
 
 /* Where did a bit of data arrive from? In order of increasing priority */
 typedef enum {
-    SOURCE_INVALID, /* data is not valid */
-    SOURCE_MODE_AC, /* A/C message */
-    SOURCE_MLAT, /* derived from mlat */
-    SOURCE_MODE_S, /* data from a Mode S message, no full CRC */
-    SOURCE_MODE_S_CHECKED, /* data from a Mode S message with full CRC */
-    SOURCE_TISB, /* data from a TIS-B extended squitter message */
-    SOURCE_ADSR, /* data from a ADS-R extended squitter message */
-    SOURCE_ADSB, /* data from a ADS-B extended squitter message */
+    SOURCE_INVALID = 0, /* data is not valid */
+    SOURCE_MODE_AC = 1, /* A/C message */
+    SOURCE_MLAT = 2, /* derived from mlat */
+    SOURCE_MODE_S = 3, /* data from a Mode S message, no full CRC */
+    SOURCE_MODE_S_CHECKED = 4, /* data from a Mode S message with full CRC */
+    SOURCE_TISB = 5, /* data from a TIS-B extended squitter message */
+    SOURCE_ADSR = 6, /* data from a ADS-R extended squitter message */
+    SOURCE_ADSB = 7, /* data from a ADS-B extended squitter message */
 } datasource_t;
 
 typedef enum {

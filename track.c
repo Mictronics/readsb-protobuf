@@ -75,6 +75,7 @@ static struct aircraft *trackCreateAircraft(struct modesMessage *mm) {
     *a = zeroAircraft;
     aircraft_meta__init(&a->meta);
     aircraft_meta__nav_modes__init(&a->nav_modes);
+    aircraft_meta__valid_source__init(&a->valid_source);
 
     // Now initialise things that should not be 0/NULL to their defaults
     a->meta.addr = mm->addr;

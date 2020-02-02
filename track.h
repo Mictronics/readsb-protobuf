@@ -91,6 +91,7 @@ struct aircraft {
     // Aircraft metadata that is shared with webapp.
     AircraftMeta meta; // See readsb.pb-c.h generated from readsb.proto
     AircraftMeta__NavModes nav_modes;
+    AircraftMeta__ValidSource valid_source;
     // Remaining variables are all readsb internal use.
     uint64_t fatsv_last_emitted; // time (millis) aircraft was last FA emitted
     uint64_t fatsv_last_force_emit; // time (millis) we last emitted only-on-change data
