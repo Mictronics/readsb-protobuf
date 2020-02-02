@@ -233,7 +233,7 @@ static int compare_validity(const data_validity *lhs, const data_validity *rhs) 
  * @param lon0 Longitude start
  * @param lat1 Latitude end
  * @param lon1 Longitude end
- * @return Bearing in degree.
+ * @return Bearing in 0-360 degree.
  */
 static double getBearing(double lat0, double lon0, double lat1, double lon1) {
     lat0 = lat0 * M_PI / 180.0;
@@ -241,12 +241,12 @@ static double getBearing(double lat0, double lon0, double lat1, double lon1) {
     lat1 = lat1 * M_PI / 180.0;
     lon1 = lon1 * M_PI / 180.0;
 
-    double dlon = fabs(lon1 - lon0);
+    double dlon = lon1 - lon0;
     double x = cos(lat0) * sin(dlon);
     double y = cos(lat1) * sin(lat0) - sin(lat1) * cos(lat0) * cos(dlon);
     double b = atan2(x, y);
     double bearing = 180 / M_PI * b;
-    return bearing;
+    return bearing + 180;
 }
 
 //
