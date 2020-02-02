@@ -57,234 +57,234 @@ var READSB;
         ValidSource: {
             read(pbf, end) {
                 return pbf.readFields(this._readField, {
-                    alt_geom: false,
-                    altitude: false,
-                    baro_rate: false,
-                    callsign: false,
-                    emergency: false,
-                    geom_rate: false,
-                    gs: false,
-                    gva: false,
-                    ias: false,
-                    lat: false,
-                    lon: false,
-                    mach: false,
-                    mag_heading: false,
-                    nac_p: false,
-                    nac_v: false,
-                    nav_altitude_fms: false,
-                    nav_altitude_mcp: false,
-                    nav_heading: false,
-                    nav_modes: false,
-                    nav_qnh: false,
-                    nic: false,
-                    nic_baro: false,
-                    rc: false,
-                    roll: false,
-                    sda: false,
-                    sil: false,
-                    sil_type: false,
-                    squawk: false,
-                    tas: false,
-                    track: false,
-                    track_rate: false,
-                    true_heading: false,
+                    alt_geom: READSB.eDataSource.Invalid,
+                    altitude: READSB.eDataSource.Invalid,
+                    baro_rate: READSB.eDataSource.Invalid,
+                    callsign: READSB.eDataSource.Invalid,
+                    emergency: READSB.eDataSource.Invalid,
+                    geom_rate: READSB.eDataSource.Invalid,
+                    gs: READSB.eDataSource.Invalid,
+                    gva: READSB.eDataSource.Invalid,
+                    ias: READSB.eDataSource.Invalid,
+                    lat: READSB.eDataSource.Invalid,
+                    lon: READSB.eDataSource.Invalid,
+                    mach: READSB.eDataSource.Invalid,
+                    mag_heading: READSB.eDataSource.Invalid,
+                    nac_p: READSB.eDataSource.Invalid,
+                    nac_v: READSB.eDataSource.Invalid,
+                    nav_altitude_fms: READSB.eDataSource.Invalid,
+                    nav_altitude_mcp: READSB.eDataSource.Invalid,
+                    nav_heading: READSB.eDataSource.Invalid,
+                    nav_modes: READSB.eDataSource.Invalid,
+                    nav_qnh: READSB.eDataSource.Invalid,
+                    nic: READSB.eDataSource.Invalid,
+                    nic_baro: READSB.eDataSource.Invalid,
+                    rc: READSB.eDataSource.Invalid,
+                    roll: READSB.eDataSource.Invalid,
+                    sda: READSB.eDataSource.Invalid,
+                    sil: READSB.eDataSource.Invalid,
+                    sil_type: READSB.eDataSource.Invalid,
+                    squawk: READSB.eDataSource.Invalid,
+                    tas: READSB.eDataSource.Invalid,
+                    track: READSB.eDataSource.Invalid,
+                    track_rate: READSB.eDataSource.Invalid,
+                    true_heading: READSB.eDataSource.Invalid,
                 }, end);
             },
             _readField(tag, obj, pbf) {
                 if (tag === 100) {
-                    obj.callsign = pbf.readBoolean();
+                    obj.callsign = pbf.readVarint();
                 }
                 else if (tag === 101) {
-                    obj.altitude = pbf.readBoolean();
+                    obj.altitude = pbf.readVarint();
                 }
                 else if (tag === 102) {
-                    obj.alt_geom = pbf.readBoolean();
+                    obj.alt_geom = pbf.readVarint();
                 }
                 else if (tag === 103) {
-                    obj.gs = pbf.readBoolean();
+                    obj.gs = pbf.readVarint();
                 }
                 else if (tag === 104) {
-                    obj.ias = pbf.readBoolean();
+                    obj.ias = pbf.readVarint();
                 }
                 else if (tag === 105) {
-                    obj.tas = pbf.readBoolean();
+                    obj.tas = pbf.readVarint();
                 }
                 else if (tag === 106) {
-                    obj.mach = pbf.readBoolean();
+                    obj.mach = pbf.readVarint();
                 }
                 else if (tag === 107) {
-                    obj.track = pbf.readBoolean();
+                    obj.track = pbf.readVarint();
                 }
                 else if (tag === 108) {
-                    obj.track_rate = pbf.readBoolean();
+                    obj.track_rate = pbf.readVarint();
                 }
                 else if (tag === 109) {
-                    obj.roll = pbf.readBoolean();
+                    obj.roll = pbf.readVarint();
                 }
                 else if (tag === 110) {
-                    obj.mag_heading = pbf.readBoolean();
+                    obj.mag_heading = pbf.readVarint();
                 }
                 else if (tag === 111) {
-                    obj.true_heading = pbf.readBoolean();
+                    obj.true_heading = pbf.readVarint();
                 }
                 else if (tag === 112) {
-                    obj.baro_rate = pbf.readBoolean();
+                    obj.baro_rate = pbf.readVarint();
                 }
                 else if (tag === 113) {
-                    obj.geom_rate = pbf.readBoolean();
+                    obj.geom_rate = pbf.readVarint();
                 }
                 else if (tag === 114) {
-                    obj.squawk = pbf.readBoolean();
+                    obj.squawk = pbf.readVarint();
                 }
                 else if (tag === 115) {
-                    obj.emergency = pbf.readBoolean();
+                    obj.emergency = pbf.readVarint();
                 }
                 else if (tag === 116) {
-                    obj.nav_qnh = pbf.readBoolean();
+                    obj.nav_qnh = pbf.readVarint();
                 }
                 else if (tag === 117) {
-                    obj.nav_altitude_mcp = pbf.readBoolean();
+                    obj.nav_altitude_mcp = pbf.readVarint();
                 }
                 else if (tag === 118) {
-                    obj.nav_altitude_fms = pbf.readBoolean();
+                    obj.nav_altitude_fms = pbf.readVarint();
                 }
                 else if (tag === 119) {
-                    obj.nav_heading = pbf.readBoolean();
+                    obj.nav_heading = pbf.readVarint();
                 }
                 else if (tag === 120) {
-                    obj.nav_modes = pbf.readBoolean();
+                    obj.nav_modes = pbf.readVarint();
                 }
                 else if (tag === 121) {
-                    obj.lat = pbf.readBoolean();
+                    obj.lat = pbf.readVarint();
                 }
                 else if (tag === 122) {
-                    obj.lon = pbf.readBoolean();
+                    obj.lon = pbf.readVarint();
                 }
                 else if (tag === 123) {
-                    obj.nic = pbf.readBoolean();
+                    obj.nic = pbf.readVarint();
                 }
                 else if (tag === 124) {
-                    obj.rc = pbf.readBoolean();
+                    obj.rc = pbf.readVarint();
                 }
                 else if (tag === 125) {
-                    obj.nic_baro = pbf.readBoolean();
+                    obj.nic_baro = pbf.readVarint();
                 }
                 else if (tag === 126) {
-                    obj.nac_p = pbf.readBoolean();
+                    obj.nac_p = pbf.readVarint();
                 }
                 else if (tag === 127) {
-                    obj.nac_v = pbf.readBoolean();
+                    obj.nac_v = pbf.readVarint();
                 }
                 else if (tag === 128) {
-                    obj.sil = pbf.readBoolean();
+                    obj.sil = pbf.readVarint();
                 }
                 else if (tag === 129) {
-                    obj.sil_type = pbf.readBoolean();
+                    obj.sil_type = pbf.readVarint();
                 }
                 else if (tag === 130) {
-                    obj.gva = pbf.readBoolean();
+                    obj.gva = pbf.readVarint();
                 }
                 else if (tag === 131) {
-                    obj.sda = pbf.readBoolean();
+                    obj.sda = pbf.readVarint();
                 }
             },
             write(obj, pbf) {
                 if (obj.callsign) {
-                    pbf.writeBooleanField(100, obj.callsign);
+                    pbf.writeVarintField(100, obj.callsign);
                 }
                 if (obj.altitude) {
-                    pbf.writeBooleanField(101, obj.altitude);
+                    pbf.writeVarintField(101, obj.altitude);
                 }
                 if (obj.alt_geom) {
-                    pbf.writeBooleanField(102, obj.alt_geom);
+                    pbf.writeVarintField(102, obj.alt_geom);
                 }
                 if (obj.gs) {
-                    pbf.writeBooleanField(103, obj.gs);
+                    pbf.writeVarintField(103, obj.gs);
                 }
                 if (obj.ias) {
-                    pbf.writeBooleanField(104, obj.ias);
+                    pbf.writeVarintField(104, obj.ias);
                 }
                 if (obj.tas) {
-                    pbf.writeBooleanField(105, obj.tas);
+                    pbf.writeVarintField(105, obj.tas);
                 }
                 if (obj.mach) {
-                    pbf.writeBooleanField(106, obj.mach);
+                    pbf.writeVarintField(106, obj.mach);
                 }
                 if (obj.track) {
-                    pbf.writeBooleanField(107, obj.track);
+                    pbf.writeVarintField(107, obj.track);
                 }
                 if (obj.track_rate) {
-                    pbf.writeBooleanField(108, obj.track_rate);
+                    pbf.writeVarintField(108, obj.track_rate);
                 }
                 if (obj.roll) {
-                    pbf.writeBooleanField(109, obj.roll);
+                    pbf.writeVarintField(109, obj.roll);
                 }
                 if (obj.mag_heading) {
-                    pbf.writeBooleanField(110, obj.mag_heading);
+                    pbf.writeVarintField(110, obj.mag_heading);
                 }
                 if (obj.true_heading) {
-                    pbf.writeBooleanField(111, obj.true_heading);
+                    pbf.writeVarintField(111, obj.true_heading);
                 }
                 if (obj.baro_rate) {
-                    pbf.writeBooleanField(112, obj.baro_rate);
+                    pbf.writeVarintField(112, obj.baro_rate);
                 }
                 if (obj.geom_rate) {
-                    pbf.writeBooleanField(113, obj.geom_rate);
+                    pbf.writeVarintField(113, obj.geom_rate);
                 }
                 if (obj.squawk) {
-                    pbf.writeBooleanField(114, obj.squawk);
+                    pbf.writeVarintField(114, obj.squawk);
                 }
                 if (obj.emergency) {
-                    pbf.writeBooleanField(115, obj.emergency);
+                    pbf.writeVarintField(115, obj.emergency);
                 }
                 if (obj.nav_qnh) {
-                    pbf.writeBooleanField(116, obj.nav_qnh);
+                    pbf.writeVarintField(116, obj.nav_qnh);
                 }
                 if (obj.nav_altitude_mcp) {
-                    pbf.writeBooleanField(117, obj.nav_altitude_mcp);
+                    pbf.writeVarintField(117, obj.nav_altitude_mcp);
                 }
                 if (obj.nav_altitude_fms) {
-                    pbf.writeBooleanField(118, obj.nav_altitude_fms);
+                    pbf.writeVarintField(118, obj.nav_altitude_fms);
                 }
                 if (obj.nav_heading) {
-                    pbf.writeBooleanField(119, obj.nav_heading);
+                    pbf.writeVarintField(119, obj.nav_heading);
                 }
                 if (obj.nav_modes) {
-                    pbf.writeBooleanField(120, obj.nav_modes);
+                    pbf.writeVarintField(120, obj.nav_modes);
                 }
                 if (obj.lat) {
-                    pbf.writeBooleanField(121, obj.lat);
+                    pbf.writeVarintField(121, obj.lat);
                 }
                 if (obj.lon) {
-                    pbf.writeBooleanField(122, obj.lon);
+                    pbf.writeVarintField(122, obj.lon);
                 }
                 if (obj.nic) {
-                    pbf.writeBooleanField(123, obj.nic);
+                    pbf.writeVarintField(123, obj.nic);
                 }
                 if (obj.rc) {
-                    pbf.writeBooleanField(124, obj.rc);
+                    pbf.writeVarintField(124, obj.rc);
                 }
                 if (obj.nic_baro) {
-                    pbf.writeBooleanField(125, obj.nic_baro);
+                    pbf.writeVarintField(125, obj.nic_baro);
                 }
                 if (obj.nac_p) {
-                    pbf.writeBooleanField(126, obj.nac_p);
+                    pbf.writeVarintField(126, obj.nac_p);
                 }
                 if (obj.nac_v) {
-                    pbf.writeBooleanField(127, obj.nac_v);
+                    pbf.writeVarintField(127, obj.nac_v);
                 }
                 if (obj.sil) {
-                    pbf.writeBooleanField(128, obj.sil);
+                    pbf.writeVarintField(128, obj.sil);
                 }
                 if (obj.sil_type) {
-                    pbf.writeBooleanField(129, obj.sil_type);
+                    pbf.writeVarintField(129, obj.sil_type);
                 }
                 if (obj.gva) {
-                    pbf.writeBooleanField(130, obj.gva);
+                    pbf.writeVarintField(130, obj.gva);
                 }
                 if (obj.sda) {
-                    pbf.writeBooleanField(131, obj.sda);
+                    pbf.writeVarintField(131, obj.sda);
                 }
             },
         },
@@ -468,10 +468,7 @@ var READSB;
                 obj.nav_modes = READSB.AircraftMeta.NavModes.read(pbf, pbf.readVarint() + pbf.pos);
             }
             else if (tag === 151) {
-                obj.mlat = READSB.AircraftMeta.ValidSource.read(pbf, pbf.readVarint() + pbf.pos);
-            }
-            else if (tag === 152) {
-                obj.tisb = READSB.AircraftMeta.ValidSource.read(pbf, pbf.readVarint() + pbf.pos);
+                obj.valid_source = READSB.AircraftMeta.ValidSource.read(pbf, pbf.readVarint() + pbf.pos);
             }
         },
         write(obj, pbf) {
@@ -604,11 +601,8 @@ var READSB;
             if (obj.nav_modes) {
                 pbf.writeMessage(150, READSB.AircraftMeta.NavModes.write, obj.nav_modes);
             }
-            if (obj.mlat) {
-                pbf.writeMessage(151, READSB.AircraftMeta.ValidSource.write, obj.mlat);
-            }
-            if (obj.tisb) {
-                pbf.writeMessage(152, READSB.AircraftMeta.ValidSource.write, obj.tisb);
+            if (obj.valid_source) {
+                pbf.writeMessage(151, READSB.AircraftMeta.ValidSource.write, obj.valid_source);
             }
         },
     };
