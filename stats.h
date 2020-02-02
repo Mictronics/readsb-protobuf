@@ -111,13 +111,19 @@ struct stats {
     unsigned int unique_aircraft;
     // we saw only a single message
     unsigned int single_message_aircraft;
-    // range histogram
-#define RANGE_BUCKET_COUNT 76
-    uint32_t range_histogram[RANGE_BUCKET_COUNT];
     double longest_distance; // Longest range decoded, in *metres*
     uint32_t with_positions; // Aircrafts with positions
     uint32_t mlat_positions; // Positions from mlat source
     uint32_t tisb_positions; // Positions from tisb source
+};
+
+struct range_stats {
+    // range histogram
+#define RANGE_BUCKET_COUNT 76
+    uint32_t range_histogram[RANGE_BUCKET_COUNT];
+    // Maximum polar ranges
+#define POLAR_RANGE_RESOLUTION 5 // degree    
+    uint32_t polar_range[360 / POLAR_RANGE_RESOLUTION];
 };
 
 void add_stats(const struct stats *st1, const struct stats *st2, struct stats *target);

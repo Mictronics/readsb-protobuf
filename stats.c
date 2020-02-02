@@ -60,7 +60,7 @@ void add_timespecs(const struct timespec *x, const struct timespec *y, struct ti
     z->tv_nsec = z->tv_nsec % 1000000000L;
 }
 
-static void display_range_histogram(struct stats *st);
+static void display_range_histogram();
 
 void display_stats(struct stats *st) {
     int j;
@@ -177,12 +177,12 @@ void display_stats(struct stats *st) {
     }
 
     if (Modes.stats_range_histo)
-        display_range_histogram(st);
+        display_range_histogram();
 
     fflush(stdout);
 }
 
-static void display_range_histogram(struct stats *st) {
+static void display_range_histogram(void) {
     uint32_t peak;
     int i, j;
     int heights[RANGE_BUCKET_COUNT];
@@ -208,13 +208,13 @@ static void display_range_histogram(struct stats *st) {
     printf("Range histogram:\n\n");
 
     for (i = 0, peak = 0; i < RANGE_BUCKET_COUNT; ++i) {
-        if (st->range_histogram[i] > peak)
-            peak = st->range_histogram[i];
+        if (Modes.stats_range.range_histogram[i] > peak)
+            peak = Modes.stats_range.range_histogram[i];
     }
 
     for (i = 0; i < RANGE_BUCKET_COUNT; ++i) {
-        heights[i] = st->range_histogram[i] * 20.0 * NPIXELS / peak;
-        if (st->range_histogram[i] > 0 && heights[i] == 0)
+        heights[i] = Modes.stats_range.range_histogram[i] * 20.0 * NPIXELS / peak;
+        if (Modes.stats_range.range_histogram[i] > 0 && heights[i] == 0)
             heights[i] = 1;
     }
 
@@ -334,10 +334,6 @@ void add_stats(const struct stats *st1, const struct stats *st2, struct stats *t
     target->with_positions = st1->with_positions;
     target->mlat_positions = st1->mlat_positions;
     target->tisb_positions = st1->tisb_positions;
-
-    // range histogram
-    for (i = 0; i < RANGE_BUCKET_COUNT; ++i)
-        target->range_histogram[i] = st1->range_histogram[i] + st2->range_histogram[i];
 
     // Longest Distance observed
     if (st1->longest_distance > st2->longest_distance)
