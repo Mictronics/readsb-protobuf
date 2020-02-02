@@ -157,6 +157,9 @@ void display_stats(struct stats *st) {
     printf("%u non-ES altitude messages from ES-equipped aircraft ignored\n", st->suppressed_altitude_messages);
     printf("%u unique aircraft tracks\n", st->unique_aircraft);
     printf("%u aircraft tracks where only one message was seen\n", st->single_message_aircraft);
+    printf("%u aircraft with positions seen\n", st->with_positions);
+    printf("%u aircraft had an MLAT postion source\n", st->mlat_positions);
+    printf("%u aircraft had an TISB position source\n", st->tisb_positions);
 
     {
         uint64_t demod_cpu_millis = (uint64_t) st->demod_cpu.tv_sec * 1000UL + st->demod_cpu.tv_nsec / 1000000UL;
@@ -327,6 +330,10 @@ void add_stats(const struct stats *st1, const struct stats *st2, struct stats *t
     // aircraft
     target->unique_aircraft = st1->unique_aircraft + st2->unique_aircraft;
     target->single_message_aircraft = st1->single_message_aircraft + st2->single_message_aircraft;
+    // Positions, momentary snapshot of track count. Sum up will cause false numbers.
+    target->with_positions = st1->with_positions;
+    target->mlat_positions = st1->mlat_positions;
+    target->tisb_positions = st1->tisb_positions;
 
     // range histogram
     for (i = 0; i < RANGE_BUCKET_COUNT; ++i)

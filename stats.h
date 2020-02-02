@@ -115,7 +115,9 @@ struct stats {
 #define RANGE_BUCKET_COUNT 76
     uint32_t range_histogram[RANGE_BUCKET_COUNT];
     double longest_distance; // Longest range decoded, in *metres*
-    uint32_t padding;
+    uint32_t with_positions; // Aircrafts with positions
+    uint32_t mlat_positions; // Positions from mlat source
+    uint32_t tisb_positions; // Positions from tisb source
 };
 
 void add_stats(const struct stats *st1, const struct stats *st2, struct stats *target);

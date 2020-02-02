@@ -502,10 +502,16 @@ struct  _StatisticEntry
   uint32_t max_distance_in_nautical_miles;
   protobuf_c_boolean has_altitude_suppressed;
   uint64_t altitude_suppressed;
-  protobuf_c_boolean has_tracks_all;
-  uint64_t tracks_all;
+  protobuf_c_boolean has_tracks_new;
+  uint64_t tracks_new;
   protobuf_c_boolean has_tracks_single_message;
   uint64_t tracks_single_message;
+  protobuf_c_boolean has_tracks_with_position;
+  uint64_t tracks_with_position;
+  protobuf_c_boolean has_tracks_mlat_position;
+  uint64_t tracks_mlat_position;
+  protobuf_c_boolean has_tracks_tisb_position;
+  uint64_t tracks_tisb_position;
   protobuf_c_boolean has_cpu_demod;
   uint64_t cpu_demod;
   protobuf_c_boolean has_cpu_reader;
@@ -571,7 +577,7 @@ struct  _StatisticEntry
 };
 #define STATISTIC_ENTRY__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&statistic_entry__descriptor) \
-    , 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
+    , 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
 
 
 /*

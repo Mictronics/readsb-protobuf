@@ -1907,6 +1907,10 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     msg.has_now = true;
     msg.messages = Modes.stats_current.messages_total + Modes.stats_alltime.messages_total;
     msg.has_messages = true;
+    
+    Modes.stats_current.with_positions = 0;
+    Modes.stats_current.mlat_positions = 0;
+    Modes.stats_current.tisb_positions = 0;
 
     for (j = 0; j < AIRCRAFTS_BUCKETS; j++) {
         for (a = Modes.aircrafts[j]; a; a = a->next) {
@@ -2034,6 +2038,13 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
                 msg.aircraft[msg.n_aircraft]->has_rc = true;
                 msg.aircraft[msg.n_aircraft]->seen_pos = (now - a->position_valid.updated) / 1000.0;
                 msg.aircraft[msg.n_aircraft]->has_seen_pos = true;
+                // Update position statistics.
+                Modes.stats_current.with_positions += 1;
+                if(a->position_valid.source == SOURCE_MLAT) {
+                    Modes.stats_current.mlat_positions += 1;
+                } else if(a->position_valid.source == SOURCE_TISB) {
+                    Modes.stats_current.tisb_positions += 1;
+                }
             }
             if (a->adsb_version >= 0) {
                 msg.aircraft[msg.n_aircraft]->version = a->adsb_version;
@@ -2167,8 +2178,16 @@ retry:
                 p = append_nav_modes(p, end, a->nav_modes, "\"", ",");
                 p = safe_snprintf(p, end, "]");
             }
-            if (trackDataValid(&a->position_valid))
+            if (trackDataValid(&a->position_valid)) {
                 p = safe_snprintf(p, end, ",\"lat\":%f,\"lon\":%f,\"nic\":%u,\"rc\":%u,\"seen_pos\":%.1f", a->meta.lat, a->meta.lon, a->meta.nic, a->meta.rc, (now - a->position_valid.updated) / 1000.0);
+                // Update position statistics.
+                Modes.stats_current.with_positions += 1;
+                if(a->position_valid.source == SOURCE_MLAT) {
+                    Modes.stats_current.mlat_positions += 1;
+                } else if(a->position_valid.source == SOURCE_TISB) {
+                    Modes.stats_current.tisb_positions += 1;
+                }
+            }
             if (a->adsb_version >= 0)
                 p = safe_snprintf(p, end, ",\"version\":%d", a->adsb_version);
             if (trackDataValid(&a->nic_baro_valid))
@@ -2304,8 +2323,11 @@ static char * appendStatsJson(char *p,
                 ",\"filtered\":%u}"
                 ",\"altitude_suppressed\":%u"
                 ",\"cpu\":{\"demod\":%llu,\"reader\":%llu,\"background\":%llu}"
-                ",\"tracks\":{\"all\":%u"
-                ",\"single_message\":%u}"
+                ",\"tracks\":{\"new\":%u"
+                ",\"single_message\":%u"
+                ",\"with_position\":%u"
+                ",\"mlat_position\":%u"
+                ",\"tisb_position\":%u}"
                 ",\"messages\":%u"
                 ",\"max_distance_in_metres\":%ld"
                 ",\"max_distance_in_nautical_miles\":%.1lf}",
@@ -2329,6 +2351,9 @@ static char * appendStatsJson(char *p,
                 (unsigned long long) background_cpu_millis,
                 st->unique_aircraft,
                 st->single_message_aircraft,
+                st->with_positions,
+                st->mlat_positions,
+                st->tisb_positions,
                 st->messages_total,
                 (long) st->longest_distance,
                 st->longest_distance / 1852.0);
@@ -2464,10 +2489,16 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
     e->cpu_background = background_cpu_millis;
     e->has_cpu_background = true;
 
-    e->tracks_all = st->unique_aircraft;
-    e->has_tracks_all = true;
+    e->tracks_new = st->unique_aircraft;
+    e->has_tracks_new = true;
     e->tracks_single_message = st->single_message_aircraft;
     e->has_tracks_single_message = true;
+    e->tracks_with_position = st->with_positions;
+    e->has_tracks_with_position = true;
+    e->tracks_mlat_position = st->mlat_positions;
+    e->has_tracks_mlat_position = true;
+    e->tracks_tisb_position = st->tisb_positions;
+    e->has_tracks_tisb_position = true;
     e->messages = st->messages_total;
     e->has_messages = true;
     e->max_distance_in_metres = st->longest_distance;

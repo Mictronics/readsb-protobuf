@@ -1683,7 +1683,7 @@ const ProtobufCMessageDescriptor receiver__descriptor =
   (ProtobufCMessageInit) receiver__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[39] =
+static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[42] =
 {
   {
     "start",
@@ -1758,12 +1758,12 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[39] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "tracks_all",
+    "tracks_new",
     7,
     PROTOBUF_C_LABEL_OPTIONAL,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_tracks_all),
-    offsetof(StatisticEntry, tracks_all),
+    offsetof(StatisticEntry, has_tracks_new),
+    offsetof(StatisticEntry, tracks_new),
     NULL,
     NULL,
     0,             /* flags */
@@ -1776,6 +1776,42 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[39] =
     PROTOBUF_C_TYPE_UINT64,
     offsetof(StatisticEntry, has_tracks_single_message),
     offsetof(StatisticEntry, tracks_single_message),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "tracks_with_position",
+    9,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT64,
+    offsetof(StatisticEntry, has_tracks_with_position),
+    offsetof(StatisticEntry, tracks_with_position),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "tracks_mlat_position",
+    10,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT64,
+    offsetof(StatisticEntry, has_tracks_mlat_position),
+    offsetof(StatisticEntry, tracks_mlat_position),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "tracks_tisb_position",
+    11,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT64,
+    offsetof(StatisticEntry, has_tracks_tisb_position),
+    offsetof(StatisticEntry, tracks_tisb_position),
     NULL,
     NULL,
     0,             /* flags */
@@ -2156,53 +2192,56 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[39] =
 };
 static const unsigned statistic_entry__field_indices_by_name[] = {
   5,   /* field[5] = altitude_suppressed */
-  12,   /* field[12] = cpr_airborne */
-  24,   /* field[24] = cpr_filtered */
-  14,   /* field[14] = cpr_global_bad */
-  13,   /* field[13] = cpr_global_ok */
-  15,   /* field[15] = cpr_global_range */
-  17,   /* field[17] = cpr_global_skipped */
-  16,   /* field[16] = cpr_global_speed */
-  19,   /* field[19] = cpr_local_aircraft_relative */
-  18,   /* field[18] = cpr_local_ok */
-  22,   /* field[22] = cpr_local_range */
-  20,   /* field[20] = cpr_local_receiver_relative */
-  21,   /* field[21] = cpr_local_skipped */
-  23,   /* field[23] = cpr_local_speed */
-  11,   /* field[11] = cpr_surface */
-  10,   /* field[10] = cpu_background */
-  8,   /* field[8] = cpu_demod */
-  9,   /* field[9] = cpu_reader */
-  33,   /* field[33] = local_bad */
-  31,   /* field[31] = local_modeac */
-  32,   /* field[32] = local_modes */
-  37,   /* field[37] = local_noise */
-  38,   /* field[38] = local_peak_signal */
-  30,   /* field[30] = local_samples_dropped */
-  29,   /* field[29] = local_samples_processed */
-  36,   /* field[36] = local_signal */
-  35,   /* field[35] = local_strong_signals */
-  34,   /* field[34] = local_unknown_icao */
+  15,   /* field[15] = cpr_airborne */
+  27,   /* field[27] = cpr_filtered */
+  17,   /* field[17] = cpr_global_bad */
+  16,   /* field[16] = cpr_global_ok */
+  18,   /* field[18] = cpr_global_range */
+  20,   /* field[20] = cpr_global_skipped */
+  19,   /* field[19] = cpr_global_speed */
+  22,   /* field[22] = cpr_local_aircraft_relative */
+  21,   /* field[21] = cpr_local_ok */
+  25,   /* field[25] = cpr_local_range */
+  23,   /* field[23] = cpr_local_receiver_relative */
+  24,   /* field[24] = cpr_local_skipped */
+  26,   /* field[26] = cpr_local_speed */
+  14,   /* field[14] = cpr_surface */
+  13,   /* field[13] = cpu_background */
+  11,   /* field[11] = cpu_demod */
+  12,   /* field[12] = cpu_reader */
+  36,   /* field[36] = local_bad */
+  34,   /* field[34] = local_modeac */
+  35,   /* field[35] = local_modes */
+  40,   /* field[40] = local_noise */
+  41,   /* field[41] = local_peak_signal */
+  33,   /* field[33] = local_samples_dropped */
+  32,   /* field[32] = local_samples_processed */
+  39,   /* field[39] = local_signal */
+  38,   /* field[38] = local_strong_signals */
+  37,   /* field[37] = local_unknown_icao */
   3,   /* field[3] = max_distance_in_metres */
   4,   /* field[4] = max_distance_in_nautical_miles */
   2,   /* field[2] = messages */
-  27,   /* field[27] = remote_bad */
-  25,   /* field[25] = remote_modeac */
-  26,   /* field[26] = remote_modes */
-  28,   /* field[28] = remote_unknown_icao */
+  30,   /* field[30] = remote_bad */
+  28,   /* field[28] = remote_modeac */
+  29,   /* field[29] = remote_modes */
+  31,   /* field[31] = remote_unknown_icao */
   0,   /* field[0] = start */
   1,   /* field[1] = stop */
-  6,   /* field[6] = tracks_all */
+  9,   /* field[9] = tracks_mlat_position */
+  6,   /* field[6] = tracks_new */
   7,   /* field[7] = tracks_single_message */
+  10,   /* field[10] = tracks_tisb_position */
+  8,   /* field[8] = tracks_with_position */
 };
 static const ProtobufCIntRange statistic_entry__number_ranges[5 + 1] =
 {
   { 1, 0 },
-  { 20, 8 },
-  { 40, 11 },
-  { 70, 25 },
-  { 90, 29 },
-  { 0, 39 }
+  { 20, 11 },
+  { 40, 14 },
+  { 70, 28 },
+  { 90, 32 },
+  { 0, 42 }
 };
 const ProtobufCMessageDescriptor statistic_entry__descriptor =
 {
@@ -2212,7 +2251,7 @@ const ProtobufCMessageDescriptor statistic_entry__descriptor =
   "StatisticEntry",
   "",
   sizeof(StatisticEntry),
-  39,
+  42,
   statistic_entry__field_descriptors,
   statistic_entry__field_indices_by_name,
   5,  statistic_entry__number_ranges,
