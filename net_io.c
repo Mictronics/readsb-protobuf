@@ -2560,8 +2560,7 @@ void generateStatsProtoBuf(const char *file) {
             stats.polar_range[b]->value = Modes.stats_range.polar_range[b];
             stats.polar_range[b]->has_value = true;
         }
-        stats.n_polar_range =  stats.polar_range_length = POLAR_RANGE_BUCKETS;
-        stats.has_polar_range_length = true;
+        stats.n_polar_range = POLAR_RANGE_BUCKETS;
     }
 
     // Pack and serialize entire aicraft collection.

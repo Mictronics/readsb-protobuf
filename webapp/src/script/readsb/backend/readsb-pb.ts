@@ -492,7 +492,6 @@ namespace READSB {
                     last_5min: undefined,
                     last_15min: undefined,
                     polar_range: [],
-                    polar_range_length: 0,
                     total: undefined,
                 }, end);
         },
@@ -503,8 +502,7 @@ namespace READSB {
             else if (tag === 3) { obj.last_5min = StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos); }
             else if (tag === 4) { obj.last_15min = StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos); }
             else if (tag === 5) { obj.total = StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos); }
-            else if (tag === 6) { obj.polar_range_length = StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos); }
-            else if (tag === 7) {
+            else if (tag === 6) {
                 entry = Statistics.PolarRangeEntry.read(pbf, pbf.readVarint() + pbf.pos);
                 obj.polar_range[entry.key] = entry.value;
             }
@@ -515,11 +513,10 @@ namespace READSB {
             if (obj.last_5min) { pbf.writeMessage(3, StatisticEntry.write, obj.last_5min); }
             if (obj.last_15min) { pbf.writeMessage(4, StatisticEntry.write, obj.last_15min); }
             if (obj.total) { pbf.writeMessage(5, StatisticEntry.write, obj.total); }
-            if (obj.polar_range_length) { pbf.writeFloatField(6, obj.polar_range_length); }
             if (obj.polar_range) {
                 for (const i in obj.polar_range) {
                     if (Object.prototype.hasOwnProperty.call(obj.polar_range, i)) {
-                        pbf.writeMessage(7, Statistics.PolarRangeEntry.write, { key: parseInt(i, 10), value: obj.polar_range[i] });
+                        pbf.writeMessage(6, Statistics.PolarRangeEntry.write, { key: parseInt(i, 10), value: obj.polar_range[i] });
                     }
                 }
             }

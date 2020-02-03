@@ -606,14 +606,12 @@ struct  _Statistics
   StatisticEntry *last_5min;
   StatisticEntry *last_15min;
   StatisticEntry *total;
-  protobuf_c_boolean has_polar_range_length;
-  uint32_t polar_range_length;
   size_t n_polar_range;
   Statistics__PolarRangeEntry **polar_range;
 };
 #define STATISTICS__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&statistics__descriptor) \
-    , NULL, NULL, NULL, NULL, NULL, 0,0, 0,NULL }
+    , NULL, NULL, NULL, NULL, NULL, 0,NULL }
 
 
 /* AircraftMeta__NavModes methods */

@@ -2315,7 +2315,7 @@ const ProtobufCMessageDescriptor statistics__polar_range_entry__descriptor =
   (ProtobufCMessageInit) statistics__polar_range_entry__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor statistics__field_descriptors[7] =
+static const ProtobufCFieldDescriptor statistics__field_descriptors[6] =
 {
   {
     "latest",
@@ -2378,20 +2378,8 @@ static const ProtobufCFieldDescriptor statistics__field_descriptors[7] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "polar_range_length",
-    6,
-    PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_UINT32,
-    offsetof(Statistics, has_polar_range_length),
-    offsetof(Statistics, polar_range_length),
-    NULL,
-    NULL,
-    0,             /* flags */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
     "polar_range",
-    7,
+    6,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
     offsetof(Statistics, n_polar_range),
@@ -2407,14 +2395,13 @@ static const unsigned statistics__field_indices_by_name[] = {
   1,   /* field[1] = last_1min */
   2,   /* field[2] = last_5min */
   0,   /* field[0] = latest */
-  6,   /* field[6] = polar_range */
-  5,   /* field[5] = polar_range_length */
+  5,   /* field[5] = polar_range */
   4,   /* field[4] = total */
 };
 static const ProtobufCIntRange statistics__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 7 }
+  { 0, 6 }
 };
 const ProtobufCMessageDescriptor statistics__descriptor =
 {
@@ -2424,7 +2411,7 @@ const ProtobufCMessageDescriptor statistics__descriptor =
   "Statistics",
   "",
   sizeof(Statistics),
-  7,
+  6,
   statistics__field_descriptors,
   statistics__field_indices_by_name,
   1,  statistics__number_ranges,

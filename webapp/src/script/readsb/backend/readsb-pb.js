@@ -975,7 +975,6 @@ var READSB;
                 last_5min: undefined,
                 last_15min: undefined,
                 polar_range: [],
-                polar_range_length: 0,
                 total: undefined,
             }, end);
         },
@@ -997,9 +996,6 @@ var READSB;
                 obj.total = READSB.StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos);
             }
             else if (tag === 6) {
-                obj.polar_range_length = READSB.StatisticEntry.read(pbf, pbf.readVarint() + pbf.pos);
-            }
-            else if (tag === 7) {
                 entry = READSB.Statistics.PolarRangeEntry.read(pbf, pbf.readVarint() + pbf.pos);
                 obj.polar_range[entry.key] = entry.value;
             }
@@ -1020,13 +1016,10 @@ var READSB;
             if (obj.total) {
                 pbf.writeMessage(5, READSB.StatisticEntry.write, obj.total);
             }
-            if (obj.polar_range_length) {
-                pbf.writeFloatField(6, obj.polar_range_length);
-            }
             if (obj.polar_range) {
                 for (const i in obj.polar_range) {
                     if (Object.prototype.hasOwnProperty.call(obj.polar_range, i)) {
-                        pbf.writeMessage(7, READSB.Statistics.PolarRangeEntry.write, { key: parseInt(i, 10), value: obj.polar_range[i] });
+                        pbf.writeMessage(6, READSB.Statistics.PolarRangeEntry.write, { key: parseInt(i, 10), value: obj.polar_range[i] });
                     }
                 }
             }
