@@ -16,6 +16,7 @@ This is a personal, hobbyist project with no commercial background.
 
 ## Modifications:
 
+* Range polar plot available as map layer. Generated as server side statistics.
 * Storing and exchanging aircraft meta data using Protocol Buffer.
 * Light and dark theme.
 * Add max distance to stats.json.

@@ -295,7 +295,8 @@
       "radolan": "DWD Radolan",
       "siteCircles": "Радиус-линейка",
       "site": "Центр",
-      "altitudeChart": "Легенда высотa"
+      "altitudeChart": "Легенда высотa",
+      "range": "Дальность"
     }
   }
 }

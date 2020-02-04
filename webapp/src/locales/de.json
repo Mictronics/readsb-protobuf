@@ -295,7 +295,8 @@
       "radolan": "DWD Radolan",
       "siteCircles": "Entfernungsringe",
       "site": "Standort",
-      "altitudeChart": "Höhenkarte"
+      "altitudeChart": "Höhenkarte",
+      "range": "Reichweite"
     }
   }
 }

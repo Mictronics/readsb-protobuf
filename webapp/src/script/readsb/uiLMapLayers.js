@@ -187,7 +187,7 @@ var READSB;
             }
             return layers;
         }
-        static CreateSiteCircleLayer() {
+        static CreateSiteCircleLayer(ranges) {
             const site = [];
             const layers = {};
             const siteCirclesGroup = L.layerGroup(null, {
@@ -197,6 +197,12 @@ var READSB;
                 type: "overlay",
             });
             let conversionFactor = 1000.0;
+            if (READSB.AppSettings.DisplayUnits === "nautical") {
+                conversionFactor = 1852.0;
+            }
+            else if (READSB.AppSettings.DisplayUnits === "imperial") {
+                conversionFactor = 1609.0;
+            }
             if (READSB.AppSettings.SiteLat !== undefined && READSB.AppSettings.SiteLon !== undefined) {
                 let color = "black";
                 if (READSB.AppSettings.UseDarkTheme) {
@@ -217,12 +223,6 @@ var READSB;
                         type: "overlay",
                         weight: 1,
                     }));
-                }
-                if (READSB.AppSettings.DisplayUnits === "nautical") {
-                    conversionFactor = 1852.0;
-                }
-                else if (READSB.AppSettings.DisplayUnits === "imperial") {
-                    conversionFactor = 1609.0;
                 }
                 if (READSB.AppSettings.ShowSiteCircles) {
                     for (const dist of READSB.AppSettings.SiteCirclesDistances) {
@@ -245,10 +245,52 @@ var READSB;
                 title: i18next.t("map.layer.altitudeChart"),
                 type: "overlay",
             }));
+            const lg = L.layerGroup(null, {
+                isActive: false,
+                name: "polarrange",
+                title: i18next.t("map.layer.range"),
+                type: "overlay",
+            });
+            if (ranges !== undefined && ranges.length > 0) {
+                this.polarRanges = ranges;
+            }
+            if (this.polarRanges !== undefined && this.polarRanges.length > 0) {
+                lg.addLayer(this.CreatePolarRangeLayer(this.polarRanges));
+                site.push(lg);
+            }
             if (site.length > 0) {
                 layers[i18next.t("map.layer.features")] = site;
             }
             return layers;
+        }
+        static CreatePolarRangeLayer(ranges) {
+            const center = L.latLng(READSB.AppSettings.SiteLat, READSB.AppSettings.SiteLon);
+            const lon1 = center.lng * Math.PI / 180.0;
+            const lat1 = center.lat * Math.PI / 180.0;
+            const locGeom = [];
+            for (let i = 0; i < ranges.length; ++i) {
+                const angularDistance = ranges[i] / 6378137.0;
+                const bearing = i * 2 * Math.PI / ranges.length;
+                let lat2 = Math.asin(Math.sin(lat1) * Math.cos(angularDistance) +
+                    Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing));
+                let lon2 = lon1 + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1), Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2));
+                lat2 = lat2 * 180.0 / Math.PI;
+                lon2 = lon2 * 180.0 / Math.PI;
+                locGeom.push([lat2, lon2]);
+            }
+            locGeom.push(locGeom[0]);
+            let color = "black";
+            if (READSB.AppSettings.UseDarkTheme) {
+                color = "#606060";
+            }
+            return L.polyline(locGeom, {
+                color,
+                fill: false,
+                lineJoin: "round",
+                opacity: 0.7,
+                smoothFactor: 0.5,
+                weight: 1,
+            });
         }
         static MakeGeodesicCircle(center, radius, points) {
             if (center === null) {
@@ -289,6 +331,7 @@ var READSB;
             return s.toFixed(0) + l;
         }
     }
+    LMapLayers.polarRanges = [];
     READSB.LMapLayers = LMapLayers;
 })(READSB || (READSB = {}));
 //# sourceMappingURL=uiLMapLayers.js.map

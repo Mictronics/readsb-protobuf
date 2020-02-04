@@ -98,6 +98,8 @@ namespace READSB {
                     this.receiverErrorCount++;
                     this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
                 });
+            // First try getting the polar range.
+            this.GetPolarRange();
         }
 
         private static worker: Worker = self as any; // See https://github.com/Microsoft/TypeScript/issues/20595#issuecomment-390359040
@@ -238,6 +240,39 @@ namespace READSB {
                     this.receiverErrorCount++;
                     this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
                     console.error(error);
+                });
+        }
+
+        private static GetPolarRange(): void {
+            // Get receiver statistics, use only polar range for now.
+            fetch("../../../data/stats.pb", {
+                cache: "no-cache",
+                method: "GET",
+                mode: "cors",
+            })
+                .then((res: Response) => {
+                    if (res.status >= 200 && res.status < 300) {
+                        return Promise.resolve(res);
+                    } else {
+                        return Promise.reject(new Error(res.statusText));
+                    }
+                })
+                .then((res: Response) => {
+                    return res.arrayBuffer();
+                })
+                .then((pb: ArrayBuffer) => {
+                    const pbf = new Pbf(new Uint8Array(pb));
+                    const msg = Statistics.read(pbf);
+                    pbf.destroy();
+                    if (msg.polar_range.length > 0) {
+                        // Refresh every 5min if range statistic exists.
+                        setTimeout(this.GetPolarRange.bind(this), 5 * 60 * 1000);
+                        this.worker.postMessage({ type: "Range", data: msg.polar_range });
+                    }
+                })
+                .catch((error) => {
+                    this.receiverErrorCount++;
+                    this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
                 });
         }
 

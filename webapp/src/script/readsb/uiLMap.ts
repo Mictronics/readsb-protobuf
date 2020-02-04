@@ -124,23 +124,25 @@ namespace READSB {
         /**
          * Create site marker and site circles on external request.
          * Such as site position or circles distance change.
+         * In case we get range numbers create a polar plot also.
          */
-        public static CreateSiteCircles() {
+        public static CreateSiteCircles(ranges?: number[]) {
+            const features = i18next.t("map.layer.features");
             // Remove old site circles layers
-            if (this.lMapLayers.hasOwnProperty("Features")) {
-                this.lMapLayers["Features"].forEach((l: L.TileLayer, i: number) => {
+            if (this.lMapLayers.hasOwnProperty(features)) {
+                this.lMapLayers[features].forEach((l: L.TileLayer, i: number) => {
                     if (this.lMap.hasLayer(l)) {
                         this.lMap.removeLayer(l);
                     }
                 });
-                delete this.lMapLayers["Features"];
+                delete this.lMapLayers[features];
             }
             // Create new
-            const sl = LMapLayers.CreateSiteCircleLayer();
+            const sl = LMapLayers.CreateSiteCircleLayer(ranges);
             // and add to map
-            if (sl.hasOwnProperty("Features")) {
+            if (sl.hasOwnProperty(features)) {
                 this.lMapLayers = Object.assign(this.lMapLayers, sl);
-                this.lMapLayers["Features"].forEach((l: L.TileLayer) => {
+                this.lMapLayers[features].forEach((l: L.TileLayer) => {
                     const o = l.options as L.ExtLayerOptions;
                     // Activate altitude chart, site and site circles when they are selected by user
                     if (AppSettings.ShowSite && o.name === "site") {
@@ -150,6 +152,9 @@ namespace READSB {
                         o.isActive = true;
                     }
                     if (AppSettings.ShowAltitudeChart && o.name === "altchart") {
+                        o.isActive = true;
+                    }
+                    if (AppSettings.ShowRange && o.name === "polarrange") {
                         o.isActive = true;
                     }
                 });
@@ -335,18 +340,27 @@ namespace READSB {
          */
         private static OnGroupedLayersControlClick(e: any) {
             const input = e.target as HTMLInputElement;
-            if (input.id === "site") {
-                AppSettings.ShowSite = input.checked;
-            } else if (input.id === "sitecircles") {
-                AppSettings.ShowSiteCircles = input.checked;
-            } else if (input.id === "altchart") {
-                const checked = input.checked;
-                AppSettings.ShowAltitudeChart = checked;
-                if (checked) {
-                    document.getElementById("altitudeChart").classList.remove("hidden");
-                } else {
-                    document.getElementById("altitudeChart").classList.add("hidden");
-                }
+            switch (input.id) {
+                case "site":
+                    AppSettings.ShowSite = input.checked;
+                    break;
+                case "sitecircles":
+                    AppSettings.ShowSiteCircles = input.checked;
+                    break;
+                case "altchart":
+                    const checked = input.checked;
+                    AppSettings.ShowAltitudeChart = checked;
+                    if (checked) {
+                        document.getElementById("altitudeChart").classList.remove("hidden");
+                    } else {
+                        document.getElementById("altitudeChart").classList.add("hidden");
+                    }
+                    break;
+                case "polarrange":
+                    AppSettings.ShowRange = input.checked;
+                    break;
+                default:
+                    break;
             }
         }
     }

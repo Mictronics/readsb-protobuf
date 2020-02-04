@@ -13,6 +13,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Add tracked positions to stats.
   * Use only single range histogram buffer.
   * Add and generate maximum polar range with --stats-range option enabled.
+  * Range polar plot available as map overlay.
 
  -- Michael Wolf <michael@mictronics.de>  Sun, 02 Feb 2020 20:39:21 +0200
 

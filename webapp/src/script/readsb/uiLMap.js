@@ -73,19 +73,20 @@ var READSB;
             }
             this.Initialized = true;
         }
-        static CreateSiteCircles() {
-            if (this.lMapLayers.hasOwnProperty("Features")) {
-                this.lMapLayers["Features"].forEach((l, i) => {
+        static CreateSiteCircles(ranges) {
+            const features = i18next.t("map.layer.features");
+            if (this.lMapLayers.hasOwnProperty(features)) {
+                this.lMapLayers[features].forEach((l, i) => {
                     if (this.lMap.hasLayer(l)) {
                         this.lMap.removeLayer(l);
                     }
                 });
-                delete this.lMapLayers["Features"];
+                delete this.lMapLayers[features];
             }
-            const sl = READSB.LMapLayers.CreateSiteCircleLayer();
-            if (sl.hasOwnProperty("Features")) {
+            const sl = READSB.LMapLayers.CreateSiteCircleLayer(ranges);
+            if (sl.hasOwnProperty(features)) {
                 this.lMapLayers = Object.assign(this.lMapLayers, sl);
-                this.lMapLayers["Features"].forEach((l) => {
+                this.lMapLayers[features].forEach((l) => {
                     const o = l.options;
                     if (READSB.AppSettings.ShowSite && o.name === "site") {
                         o.isActive = true;
@@ -94,6 +95,9 @@ var READSB;
                         o.isActive = true;
                     }
                     if (READSB.AppSettings.ShowAltitudeChart && o.name === "altchart") {
+                        o.isActive = true;
+                    }
+                    if (READSB.AppSettings.ShowRange && o.name === "polarrange") {
                         o.isActive = true;
                     }
                 });
@@ -202,21 +206,28 @@ var READSB;
         }
         static OnGroupedLayersControlClick(e) {
             const input = e.target;
-            if (input.id === "site") {
-                READSB.AppSettings.ShowSite = input.checked;
-            }
-            else if (input.id === "sitecircles") {
-                READSB.AppSettings.ShowSiteCircles = input.checked;
-            }
-            else if (input.id === "altchart") {
-                const checked = input.checked;
-                READSB.AppSettings.ShowAltitudeChart = checked;
-                if (checked) {
-                    document.getElementById("altitudeChart").classList.remove("hidden");
-                }
-                else {
-                    document.getElementById("altitudeChart").classList.add("hidden");
-                }
+            switch (input.id) {
+                case "site":
+                    READSB.AppSettings.ShowSite = input.checked;
+                    break;
+                case "sitecircles":
+                    READSB.AppSettings.ShowSiteCircles = input.checked;
+                    break;
+                case "altchart":
+                    const checked = input.checked;
+                    READSB.AppSettings.ShowAltitudeChart = checked;
+                    if (checked) {
+                        document.getElementById("altitudeChart").classList.remove("hidden");
+                    }
+                    else {
+                        document.getElementById("altitudeChart").classList.add("hidden");
+                    }
+                    break;
+                case "polarrange":
+                    READSB.AppSettings.ShowRange = input.checked;
+                    break;
+                default:
+                    break;
             }
         }
     }

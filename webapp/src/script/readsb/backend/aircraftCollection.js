@@ -66,6 +66,7 @@ var READSB;
                 this.receiverErrorCount++;
                 this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
             });
+            this.GetPolarRange();
         }
         static OnFrontendMessage(ev) {
             const msg = ev.data;
@@ -148,6 +149,37 @@ var READSB;
                 this.receiverErrorCount++;
                 this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
                 console.error(error);
+            });
+        }
+        static GetPolarRange() {
+            fetch("../../../data/stats.pb", {
+                cache: "no-cache",
+                method: "GET",
+                mode: "cors",
+            })
+                .then((res) => {
+                if (res.status >= 200 && res.status < 300) {
+                    return Promise.resolve(res);
+                }
+                else {
+                    return Promise.reject(new Error(res.statusText));
+                }
+            })
+                .then((res) => {
+                return res.arrayBuffer();
+            })
+                .then((pb) => {
+                const pbf = new Pbf(new Uint8Array(pb));
+                const msg = READSB.Statistics.read(pbf);
+                pbf.destroy();
+                if (msg.polar_range.length > 0) {
+                    setTimeout(this.GetPolarRange.bind(this), 5 * 60 * 1000);
+                    this.worker.postMessage({ type: "Range", data: msg.polar_range });
+                }
+            })
+                .catch((error) => {
+                this.receiverErrorCount++;
+                this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
             });
         }
         static GetMessageRate() {

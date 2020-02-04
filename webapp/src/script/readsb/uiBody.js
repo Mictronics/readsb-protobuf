@@ -230,6 +230,9 @@ var READSB;
                         }
                     }
                     break;
+                case "Range":
+                    READSB.LMap.CreateSiteCircles(msg.data);
+                    break;
                 default:
                     break;
             }

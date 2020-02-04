@@ -357,6 +357,9 @@ namespace READSB {
                         }
                     }
                     break;
+                case "Range":
+                    LMap.CreateSiteCircles(msg.data);
+                    break;
                 default:
                     break;
             }

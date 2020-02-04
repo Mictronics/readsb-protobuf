@@ -231,7 +231,7 @@ namespace READSB {
          * Create site and site circles layers.
          * A separate function is used for this since site layer can change with user settings.
          */
-        public static CreateSiteCircleLayer(): L.GroupedLayersCollection {
+        public static CreateSiteCircleLayer(ranges?: number[]): L.GroupedLayersCollection {
             const site: L.Layer[] = [];
             const layers: L.GroupedLayersCollection = {};
             const siteCirclesGroup: L.LayerGroup = L.layerGroup(null, {
@@ -240,7 +240,13 @@ namespace READSB {
                 title: i18next.t("map.layer.siteCircles"),
                 type: "overlay",
             } as L.ExtLayerOptions);
+
             let conversionFactor = 1000.0;
+            if (AppSettings.DisplayUnits === "nautical") {
+                conversionFactor = 1852.0;
+            } else if (AppSettings.DisplayUnits === "imperial") {
+                conversionFactor = 1609.0;
+            }
 
             if (AppSettings.SiteLat !== undefined && AppSettings.SiteLon !== undefined) {
                 let color = "black";
@@ -263,12 +269,6 @@ namespace READSB {
                         type: "overlay",
                         weight: 1,
                     } as L.ExtLayerOptions));
-                }
-
-                if (AppSettings.DisplayUnits === "nautical") {
-                    conversionFactor = 1852.0;
-                } else if (AppSettings.DisplayUnits === "imperial") {
-                    conversionFactor = 1609.0;
                 }
 
                 if (AppSettings.ShowSiteCircles) {
@@ -297,10 +297,70 @@ namespace READSB {
                 type: "overlay",
             } as L.ExtLayerOptions));
 
+            const lg = L.layerGroup(null, {
+                isActive: false,
+                name: "polarrange",
+                title: i18next.t("map.layer.range"),
+                type: "overlay",
+            } as L.ExtLayerOptions);
+
+            // Don't overwrite existing ranges.
+            if (ranges !== undefined && ranges.length > 0) {
+                this.polarRanges = ranges;
+            }
+
+            // Create layer if we have valid ranges.
+            if (this.polarRanges !== undefined && this.polarRanges.length > 0) {
+                lg.addLayer(this.CreatePolarRangeLayer(this.polarRanges));
+                site.push(lg);
+            }
+
             if (site.length > 0) {
                 layers[i18next.t("map.layer.features")] = site;
             }
             return layers;
+        }
+
+        private static polarRanges: number[] = [];
+
+        /**
+         * Create a polyline around our site location depending on maximum recorded ranges.
+         * @param ranges Holding maximum recorded ranges for each bearing bucket. [range in meters]
+         */
+        private static CreatePolarRangeLayer(ranges: number[]): L.Layer {
+            const center = L.latLng(AppSettings.SiteLat, AppSettings.SiteLon);
+            const lon1 = center.lng * Math.PI / 180.0;
+            const lat1 = center.lat * Math.PI / 180.0;
+            const locGeom: L.LatLngExpression[] = [];
+            for (let i = 0; i < ranges.length; ++i) {
+                const angularDistance = ranges[i] / 6378137.0;
+                const bearing = i * 2 * Math.PI / ranges.length;
+
+                let lat2 = Math.asin(Math.sin(lat1) * Math.cos(angularDistance) +
+                    Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing));
+                let lon2 = lon1 + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
+                    Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2));
+
+                lat2 = lat2 * 180.0 / Math.PI;
+                lon2 = lon2 * 180.0 / Math.PI;
+                locGeom.push([lat2, lon2]);
+            }
+            // Close the line.
+            locGeom.push(locGeom[0]);
+
+            let color = "black";
+            if (AppSettings.UseDarkTheme) {
+                color = "#606060";
+            }
+
+            return L.polyline(locGeom, {
+                color,
+                fill: false,
+                lineJoin: "round",
+                opacity: 0.7,
+                smoothFactor: 0.5,
+                weight: 1,
+            });
         }
 
         /**
