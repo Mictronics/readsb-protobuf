@@ -54,6 +54,7 @@ declare namespace READSB {
         UseDarkTheme: boolean;
         ShowTraceDetails: boolean;
         DimMap: boolean;
+        ShowRange: boolean;
     }
 
     /*
@@ -92,6 +93,7 @@ declare namespace READSB {
         HideAircraftsNotInView: boolean;
         UseDarkTheme: boolean;
         ShowTraceDetails: boolean;
+        ShowRange: boolean;
     }
 
     /**

@@ -299,6 +299,17 @@ namespace READSB {
             DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
+        static get ShowRange(): boolean {
+            if (this.appSettings.ShowRange === undefined) {
+                this.appSettings.ShowRange = false;
+            }
+            return this.appSettings.ShowRange;
+        }
+        static set ShowRange(value: boolean) {
+            this.appSettings.ShowRange = value;
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
+        }
+
         public static ReadSettings() {
             DatabaseFrontend.GetSetting("MapSettings")
                 .then((result: any) => {
@@ -357,6 +368,7 @@ namespace READSB {
                         ShowFlags: ("ShowFlags" in data) ? data.ShowFlags : true,
                         ShowHoverOverLabels: ("ShowHoverOverLabels" in data) ? data.ShowHoverOverLabels : true,
                         ShowMessageRateInTitle: ("ShowMessageRateInTitle" in data) ? data.ShowMessageRateInTitle : true,
+                        ShowRange: ("ShowRange" in data) ? data.ShowRange : false,
                         ShowSite: ("ShowSite" in data) ? data.ShowSite : true,
                         ShowSiteCircles: ("ShowSiteCircles" in data) ? data.ShowSiteCircles : true,
                         ShowTraceDetails: ("ShowTraceDetails" in data) ? data.ShowTraceDetails : false,
@@ -411,6 +423,7 @@ namespace READSB {
                         ShowFlags: true,
                         ShowHoverOverLabels: true,
                         ShowMessageRateInTitle: true,
+                        ShowRange: false,
                         ShowSite: true,
                         ShowSiteCircles: true,
                         ShowTraceDetails: false,
