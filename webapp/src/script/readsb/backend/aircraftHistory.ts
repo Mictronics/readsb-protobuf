@@ -107,7 +107,7 @@ namespace READSB {
                 h.aircraft.forEach((ac: IAircraftMeta, i: number) => {
                     if ((ac.lat !== null) && (ac.lon !== null) && (ac.alt_baro !== null)) {
                         const pos = new Array(ac.lat, ac.lon, ac.alt_baro);
-                        const msg = { type: "Update", data: [ac.addr, pos, h.now] };
+                        const msg = { type: "Update", data: [ac.addr.toString(16).padStart(6, "0"), pos, h.now] };
                         AircraftTraceCollector.postMessage(msg);
                     }
                 });
