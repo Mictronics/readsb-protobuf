@@ -607,7 +607,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
                 Modes.stats = (uint64_t) 1 << 60; // "never"
             break;
         case OptStatsRange:
-            Modes.stats_range_histo = 1;
+            Modes.stats_polar_range = 1;
             break;
         case OptStatsEvery:
             Modes.stats = (uint64_t) (1000 * atof(arg));

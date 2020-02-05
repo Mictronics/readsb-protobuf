@@ -2550,7 +2550,7 @@ void generateStatsProtoBuf(const char *file) {
     stats.total = &total;
 
     // Inlcude maximum range polar values if enabled
-    if (Modes.stats_range_histo) {
+    if (Modes.stats_polar_range) {
         stats.polar_range = malloc(sizeof (Statistics__PolarRangeEntry*) * POLAR_RANGE_BUCKETS);
         for (b = 0; b < POLAR_RANGE_BUCKETS; b++) {
             stats.polar_range[b] = malloc(sizeof (Statistics__PolarRangeEntry));
@@ -2585,7 +2585,7 @@ void generateStatsProtoBuf(const char *file) {
     }
     // Free up all allocated memory.
     free(buf);
-    if (Modes.stats_range_histo) {
+    if (Modes.stats_polar_range) {
         for (b = 0; b < POLAR_RANGE_BUCKETS; b++) {
             free(stats.polar_range[b]);
         }

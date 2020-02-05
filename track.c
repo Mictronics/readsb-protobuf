@@ -278,7 +278,7 @@ static double greatcircle(double lat0, double lon0, double lat1, double lon1) {
     return 6371e3 * acos(sin(lat0) * sin(lat1) + cos(lat0) * cos(lat1) * cos(dlon));
 }
 
-static void update_range_histogram(double lat, double lon) {
+static void update_polar_range(double lat, double lon) {
     double range = 0;
     int valid_latlon = Modes.bUserFlags & MODES_USER_LATLON_VALID;
 
@@ -291,18 +291,9 @@ static void update_range_histogram(double lat, double lon) {
         Modes.stats_current.longest_distance = range;
     }
 
-    if (Modes.stats_range_histo) {
-        int bucket = round(range / Modes.maxRange * RANGE_BUCKET_COUNT);
-
-        if (bucket < 0)
-            bucket = 0;
-        else if (bucket >= RANGE_BUCKET_COUNT)
-            bucket = RANGE_BUCKET_COUNT - 1;
-
-        ++Modes.stats_range.range_histogram[bucket];
-
+    if (Modes.stats_polar_range) {
         // Round bearing to polarplot resolution.
-        bucket = round(getBearing(Modes.fUserLat, Modes.fUserLon, lat, lon) / POLAR_RANGE_RESOLUTION);
+        int bucket = round(getBearing(Modes.fUserLat, Modes.fUserLon, lat, lon) / POLAR_RANGE_RESOLUTION);
         if (Modes.stats_range.polar_range[bucket] < range) {
             Modes.stats_range.polar_range[bucket] = (uint32_t) range;
         }
@@ -676,7 +667,7 @@ static void updatePosition(struct aircraft *a, struct modesMessage *mm) {
         a->meta.rc = new_rc;
 
         if (a->pos_reliable_odd >= 2 && a->pos_reliable_even >= 2 && mm->source == SOURCE_ADSB) {
-            update_range_histogram(new_lat, new_lon);
+            update_polar_range(new_lat, new_lon);
         }
     }
 }

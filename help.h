@@ -54,7 +54,7 @@ static struct argp_option options[] = {
     {"forward-mlat", OptForwardMlat, 0, 0, "Allow forwarding of received mlat results to output ports", 1},
     {"mlat", OptMlat, 0, 0, "Display raw messages in Beast ASCII mode", 1},
     {"stats", OptStats, 0, 0, "With --ifile print stats at exit. No other output", 1},
-    {"stats-range", OptStatsRange, 0, 0, "Collect/show range histogram", 1},
+    {"stats-range", OptStatsRange, 0, 0, "Collect range statistics for polar plot", 1},
     {"stats-every", OptStatsEvery, "<sec>", 0, "Show and reset stats every <sec> seconds", 1},
     {"onlyaddr", OptOnlyAddr, 0, 0, "Show only ICAO addresses", 1},
     {"gnss", OptGnss, 0, 0, "Show altitudes as GNSS when available", 1},

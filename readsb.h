@@ -339,7 +339,7 @@ struct { // Internal state
     int forward_mlat; // allow forwarding of mlat messages to output ports
     int quiet; // Suppress stdout
     int interactive; // Interactive mode
-    int stats_range_histo; // Collect/show a range histogram?
+    int stats_polar_range; // Collect/show a range histogram?
     int onlyaddr; // Print only ICAO addresses
     int metric; // Use metric units
     int use_gnss; // Use GNSS altitudes with H suffix ("HAE", though it isn't always) when available
