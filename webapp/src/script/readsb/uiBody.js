@@ -375,6 +375,10 @@ var READSB;
             else {
                 r.cells[2].textContent = "";
             }
+            let alt = READSB.Format.AltitudeBrief(ac.Altitude, ac.VertRate, READSB.AppSettings.DisplayUnits);
+            if (ac.AirGround === READSB.eAirGround.ground) {
+                alt = READSB.Strings.Ground;
+            }
             if (!r.cells[3].hidden) {
                 r.cells[3].textContent = (ac.Registration !== null ? ac.Registration : "");
             }
@@ -388,7 +392,7 @@ var READSB;
                 r.cells[6].textContent = (ac.Squawk !== null ? ac.Squawk : "");
             }
             if (!r.cells[7].hidden) {
-                r.cells[7].textContent = READSB.Format.AltitudeBrief(ac.Altitude, ac.VertRate, READSB.AppSettings.DisplayUnits);
+                r.cells[7].textContent = alt;
             }
             if (!r.cells[8].hidden) {
                 r.cells[8].textContent = READSB.Format.SpeedBrief(ac.Speed, READSB.AppSettings.DisplayUnits);
@@ -503,7 +507,12 @@ var READSB;
             else {
                 emerg.className = "hidden";
             }
-            document.getElementById("selectedAltitude").innerText = READSB.Format.AltitudeLong(ac.Altitude, ac.VertRate, READSB.AppSettings.DisplayUnits);
+            if (ac.AirGround === READSB.eAirGround.ground) {
+                document.getElementById("selectedAltitude").innerText = READSB.Strings.Ground;
+            }
+            else {
+                document.getElementById("selectedAltitude").innerText = READSB.Format.AltitudeLong(ac.Altitude, ac.VertRate, READSB.AppSettings.DisplayUnits);
+            }
             if (ac.Squawk === null || ac.Squawk === "0000") {
                 document.getElementById("selectedSquawk").innerText = READSB.Strings.NotApplicable;
             }
@@ -835,10 +844,10 @@ var READSB;
                 vsi = READSB.Strings.Level;
             }
             let altText;
-            if (ac.Altitude === null) {
+            if (ac.AirGround === READSB.eAirGround.invalid || ac.AirGround === READSB.eAirGround.uncertain || ac.Altitude === null) {
                 altText = "?";
             }
-            else if (isNaN(ac.Altitude)) {
+            else if (ac.AirGround === READSB.eAirGround.ground) {
                 altText = READSB.Strings.Ground;
             }
             else {
@@ -926,6 +935,12 @@ var READSB;
         static GetMarkerColor(ac) {
             if (ac.Squawk in this.specialSquawks) {
                 return this.specialSquawks[ac.Squawk].MarkerColor;
+            }
+            if (ac.AirGround === READSB.eAirGround.invalid || ac.AirGround === READSB.eAirGround.uncertain) {
+                return "hsl(200, 18%, 46%)";
+            }
+            if (ac.AirGround === READSB.eAirGround.ground) {
+                return "hsl(16, 25%, 38%)";
             }
             let h;
             let s;

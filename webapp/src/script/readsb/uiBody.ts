@@ -556,13 +556,18 @@ namespace READSB {
                 r.cells[2].textContent = "";
             }
 
+            let alt = Format.AltitudeBrief(ac.Altitude, ac.VertRate, AppSettings.DisplayUnits);
+            if (ac.AirGround === eAirGround.ground) {
+                alt = Strings.Ground;
+            }
+
             // Update only visible cells.
             // Hidden property is set in AircraftListShowColumn together with hidden class.
             if (!r.cells[3].hidden) { r.cells[3].textContent = (ac.Registration !== null ? ac.Registration : ""); }
             if (!r.cells[4].hidden) { r.cells[4].textContent = (ac.CivilMil !== null ? (ac.CivilMil === true ? Strings.MilitaryShort : Strings.CivilShort) : ""); }
             if (!r.cells[5].hidden) { r.cells[5].textContent = (ac.IcaoType !== null ? ac.IcaoType : ""); }
             if (!r.cells[6].hidden) { r.cells[6].textContent = (ac.Squawk !== null ? ac.Squawk : ""); }
-            if (!r.cells[7].hidden) { r.cells[7].textContent = Format.AltitudeBrief(ac.Altitude, ac.VertRate, AppSettings.DisplayUnits); }
+            if (!r.cells[7].hidden) { r.cells[7].textContent = alt; }
             if (!r.cells[8].hidden) { r.cells[8].textContent = Format.SpeedBrief(ac.Speed, AppSettings.DisplayUnits); }
             if (!r.cells[9].hidden) { r.cells[9].textContent = Format.VerticalRateBrief(ac.VertRate, AppSettings.DisplayUnits); }
             if (!r.cells[10].hidden) { r.cells[10].textContent = Format.DistanceBrief(ac.SiteDist, AppSettings.DisplayUnits); }
@@ -668,7 +673,11 @@ namespace READSB {
                 emerg.className = "hidden";
             }
 
-            document.getElementById("selectedAltitude").innerText = Format.AltitudeLong(ac.Altitude, ac.VertRate, AppSettings.DisplayUnits);
+            if (ac.AirGround === eAirGround.ground) {
+                document.getElementById("selectedAltitude").innerText = Strings.Ground;
+            } else {
+                document.getElementById("selectedAltitude").innerText = Format.AltitudeLong(ac.Altitude, ac.VertRate, AppSettings.DisplayUnits);
+            }
 
             if (ac.Squawk === null || ac.Squawk === "0000") {
                 document.getElementById("selectedSquawk").innerText = Strings.NotApplicable;
@@ -1055,9 +1064,9 @@ namespace READSB {
             }
 
             let altText;
-            if (ac.Altitude === null) {
+            if (ac.AirGround === eAirGround.invalid || ac.AirGround === eAirGround.uncertain || ac.Altitude === null) {
                 altText = "?";
-            } else if (isNaN(ac.Altitude)) {
+            } else if (ac.AirGround === eAirGround.ground) {
                 altText = Strings.Ground;
             } else {
                 altText = Math.round(
@@ -1161,6 +1170,14 @@ namespace READSB {
             // Emergency squawks override everything else
             if (ac.Squawk in this.specialSquawks) {
                 return this.specialSquawks[ac.Squawk].MarkerColor;
+            }
+
+            if (ac.AirGround === eAirGround.invalid || ac.AirGround === eAirGround.uncertain) {
+                return "hsl(200, 18%, 46%)"; // Blue grey
+            }
+
+            if (ac.AirGround === eAirGround.ground) {
+                return "hsl(16, 25%, 38%)"; // Brown
             }
 
             let h;

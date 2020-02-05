@@ -46,9 +46,6 @@ namespace READSB {
         // alt in feet
         public static AltitudeBrief(alt: number, vr: number, displayUnits: string) {
             let altText;
-            if (isNaN(Number(alt))) {
-                return Strings.Ground;
-            }
 
             altText = Math.round(this.ConvertAltitude(alt, displayUnits)) + this.Nbsp;
 
@@ -67,9 +64,6 @@ namespace READSB {
         // alt in feet
         public static AltitudeLong(alt: number, vr: number, displayUnits: string) {
             let altText = "";
-            if (isNaN(Number(alt))) {
-                return Strings.Ground;
-            }
 
             altText =
                 Math.round(this.ConvertAltitude(alt, displayUnits)) +

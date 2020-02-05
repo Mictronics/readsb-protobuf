@@ -78,6 +78,7 @@ namespace READSB {
         public LastMessageTime: number = null;
         public DataSource: string = null;
         public ExternalInfoLink: string = null;
+        public AirGround: eAirGround = eAirGround.invalid;
         private LastPositionTime: number = null;
         private OperatorChecked: boolean = false;
 
@@ -125,9 +126,10 @@ namespace READSB {
             this.Alert = !!data.alert;
             this.SPIdent = !!data.spi;
             this.SilType = eSilType[data.sil_type];
+            this.AirGround = data.air_ground;
 
             if (data.squawk !== null) {
-                this.Squawk = data.squawk.toString(16);
+                this.Squawk = data.squawk.toString(16).padStart(4, "0");
             }
 
             if (data.category !== null) {

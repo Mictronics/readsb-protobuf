@@ -62,6 +62,7 @@ var READSB;
             this.LastMessageTime = null;
             this.DataSource = null;
             this.ExternalInfoLink = null;
+            this.AirGround = READSB.eAirGround.invalid;
             this.LastPositionTime = null;
             this.OperatorChecked = false;
             this.Icao = icao;
@@ -97,8 +98,9 @@ var READSB;
             this.Alert = !!data.alert;
             this.SPIdent = !!data.spi;
             this.SilType = READSB.eSilType[data.sil_type];
+            this.AirGround = data.air_ground;
             if (data.squawk !== null) {
-                this.Squawk = data.squawk.toString(16);
+                this.Squawk = data.squawk.toString(16).padStart(4, "0");
             }
             if (data.category !== null) {
                 this.Category = data.category.toString(16).toUpperCase();

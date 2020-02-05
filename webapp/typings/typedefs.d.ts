@@ -234,6 +234,7 @@ declare namespace READSB {
         ExternalInfoLink: string;
         Alert: boolean;
         SPIdent: boolean;
+        AirGround: eAirGround;
         UpdateData(receiverTimestamp: number, data: IAircraftMeta): void;
         UpdateVisibility(receiverTimestamp: number): boolean;
     }
