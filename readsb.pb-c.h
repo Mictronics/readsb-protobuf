@@ -273,6 +273,11 @@ struct  _AircraftMeta
    */
   protobuf_c_boolean has_rssi;
   float rssi;
+  /*
+   * Distance to site in meter.
+   */
+  protobuf_c_boolean has_distance;
+  uint32_t distance;
   protobuf_c_boolean has_air_ground;
   AircraftMeta__AirGround air_ground;
   /*
@@ -416,7 +421,7 @@ struct  _AircraftMeta
 };
 #define AIRCRAFT_META__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&aircraft_meta__descriptor) \
-    , 0,0, NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, NULL, NULL }
+    , 0,0, NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, NULL, NULL }
 
 
 /*

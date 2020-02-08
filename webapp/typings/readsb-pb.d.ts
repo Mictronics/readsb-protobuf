@@ -70,6 +70,7 @@ declare namespace READSB {
         alt_geom?: number;
         baro_rate?: number;
         category?: number;
+        distance?: number;
         emergency?: eEmergency;
         flight?: string;
         geom_rate?: number;

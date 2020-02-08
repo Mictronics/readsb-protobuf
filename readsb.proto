@@ -36,8 +36,9 @@ message AircraftMeta {
 	uint64 messages = 10;  // Total number of Mode S messages received from this aircraft.
 	uint64 seen = 11; // When a message was last received from this aircraft. (in milliseconds!!!)
 	float rssi = 12; // Recent average RSSI (signal power), in dbFS; this will always be negative.
+    uint32 distance = 13; // Distance to site in meter.
 
-	reserved 13 to 14;
+	reserved 14;
 
     enum AirGround {
         AG_INVALID = 0;

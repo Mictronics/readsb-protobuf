@@ -169,6 +169,7 @@ namespace READSB {
                     alt_geom: null,
                     baro_rate: null,
                     category: null,
+                    distance: null,
                     emergency: null,
                     flight: null,
                     geom_rate: null,
@@ -221,6 +222,7 @@ namespace READSB {
             else if (tag === 10) { obj.messages = pbf.readVarint(); }
             else if (tag === 11) { obj.seen = pbf.readVarint(); }
             else if (tag === 12) { obj.rssi = pbf.readFloat(); }
+            else if (tag === 13) { obj.distance = pbf.readVarint(); }
             else if (tag === 15) { obj.air_ground = pbf.readVarint(); }
             else if (tag === 20) { obj.alt_geom = pbf.readVarint(true); }
             else if (tag === 21) { obj.baro_rate = pbf.readVarint(true); }
@@ -267,6 +269,7 @@ namespace READSB {
             if (obj.messages) { pbf.writeVarintField(10, obj.messages); }
             if (obj.seen) { pbf.writeVarintField(11, obj.seen); }
             if (obj.rssi) { pbf.writeFloatField(12, obj.rssi); }
+            if (obj.distance) { pbf.writeVarintField(13, obj.distance); }
             if (obj.air_ground) { pbf.writeVarintField(15, obj.air_ground); }
             if (obj.alt_geom) { pbf.writeVarintField(20, obj.alt_geom); }
             if (obj.baro_rate) { pbf.writeVarintField(21, obj.baro_rate); }

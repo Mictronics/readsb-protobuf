@@ -278,12 +278,12 @@ static double greatcircle(double lat0, double lon0, double lat1, double lon1) {
     return 6371e3 * acos(sin(lat0) * sin(lat1) + cos(lat0) * cos(lat1) * cos(dlon));
 }
 
-static void update_polar_range(double lat, double lon) {
+static uint32_t update_polar_range(double lat, double lon) {
     double range = 0;
     int valid_latlon = Modes.bUserFlags & MODES_USER_LATLON_VALID;
 
     if (!valid_latlon)
-        return;
+        return UINT32_MAX;
 
     range = greatcircle(Modes.fUserLat, Modes.fUserLon, lat, lon);
 
@@ -298,6 +298,8 @@ static void update_polar_range(double lat, double lon) {
             Modes.stats_range.polar_range[bucket] = (uint32_t) range;
         }
     }
+
+    return (uint32_t) range;
 }
 
 // return true if it's OK for the aircraft to have travelled from its last known position
@@ -666,8 +668,12 @@ static void updatePosition(struct aircraft *a, struct modesMessage *mm) {
         a->meta.nic = new_nic;
         a->meta.rc = new_rc;
 
+        a->meta.distance = false;
         if (a->pos_reliable_odd >= 2 && a->pos_reliable_even >= 2 && mm->source == SOURCE_ADSB) {
-            update_polar_range(new_lat, new_lon);
+            a->meta.distance = update_polar_range(new_lat, new_lon);
+            if (a->meta.distance < UINT32_MAX) {
+                a->meta.has_distance = true;
+            }
         }
     }
 }

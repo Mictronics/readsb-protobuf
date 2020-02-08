@@ -932,7 +932,7 @@ const ProtobufCEnumDescriptor aircraft_meta__sil_type__descriptor =
   aircraft_meta__sil_type__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };
-static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[44] =
+static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[45] =
 {
   {
     "addr",
@@ -1073,6 +1073,18 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[44] =
     PROTOBUF_C_TYPE_FLOAT,
     offsetof(AircraftMeta, has_rssi),
     offsetof(AircraftMeta, rssi),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "distance",
+    13,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(AircraftMeta, has_distance),
+    offsetof(AircraftMeta, distance),
     NULL,
     NULL,
     0,             /* flags */
@@ -1465,58 +1477,59 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[44] =
 };
 static const unsigned aircraft_meta__field_indices_by_name[] = {
   0,   /* field[0] = addr */
-  39,   /* field[39] = addr_type */
-  12,   /* field[12] = air_ground */
-  35,   /* field[35] = alert */
+  40,   /* field[40] = addr_type */
+  13,   /* field[13] = air_ground */
+  36,   /* field[36] = alert */
   4,   /* field[4] = alt_baro */
-  13,   /* field[13] = alt_geom */
-  14,   /* field[14] = baro_rate */
+  14,   /* field[14] = alt_geom */
+  15,   /* field[15] = baro_rate */
   3,   /* field[3] = category */
-  40,   /* field[40] = emergency */
+  12,   /* field[12] = distance */
+  41,   /* field[41] = emergency */
   1,   /* field[1] = flight */
-  15,   /* field[15] = geom_rate */
-  16,   /* field[16] = gs */
-  37,   /* field[37] = gva */
+  16,   /* field[16] = geom_rate */
+  17,   /* field[17] = gs */
+  38,   /* field[38] = gva */
   6,   /* field[6] = ias */
   7,   /* field[7] = lat */
   8,   /* field[8] = lon */
-  18,   /* field[18] = mach */
+  19,   /* field[19] = mach */
   5,   /* field[5] = mag_heading */
   9,   /* field[9] = messages */
-  31,   /* field[31] = nac_p */
-  32,   /* field[32] = nac_v */
-  25,   /* field[25] = nav_altitude_fms */
-  24,   /* field[24] = nav_altitude_mcp */
-  26,   /* field[26] = nav_heading */
-  42,   /* field[42] = nav_modes */
-  23,   /* field[23] = nav_qnh */
-  27,   /* field[27] = nic */
-  30,   /* field[30] = nic_baro */
-  28,   /* field[28] = rc */
-  22,   /* field[22] = roll */
+  32,   /* field[32] = nac_p */
+  33,   /* field[33] = nac_v */
+  26,   /* field[26] = nav_altitude_fms */
+  25,   /* field[25] = nav_altitude_mcp */
+  27,   /* field[27] = nav_heading */
+  43,   /* field[43] = nav_modes */
+  24,   /* field[24] = nav_qnh */
+  28,   /* field[28] = nic */
+  31,   /* field[31] = nic_baro */
+  29,   /* field[29] = rc */
+  23,   /* field[23] = roll */
   11,   /* field[11] = rssi */
-  38,   /* field[38] = sda */
+  39,   /* field[39] = sda */
   10,   /* field[10] = seen */
-  34,   /* field[34] = seen_pos */
-  33,   /* field[33] = sil */
-  41,   /* field[41] = sil_type */
-  36,   /* field[36] = spi */
+  35,   /* field[35] = seen_pos */
+  34,   /* field[34] = sil */
+  42,   /* field[42] = sil_type */
+  37,   /* field[37] = spi */
   2,   /* field[2] = squawk */
-  17,   /* field[17] = tas */
-  20,   /* field[20] = track */
-  21,   /* field[21] = track_rate */
-  19,   /* field[19] = true_heading */
-  43,   /* field[43] = valid_source */
-  29,   /* field[29] = version */
+  18,   /* field[18] = tas */
+  21,   /* field[21] = track */
+  22,   /* field[22] = track_rate */
+  20,   /* field[20] = true_heading */
+  44,   /* field[44] = valid_source */
+  30,   /* field[30] = version */
 };
 static const ProtobufCIntRange aircraft_meta__number_ranges[5 + 1] =
 {
   { 1, 0 },
-  { 15, 12 },
-  { 20, 13 },
-  { 100, 39 },
-  { 150, 42 },
-  { 0, 44 }
+  { 15, 13 },
+  { 20, 14 },
+  { 100, 40 },
+  { 150, 43 },
+  { 0, 45 }
 };
 const ProtobufCMessageDescriptor aircraft_meta__descriptor =
 {
@@ -1526,7 +1539,7 @@ const ProtobufCMessageDescriptor aircraft_meta__descriptor =
   "AircraftMeta",
   "",
   sizeof(AircraftMeta),
-  44,
+  45,
   aircraft_meta__field_descriptors,
   aircraft_meta__field_indices_by_name,
   5,  aircraft_meta__number_ranges,

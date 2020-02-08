@@ -298,6 +298,7 @@ var READSB;
                 alt_geom: null,
                 baro_rate: null,
                 category: null,
+                distance: null,
                 emergency: null,
                 flight: null,
                 geom_rate: null,
@@ -373,6 +374,9 @@ var READSB;
             }
             else if (tag === 12) {
                 obj.rssi = pbf.readFloat();
+            }
+            else if (tag === 13) {
+                obj.distance = pbf.readVarint();
             }
             else if (tag === 15) {
                 obj.air_ground = pbf.readVarint();
@@ -507,6 +511,9 @@ var READSB;
             }
             if (obj.rssi) {
                 pbf.writeFloatField(12, obj.rssi);
+            }
+            if (obj.distance) {
+                pbf.writeVarintField(13, obj.distance);
             }
             if (obj.air_ground) {
                 pbf.writeVarintField(15, obj.air_ground);
