@@ -386,10 +386,12 @@ namespace READSB {
                     cpr_local_range: 0,
                     cpr_local_speed: 0,
                     cpr_filtered: 0,
+                    remote_accepted: 0,
                     remote_modeac: 0,
                     remote_modes: 0,
                     remote_bad: 0,
                     remote_unknown_icao: 0,
+                    local_accepted: 0,
                     local_samples_processed: 0,
                     local_samples_dropped: 0,
                     local_modeac: 0,
@@ -432,6 +434,7 @@ namespace READSB {
             else if (tag === 71) { obj.remote_modes = pbf.readVarint(); }
             else if (tag === 72) { obj.remote_bad = pbf.readVarint(); }
             else if (tag === 73) { obj.remote_unknown_icao = pbf.readVarint(); }
+            else if (tag === 74) { obj.remote_accepted = pbf.readVarint(); }
             else if (tag === 90) { obj.local_samples_processed = pbf.readVarint(); }
             else if (tag === 91) { obj.local_samples_dropped = pbf.readVarint(); }
             else if (tag === 92) { obj.local_modeac = pbf.readVarint(); }
@@ -442,6 +445,7 @@ namespace READSB {
             else if (tag === 97) { obj.local_signal = pbf.readFloat(); }
             else if (tag === 98) { obj.local_noise = pbf.readFloat(); }
             else if (tag === 99) { obj.local_peak_signal = pbf.readFloat(); }
+            else if (tag === 100) { obj.local_accepted = pbf.readVarint(); }
         },
         write(obj: IStatisticEntry, pbf: Pbf) {
             if (obj.start) { pbf.writeVarintField(1, obj.start); }
@@ -473,6 +477,7 @@ namespace READSB {
             if (obj.remote_modes) { pbf.writeVarintField(71, obj.remote_modes); }
             if (obj.remote_bad) { pbf.writeVarintField(72, obj.remote_bad); }
             if (obj.remote_unknown_icao) { pbf.writeVarintField(73, obj.remote_unknown_icao); }
+            if (obj.remote_accepted) { pbf.writeVarintField(74, obj.remote_accepted); }
             if (obj.local_samples_processed) { pbf.writeVarintField(90, obj.local_samples_processed); }
             if (obj.local_samples_dropped) { pbf.writeVarintField(91, obj.local_samples_dropped); }
             if (obj.local_modeac) { pbf.writeVarintField(92, obj.local_modeac); }
@@ -483,6 +488,7 @@ namespace READSB {
             if (obj.local_signal) { pbf.writeFloatField(97, obj.local_signal); }
             if (obj.local_noise) { pbf.writeFloatField(98, obj.local_noise); }
             if (obj.local_peak_signal) { pbf.writeFloatField(99, obj.local_peak_signal); }
+            if (obj.local_accepted) { pbf.writeVarintField(100, obj.local_accepted); }
         },
     };
 

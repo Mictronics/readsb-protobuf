@@ -719,10 +719,12 @@ var READSB;
                 cpr_local_range: 0,
                 cpr_local_speed: 0,
                 cpr_filtered: 0,
+                remote_accepted: 0,
                 remote_modeac: 0,
                 remote_modes: 0,
                 remote_bad: 0,
                 remote_unknown_icao: 0,
+                local_accepted: 0,
                 local_samples_processed: 0,
                 local_samples_dropped: 0,
                 local_modeac: 0,
@@ -823,6 +825,9 @@ var READSB;
             else if (tag === 73) {
                 obj.remote_unknown_icao = pbf.readVarint();
             }
+            else if (tag === 74) {
+                obj.remote_accepted = pbf.readVarint();
+            }
             else if (tag === 90) {
                 obj.local_samples_processed = pbf.readVarint();
             }
@@ -852,6 +857,9 @@ var READSB;
             }
             else if (tag === 99) {
                 obj.local_peak_signal = pbf.readFloat();
+            }
+            else if (tag === 100) {
+                obj.local_accepted = pbf.readVarint();
             }
         },
         write(obj, pbf) {
@@ -942,6 +950,9 @@ var READSB;
             if (obj.remote_unknown_icao) {
                 pbf.writeVarintField(73, obj.remote_unknown_icao);
             }
+            if (obj.remote_accepted) {
+                pbf.writeVarintField(74, obj.remote_accepted);
+            }
             if (obj.local_samples_processed) {
                 pbf.writeVarintField(90, obj.local_samples_processed);
             }
@@ -971,6 +982,9 @@ var READSB;
             }
             if (obj.local_peak_signal) {
                 pbf.writeFloatField(99, obj.local_peak_signal);
+            }
+            if (obj.local_accepted) {
+                pbf.writeVarintField(100, obj.local_accepted);
             }
         },
     };

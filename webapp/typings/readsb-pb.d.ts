@@ -142,6 +142,7 @@ declare namespace READSB {
         cpu_background?: number;
         cpu_demod?: number;
         cpu_reader?: number;
+        local_accepted?: number;
         local_bad?: number;
         local_modeac?: number;
         local_modes?: number;
@@ -155,6 +156,7 @@ declare namespace READSB {
         max_distance_in_metres?: number;
         max_distance_in_nautical_miles?: number;
         messages?: number;
+        remote_accepted?: number;
         remote_bad?: number;
         remote_modeac?: number;
         remote_modes?: number;

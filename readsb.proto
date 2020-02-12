@@ -223,6 +223,7 @@ message StatisticEntry {
     uint64 remote_modes = 71;
     uint64 remote_bad = 72;
     uint64 remote_unknown_icao = 73;
+    uint64 remote_accepted = 74;
     uint64 local_samples_processed = 90;
     uint64 local_samples_dropped = 91;
     uint64 local_modeac = 92;
@@ -233,6 +234,7 @@ message StatisticEntry {
     float local_signal = 97;
     float local_noise = 98;
     float local_peak_signal = 99;
+    uint64 local_accepted = 100;
 }
 
 /**

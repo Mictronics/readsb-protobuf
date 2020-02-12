@@ -1702,7 +1702,7 @@ const ProtobufCMessageDescriptor receiver__descriptor =
   (ProtobufCMessageInit) receiver__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[42] =
+static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
 {
   {
     "start",
@@ -2089,6 +2089,18 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[42] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
+    "remote_accepted",
+    74,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT64,
+    offsetof(StatisticEntry, has_remote_accepted),
+    offsetof(StatisticEntry, remote_accepted),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
     "local_samples_processed",
     90,
     PROTOBUF_C_LABEL_OPTIONAL,
@@ -2208,6 +2220,18 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[42] =
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "local_accepted",
+    100,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT64,
+    offsetof(StatisticEntry, has_local_accepted),
+    offsetof(StatisticEntry, local_accepted),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned statistic_entry__field_indices_by_name[] = {
   5,   /* field[5] = altitude_suppressed */
@@ -2228,19 +2252,21 @@ static const unsigned statistic_entry__field_indices_by_name[] = {
   13,   /* field[13] = cpu_background */
   11,   /* field[11] = cpu_demod */
   12,   /* field[12] = cpu_reader */
-  36,   /* field[36] = local_bad */
-  34,   /* field[34] = local_modeac */
-  35,   /* field[35] = local_modes */
-  40,   /* field[40] = local_noise */
-  41,   /* field[41] = local_peak_signal */
-  33,   /* field[33] = local_samples_dropped */
-  32,   /* field[32] = local_samples_processed */
-  39,   /* field[39] = local_signal */
-  38,   /* field[38] = local_strong_signals */
-  37,   /* field[37] = local_unknown_icao */
+  43,   /* field[43] = local_accepted */
+  37,   /* field[37] = local_bad */
+  35,   /* field[35] = local_modeac */
+  36,   /* field[36] = local_modes */
+  41,   /* field[41] = local_noise */
+  42,   /* field[42] = local_peak_signal */
+  34,   /* field[34] = local_samples_dropped */
+  33,   /* field[33] = local_samples_processed */
+  40,   /* field[40] = local_signal */
+  39,   /* field[39] = local_strong_signals */
+  38,   /* field[38] = local_unknown_icao */
   3,   /* field[3] = max_distance_in_metres */
   4,   /* field[4] = max_distance_in_nautical_miles */
   2,   /* field[2] = messages */
+  32,   /* field[32] = remote_accepted */
   30,   /* field[30] = remote_bad */
   28,   /* field[28] = remote_modeac */
   29,   /* field[29] = remote_modes */
@@ -2259,8 +2285,8 @@ static const ProtobufCIntRange statistic_entry__number_ranges[5 + 1] =
   { 20, 11 },
   { 40, 14 },
   { 70, 28 },
-  { 90, 32 },
-  { 0, 42 }
+  { 90, 33 },
+  { 0, 44 }
 };
 const ProtobufCMessageDescriptor statistic_entry__descriptor =
 {
@@ -2270,7 +2296,7 @@ const ProtobufCMessageDescriptor statistic_entry__descriptor =
   "StatisticEntry",
   "",
   sizeof(StatisticEntry),
-  42,
+  44,
   statistic_entry__field_descriptors,
   statistic_entry__field_indices_by_name,
   5,  statistic_entry__number_ranges,

@@ -560,6 +560,8 @@ struct  _StatisticEntry
   uint64_t remote_bad;
   protobuf_c_boolean has_remote_unknown_icao;
   uint64_t remote_unknown_icao;
+  protobuf_c_boolean has_remote_accepted;
+  uint64_t remote_accepted;
   protobuf_c_boolean has_local_samples_processed;
   uint64_t local_samples_processed;
   protobuf_c_boolean has_local_samples_dropped;
@@ -580,10 +582,12 @@ struct  _StatisticEntry
   float local_noise;
   protobuf_c_boolean has_local_peak_signal;
   float local_peak_signal;
+  protobuf_c_boolean has_local_accepted;
+  uint64_t local_accepted;
 };
 #define STATISTIC_ENTRY__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&statistic_entry__descriptor) \
-    , 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
+    , 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
 
 
 struct  _Statistics__PolarRangeEntry

@@ -2396,6 +2396,7 @@ struct char_buffer generateStatsJson() {
 }
 
 static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
+    int i;
     e->start = st->start / 1000.0;
     e->has_start = true;
     e->stop = st->end / 1000.0;
@@ -2435,6 +2436,11 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
         }
         e->local_strong_signals = st->strong_signal_count;
         e->has_local_strong_signals = true;
+        
+        for (i = 0; i <= Modes.nfix_crc; ++i) {
+            e->local_accepted += st->demod_accepted[i];
+            e->has_local_accepted = true;
+        }
     }
 
     if (Modes.net) {
@@ -2446,6 +2452,11 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
         e->has_remote_bad = true;
         e->remote_unknown_icao = st->remote_rejected_unknown_icao;
         e->has_remote_unknown_icao = true;
+        
+        for (i = 0; i <= Modes.nfix_crc; ++i) {
+            e->remote_accepted += st->remote_accepted[i];
+            e->has_remote_accepted = true;
+        }
     }
 
     e->cpr_surface = st->cpr_surface;
