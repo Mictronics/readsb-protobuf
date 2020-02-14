@@ -7,4 +7,6 @@ nbproject/*
 oneoff/convert_benchmark
 oneoff/decode_comm_b
 /readsb
+/readsbrrd
 /viewadsb
+/cprtest

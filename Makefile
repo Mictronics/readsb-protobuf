@@ -11,7 +11,8 @@ CPPFLAGS += -DMODES_READSB_VERSION=\"$(READSB_VERSION)\" -DMODES_READSB_VARIANT=
 
 DIALECT = -std=c11
 CFLAGS += $(DIALECT) -O2 -g -W -D_DEFAULT_SOURCE -Wall -Werror
-LIBS = -pthread -lpthread -lm -lrt -lncurses -lprotobuf-c
+LIBS = -pthread -lpthread -lm -lrt -lncurses -lprotobuf-c -lrrd
+LDFLAGS = 
 
 ifeq ($(AGGRESSIVE), yes)
   CPPFLAGS += -DALLOW_AGGRESSIVE
@@ -54,13 +55,14 @@ ifeq ($(PLUTOSDR), yes)
     LIBS_SDR += $(shell pkg-config --libs libiio libad9361)
 endif
 
-all: protoc readsb viewadsb
+all: protoc readsb readsbrrd viewadsb
 
 protoc: readsb.proto
+	rm -f readsb.pb-c.c readsb.pb-c.h
 	protoc-c --c_out=. $<
 
 protoc-clean:
-	rm -rf readsb.pb-c.c readsb.pb-c.h
+	rm -f readsb.pb-c.c readsb.pb-c.h
 
 %.o: %.c *.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
@@ -75,8 +77,11 @@ readsb: readsb.pb-c.o readsb.o anet.o interactive.o mode_ac.o mode_s.o comm_b.o 
 viewadsb: readsb.pb-c.o viewadsb.o anet.o interactive.o mode_ac.o mode_s.o comm_b.o net_io.o crc.o stats.o cpr.o icao_filter.o track.o util.o ais_charset.o $(COMPAT)
 	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
 
+readsbrrd: readsb.pb-c.o readsbrrd.o $(COMPAT)
+	$(CC) -g -o $@ $^ $(LDFLAGS) $(LIBS)
+
 clean:	protoc-clean
-	rm -f *.o compat/clock_gettime/*.o compat/clock_nanosleep/*.o readsb viewadsb cprtests crctests convert_benchmark
+	rm -f *.o compat/clock_gettime/*.o compat/clock_nanosleep/*.o readsb readsbrrd viewadsb cprtests crctests convert_benchmark
 
 test: cprtests
 	./cprtests

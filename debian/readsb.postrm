@@ -22,6 +22,9 @@ set -e
 case "$1" in
     purge)
         rm -f /etc/default/readsb
+        rm -rf /var/lib/collectd/rrd/localhost/readsb
+        rm -rf /usr/share/readsb/graphs
+        rm -rf /usr/share/readsb
         deluser readsb plugdev
         deluser readsb dialout
         deluser readsb
@@ -40,6 +43,13 @@ case "$1" in
         then
             echo "Disabling lighttpd integration (stat cache).." >&2
             lighty-disable-mod readsb-statcache || true
+            changed=true
+        fi
+
+        if [ -e /etc/lighttpd/conf-enabled/88-readsb-graphs.conf ]
+        then
+            echo "Disabling lighttpd integration.." >&2
+            lighty-disable-mod readsb-graphs || true
             changed=true
         fi
 

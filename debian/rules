@@ -15,8 +15,8 @@ DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/default.mk
 
 ifeq ($(DEB_HOST_ARCH),armhf)
-  # Assume a Pi-like target, where using an 8-bit table is a fairly big win over the float path
-  CPPFLAGS += -DSC16Q11_TABLE_BITS=8
+	# Assume a Pi-like target, where using an 8-bit table is a fairly big win over the float path
+	CPPFLAGS += -DSC16Q11_TABLE_BITS=8
 endif
 
 CONFIG_SWITCH =
@@ -26,15 +26,15 @@ ifneq ($(filter rtlsdr,$(DEB_BUILD_PROFILES)),)
 endif
 
 ifneq ($(filter bladerf,$(DEB_BUILD_PROFILES)),)
-        CONFIG_SWITCH += 'BLADERF=yes'
+	CONFIG_SWITCH += 'BLADERF=yes'
 endif
 
 ifneq ($(filter plutosdr,$(DEB_BUILD_PROFILES)),)
-        CONFIG_SWITCH += 'PLUTOSDR=yes'
+	CONFIG_SWITCH += 'PLUTOSDR=yes'
 endif
 
 ifneq ($(filter biastee,$(DEB_BUILD_PROFILES)),)
-        CONFIG_SWITCH += 'HAVE_BIASTEE=yes'
+	CONFIG_SWITCH += 'HAVE_BIASTEE=yes'
 endif
 
 override_dh_auto_build:
@@ -44,10 +44,23 @@ override_dh_install:
 	dh_install
 	install -d debian/readsb/usr/bin
 	cp -a readsb debian/readsb/usr/bin/readsb
+	cp -a readsbrrd debian/readsb/usr/bin/readsbrrd
 	cp -a viewadsb debian/readsb/usr/bin/viewadsb
 
 override_dh_installinit:
 	dh_installinit --noscripts
+
+override_dh_installsystemd:
+	dh_installsystemd --name=readsb
+	dh_installsystemd --name=readsbrrd
+
+override_dh_systemd_enable:
+	dh_systemd_enable --name=readsb
+	dh_systemd_enable --name=readsbrrd
+
+override_dh_systemd_start:
+	dh_systemd_start --name=readsb
+	dh_systemd_start --name=readsbrrd
 
 override_dh_shlibdeps:
 	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info

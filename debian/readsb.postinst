@@ -31,16 +31,23 @@ case "$1" in
             adduser --system --home /usr/share/$NAME --no-create-home --quiet "$RUNAS"
         fi
 
+        if [ ! -d "/var/lib/collectd/rrd/localhost/readsb" ] 
+        then
+            mkdir -p -m 755 "/var/lib/collectd/rrd/localhost/readsb"
+            chown $RUNAS "/var/lib/collectd/rrd/localhost/readsb"
+        fi
+
         # plugdev required for bladeRF USB access
         adduser "$RUNAS" plugdev
-	# dialout required for Mode-S Beast and GNS5894 ttyAMA0 access
-	adduser "$RUNAS" dialout
+        # dialout required for Mode-S Beast and GNS5894 ttyAMA0 access
+        adduser "$RUNAS" dialout
 
         # set up lighttpd
         if dpkg --compare-versions "$2" lt "3.1.0"
         then
             echo "Enabling lighttpd integration.." >&2
             lighty-enable-mod readsb || true
+            lighty-enable-mod readsb-graphs || true
 
             # only enable the statcache config if there is nothing else around that already
             # configures it, because lighttpd fails if it's configured twice

@@ -15,8 +15,9 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Add and generate maximum polar range with --stats-range option enabled.
   * Range polar plot available as map overlay.
   * Range histogram removed.
+  * Add RRD file statistics generation as systemd service.
 
- -- Michael Wolf <michael@mictronics.de>  Sun, 02 Feb 2020 20:39:21 +0200
+ -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
 readsb (3.8.1) stable; urgency=medium
 
