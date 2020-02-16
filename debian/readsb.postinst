@@ -19,8 +19,6 @@ set -e
 
 NAME=readsb
 RUNAS=readsb
-CRONFILE=/etc/cron.d/$NAME
-TEMPLATECRON=/usr/share/$NAME/cron-template
 
 case "$1" in
     configure)
@@ -37,6 +35,11 @@ case "$1" in
             chown $RUNAS "/var/lib/collectd/rrd/localhost/readsb"
         fi
 
+        if [ ! -d "/usr/share/readsb" ] 
+        then
+            chown -R $RUNAS: "/usr/share/readsb"
+        fi
+
         # plugdev required for bladeRF USB access
         adduser "$RUNAS" plugdev
         # dialout required for Mode-S Beast and GNS5894 ttyAMA0 access
@@ -44,7 +47,9 @@ case "$1" in
 
         # Make a backup of existing collectd configuration
         cp /etc/collectd/collectd.conf /etc/collectd/collectd.conf.bak
-        cp /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
+        mv /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
+        echo "Restarting lighttpd.." >&2
+        service collectd restart
 
         # set up lighttpd
         if dpkg --compare-versions "$2" lt "3.1.0"
