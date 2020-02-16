@@ -42,6 +42,10 @@ case "$1" in
         # dialout required for Mode-S Beast and GNS5894 ttyAMA0 access
         adduser "$RUNAS" dialout
 
+        # Make a backup of existing collectd configuration
+        cp /etc/collectd/collectd.conf /etc/collectd/collectd.conf.bak
+        cp /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
+
         # set up lighttpd
         if dpkg --compare-versions "$2" lt "3.1.0"
         then

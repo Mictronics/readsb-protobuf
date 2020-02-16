@@ -25,12 +25,18 @@ case "$1" in
         rm -rf /var/lib/collectd/rrd/localhost/readsb
         rm -rf /usr/share/readsb/graphs
         rm -rf /usr/share/readsb
+        rm -f /etc/collectd/collectd.conf
+        cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
         deluser readsb plugdev
         deluser readsb dialout
         deluser readsb
         ;;
 
     remove)
+        # Restore original collectd configuration
+        cp /etc/collectd/collectd.conf /etc/collectd/readsb.collectd.conf
+        cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
+
         changed=false
         if [ -e /etc/lighttpd/conf-enabled/89-readsb.conf ]
         then
