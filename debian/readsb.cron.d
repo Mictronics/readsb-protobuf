@@ -13,3 +13,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/share/rea
 0 1-23/6 * * * readsb bash graphs.sh 1y >/dev/null 2>&1
 
 @reboot readsb bash boot.sh >/dev/null 2>&1
+
