@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Readsb Performance Graphs</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../radar/css/bootstrap/bootstrap.min.css" />
+    <link rel="icon" type="image/png" href="../radar/favicon.ico" />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h2>Performance Graphs</h2>
+      <div class="row">
+        <div id="navigation-bar" class="btn-group col-auto" role="group">
+          <button
+            type="button"
+            id="btn-1h"
+            class="btn btn-info btn-sm"
+            onclick="switchView('1h')"
+          >
+            1 hour
+          </button>
+          <button
+            type="button"
+            id="btn-6h"
+            class="btn btn-info btn-sm"
+            onclick="switchView('6h')"
+          >
+            6 hours
+          </button>
+          <button
+            type="button"
+            id="btn-12h"
+            class="btn btn-info btn-sm"
+            onclick="switchView('12h')"
+          >
+            12 hours
+          </button>
+          <button
+            type="button"
+            id="btn-24h"
+            class="btn btn-info btn-sm"
+            onclick="switchView('24h')"
+          >
+            24 hours
+          </button>
+          <button
+            type="button"
+            id="btn-7d"
+            class="btn btn-info btn-sm"
+            onclick="switchView('7d')"
+          >
+            1 week
+          </button>
+          <button
+            type="button"
+            id="btn-30d"
+            class="btn btn-info btn-sm"
+            onclick="switchView('30d')"
+          >
+            1 month
+          </button>
+          <button
+            type="button"
+            id="btn-180d"
+            class="btn btn-info btn-sm"
+            onclick="switchView('180d')"
+          >
+            6 months
+          </button>
+          <button
+            type="button"
+            id="btn-365d"
+            class="btn btn-info btn-sm"
+            onclick="switchView('1y')"
+          >
+            1 year
+          </button>
+        </div>
+        <div class="col text-right font-weight-lighter">
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="range-radio"
+              id="nautical-radio"
+              value="nautical"
+              onclick="switchRangeUnit('nautical')"
+            />
+            <label class="form-check-label" for="nautical-radio"
+              >Aeronautical</label
+            >
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="range-radio"
+              id="imperial-radio"
+              value="imperial"
+              onclick="switchRangeUnit('imperial')"
+            />
+            <label class="form-check-label" for="imperial-radio"
+              >Imperial</label
+            >
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="range-radio"
+              id="metric-radio"
+              value="metric"
+              onclick="switchRangeUnit('metric')"
+            />
+            <label class="form-check-label" for="metric-radio">Metric</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="temperature-radio"
+              id="fahrenheit-radio"
+              onclick="switchTemperatureUnit('fahrenheit')"
+            />
+            <label class="form-check-label" for="fahrenheit-radio"
+              >Fahrenheit</label
+            >
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="temperature-radio"
+              id="celsius-radio"
+              onclick="switchTemperatureUnit('celsius')"
+            />
+            <label class="form-check-label" for="celsius-radio">Celsius</label>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-2" style="max-width: fit-content;">
+        <div class="card-header">Receiver</div>
+        <div class="card-body">
+          <div class="row mb-2 ">
+            <div class="col">
+              <img
+                id="local-trailing-rate-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Message Rate (Trailing)"
+              />
+            </div>
+          </div>
+          <div class="row mb-2 ">
+            <div class="col-auto">
+              <img
+                id="aircraft-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Aircraft Seen"
+              />
+            </div>
+            <div class="col">
+              <img
+                id="tracks-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Tracks Seen"
+              />
+            </div>
+          </div>
+          <div class="row mb-2 ">
+            <div class="col-auto">
+              <img
+                id="range-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Max Range"
+              />
+            </div>
+            <div class="col">
+              <img
+                id="signal-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Signal Level"
+              />
+            </div>
+          </div>
+          <div class="row mb-2 ">
+            <div class="col-auto">
+              <img
+                id="local-rate-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Message Rate"
+              />
+            </div>
+            <div class="col">
+              <img
+                id="aircraft-message-rate-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Aircraft Message Rate"
+              />
+            </div>
+          </div>
+          <div class="row mb-2 ">
+            <div class="col-auto">
+              <img
+                id="readsb-cpu-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="CPU Utilization"
+              />
+            </div>
+            <div class="col"></div>
+          </div>
+        </div>
+      </div>
+      <!-- System Graphs -->
+      <div class="card mt-2 mb-3" style="max-width: fit-content;">
+        <div class="card-header">System</div>
+        <div class="card-body">
+          <div class="row mb-2 ">
+            <div class="col">
+              <img
+                id="system-cpu-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Overall CPU Utilization"
+              />
+            </div>
+          </div>
+          <div class="row mb-2 ">
+            <div class="col-auto">
+              <img
+                id="system-temperature-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Core Temperature"
+              />
+            </div>
+            <div class="col">
+              <img
+                id="system-memory-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Memory Utilization"
+              />
+            </div>
+          </div>
+          <div class="row mb-2 ">
+            <div class="col-auto">
+              <img
+                id="system-network-bandwidth-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Bandwidth Usage"
+              />
+            </div>
+            <div class="col">
+              <img
+                id="system-df-root-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Disk Space Usage (/)"
+              />
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-auto">
+              <img
+                id="system-disk-iops-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Disk I/O - IOPS"
+              />
+            </div>
+            <div class="col">
+              <img
+                id="system-disk-octets-image"
+                class="img-fluid rounded"
+                src="#"
+                alt="Disk I/O - Bandwidth"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="text-center">
+        <a href="https://github.com/Mictronics/readsb" target="_blank"
+          >readsb on Github</a
+        >
+      </footer>
+    </div>
+    <script src="../radar/script/jquery.min.js"></script>
+    <script src="../radar/script/bootstrap.bundle.min.js"></script>
+    <script src="../radar/script/graphs.js"></script>
+  </body>
+</html>
