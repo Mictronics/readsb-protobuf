@@ -1751,22 +1751,22 @@ static char *append_flags(char *p, char *end, struct aircraft *a, datasource_t s
 }
 
 static char *append_nav_modes(char *p, char *end, AircraftMeta__NavModes flags, const char *quote, const char *sep) {
-    if (flags.has_autopilot) {
+    if (flags.autopilot) {
         p = safe_snprintf(p, end, "%sautopilot%s%s", quote, quote, sep);
     }
-    if (flags.has_vnav) {
+    if (flags.vnav) {
         p = safe_snprintf(p, end, "%svnav%s%s", quote, quote, sep);
     }
-    if (flags.has_althold) {
+    if (flags.althold) {
         p = safe_snprintf(p, end, "%salthold%s%s", quote, quote, sep);
     }
-    if (flags.has_approach) {
+    if (flags.approach) {
         p = safe_snprintf(p, end, "%sapproach%s%s", quote, quote, sep);
     }
-    if (flags.has_lnav) {
+    if (flags.lnav) {
         p = safe_snprintf(p, end, "%slnav%s%s", quote, quote, sep);
     }
-    if (flags.has_tcas) {
+    if (flags.tcas) {
         p = safe_snprintf(p, end, "%stcas%s%s", quote, quote, sep);
     }
     return p;
@@ -1840,38 +1840,38 @@ static const char *nav_altitude_source_enum_string(nav_altitude_source_t src) {
  * @param a Single aicraft data.
  */
 static void generateValidSourceMessage(struct aircraft *a) {
-    a->valid_source.callsign = a->valid_source.has_callsign = a->callsign_valid.source;
-    a->valid_source.altitude = a->valid_source.has_altitude = a->altitude_baro_valid.source;
-    a->valid_source.alt_geom = a->valid_source.has_alt_geom = a->altitude_geom_valid.source;
-    a->valid_source.gs = a->valid_source.has_gs = a->gs_valid.source;
-    a->valid_source.ias = a->valid_source.has_ias = a->ias_valid.source;
-    a->valid_source.tas = a->valid_source.has_tas = a->tas_valid.source;
-    a->valid_source.mach = a->valid_source.has_mach = a->mach_valid.source;
-    a->valid_source.track = a->valid_source.has_track = a->track_valid.source;
-    a->valid_source.track_rate = a->valid_source.has_track_rate = a->track_rate_valid.source;
-    a->valid_source.roll = a->valid_source.has_roll = a->roll_valid.source;
-    a->valid_source.mag_heading = a->valid_source.has_mag_heading = a->mag_heading_valid.source;
-    a->valid_source.true_heading = a->valid_source.has_true_heading = a->true_heading_valid.source;
-    a->valid_source.baro_rate = a->valid_source.has_baro_rate = a->baro_rate_valid.source;
-    a->valid_source.geom_rate = a->valid_source.has_geom_rate = a->geom_rate_valid.source;
-    a->valid_source.squawk = a->valid_source.has_squawk = a->squawk_valid.source;
-    a->valid_source.emergency = a->valid_source.has_emergency = a->emergency_valid.source;
-    a->valid_source.nav_qnh = a->valid_source.has_nav_qnh = a->nav_qnh_valid.source;
-    a->valid_source.nav_altitude_mcp = a->valid_source.has_nav_altitude_mcp = a->nav_altitude_mcp_valid.source;
-    a->valid_source.nav_altitude_fms = a->valid_source.has_nav_altitude_fms = a->nav_altitude_fms_valid.source;
-    a->valid_source.nav_heading = a->valid_source.has_nav_heading = a->nav_heading_valid.source;
-    a->valid_source.nav_modes = a->valid_source.has_nav_modes = a->nav_modes_valid.source;
-    a->valid_source.lat = a->valid_source.has_lat = a->position_valid.source;
-    a->valid_source.lon = a->valid_source.has_lon = a->position_valid.source;
-    a->valid_source.nic = a->valid_source.has_nic = a->position_valid.source;
-    a->valid_source.rc = a->valid_source.has_rc = a->position_valid.source;
-    a->valid_source.nic_baro = a->valid_source.has_nic_baro = a->nic_baro_valid.source;
-    a->valid_source.nac_p = a->valid_source.has_nac_p = a->nac_p_valid.source;
-    a->valid_source.nac_v = a->valid_source.has_nac_v = a->nac_v_valid.source;
-    a->valid_source.sil = a->valid_source.has_sil = a->sil_valid.source;
-    a->valid_source.sil_type = a->valid_source.has_sil_type = a->sil_valid.source;
-    a->valid_source.gva = a->valid_source.has_gva = a->gva_valid.source;
-    a->valid_source.sda = a->valid_source.has_sda = a->sda_valid.source;
+    a->valid_source.callsign = a->callsign_valid.source;
+    a->valid_source.altitude = a->altitude_baro_valid.source;
+    a->valid_source.alt_geom = a->altitude_geom_valid.source;
+    a->valid_source.gs = a->gs_valid.source;
+    a->valid_source.ias = a->ias_valid.source;
+    a->valid_source.tas = a->tas_valid.source;
+    a->valid_source.mach = a->mach_valid.source;
+    a->valid_source.track = a->track_valid.source;
+    a->valid_source.track_rate = a->track_rate_valid.source;
+    a->valid_source.roll = a->roll_valid.source;
+    a->valid_source.mag_heading = a->mag_heading_valid.source;
+    a->valid_source.true_heading = a->true_heading_valid.source;
+    a->valid_source.baro_rate = a->baro_rate_valid.source;
+    a->valid_source.geom_rate = a->geom_rate_valid.source;
+    a->valid_source.squawk = a->squawk_valid.source;
+    a->valid_source.emergency = a->emergency_valid.source;
+    a->valid_source.nav_qnh = a->nav_qnh_valid.source;
+    a->valid_source.nav_altitude_mcp = a->nav_altitude_mcp_valid.source;
+    a->valid_source.nav_altitude_fms = a->nav_altitude_fms_valid.source;
+    a->valid_source.nav_heading = a->nav_heading_valid.source;
+    a->valid_source.nav_modes = a->nav_modes_valid.source;
+    a->valid_source.lat = a->position_valid.source;
+    a->valid_source.lon = a->position_valid.source;
+    a->valid_source.nic = a->position_valid.source;
+    a->valid_source.rc = a->position_valid.source;
+    a->valid_source.nic_baro = a->nic_baro_valid.source;
+    a->valid_source.nac_p = a->nac_p_valid.source;
+    a->valid_source.nac_v = a->nac_v_valid.source;
+    a->valid_source.sil = a->sil_valid.source;
+    a->valid_source.sil_type = a->sil_valid.source;
+    a->valid_source.gva = a->gva_valid.source;
+    a->valid_source.sda = a->sda_valid.source;
 }
 
 /**
@@ -1904,9 +1904,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
 
     msg.n_aircraft = 0;
     msg.now = (uint64_t) (now / 1000);
-    msg.has_now = true;
     msg.messages = Modes.stats_current.messages_total + Modes.stats_alltime.messages_total;
-    msg.has_messages = true;
 
     Modes.stats_current.with_positions = 0;
     Modes.stats_current.mlat_positions = 0;
@@ -1934,110 +1932,63 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
             msg.aircraft[msg.n_aircraft] = &a->meta;
 
             // History file contains address, position and altitude.
-            msg.aircraft[msg.n_aircraft]->has_addr = true;
-            if (trackDataValid(&a->position_valid)) {
-                msg.aircraft[msg.n_aircraft]->has_lat = true;
-                msg.aircraft[msg.n_aircraft]->has_lon = true;
-            }
-            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_AIRBORNE) {
-                msg.aircraft[msg.n_aircraft]->has_alt_baro = (trackDataValid(&a->altitude_baro_valid) & (a->altitude_baro_reliable >= 3));
-            }
             // Skip everything else when creating history files.
             if (is_history) {
-                msg.aircraft[msg.n_aircraft]->has_addr_type = false;
                 msg.aircraft[msg.n_aircraft]->flight = NULL;
-                msg.aircraft[msg.n_aircraft]->has_category = false;
-                msg.aircraft[msg.n_aircraft]->has_alt_geom = false;
-                msg.aircraft[msg.n_aircraft]->has_gs = false;
-                msg.aircraft[msg.n_aircraft]->has_ias = false;
-                msg.aircraft[msg.n_aircraft]->has_tas = false;
-                msg.aircraft[msg.n_aircraft]->has_mach = false;
-                msg.aircraft[msg.n_aircraft]->has_track = false;
-                msg.aircraft[msg.n_aircraft]->has_track_rate = false;
-                msg.aircraft[msg.n_aircraft]->has_roll = false;
-                msg.aircraft[msg.n_aircraft]->has_baro_rate = false;
-                msg.aircraft[msg.n_aircraft]->has_geom_rate = false;
-                msg.aircraft[msg.n_aircraft]->has_squawk = false;
-                msg.aircraft[msg.n_aircraft]->has_emergency = false;
-                msg.aircraft[msg.n_aircraft]->has_nav_qnh = false;
-                msg.aircraft[msg.n_aircraft]->has_nav_altitude_mcp = false;
-                msg.aircraft[msg.n_aircraft]->has_nav_altitude_fms = false;
-                msg.aircraft[msg.n_aircraft]->has_nav_heading = false;
-                msg.aircraft[msg.n_aircraft]->has_nic_baro = false;
-                msg.aircraft[msg.n_aircraft]->has_nac_p = false;
-                msg.aircraft[msg.n_aircraft]->has_nac_v = false;
-                msg.aircraft[msg.n_aircraft]->has_sil = false;
-                msg.aircraft[msg.n_aircraft]->has_gva = false;
-                msg.aircraft[msg.n_aircraft]->has_sda = false;
-                msg.aircraft[msg.n_aircraft]->has_alert = false;
-                msg.aircraft[msg.n_aircraft]->has_spi = false;
-                msg.aircraft[msg.n_aircraft]->has_air_ground = false;
-                msg.aircraft[msg.n_aircraft]->has_nic = false;
-                msg.aircraft[msg.n_aircraft]->has_rc = false;
-                msg.aircraft[msg.n_aircraft]->has_seen_pos = false;
-                msg.aircraft[msg.n_aircraft]->has_version = false;
-                msg.aircraft[msg.n_aircraft]->has_sil_type = false;
-                msg.aircraft[msg.n_aircraft]->has_messages = false;
-                msg.aircraft[msg.n_aircraft]->has_seen = false;
-                msg.aircraft[msg.n_aircraft]->has_rssi = false;
-                msg.aircraft[msg.n_aircraft]->has_mag_heading = false;
-                msg.aircraft[msg.n_aircraft]->has_true_heading = false;
+/*                
+                msg.aircraft[msg.n_aircraft]->addr_type = 0;
+                msg.aircraft[msg.n_aircraft]->category = 0;
+                msg.aircraft[msg.n_aircraft]->alt_geom = 0;
+                msg.aircraft[msg.n_aircraft]->gs = 0;
+                msg.aircraft[msg.n_aircraft]->ias = 0;
+                msg.aircraft[msg.n_aircraft]->tas = 0;
+                msg.aircraft[msg.n_aircraft]->mach = 0;
+                msg.aircraft[msg.n_aircraft]->track = 0;
+                msg.aircraft[msg.n_aircraft]->track_rate = 0;
+                msg.aircraft[msg.n_aircraft]->roll = 0;
+                msg.aircraft[msg.n_aircraft]->baro_rate = 0;
+                msg.aircraft[msg.n_aircraft]->geom_rate = 0;
+                msg.aircraft[msg.n_aircraft]->squawk = 0;
+                msg.aircraft[msg.n_aircraft]->emergency = 0;
+                msg.aircraft[msg.n_aircraft]->nav_qnh = 0;
+                msg.aircraft[msg.n_aircraft]->nav_altitude_mcp = 0;
+                msg.aircraft[msg.n_aircraft]->nav_altitude_fms = 0;
+                msg.aircraft[msg.n_aircraft]->nav_heading = 0;
+                msg.aircraft[msg.n_aircraft]->nic_baro = 0;
+                msg.aircraft[msg.n_aircraft]->nac_p = 0;
+                msg.aircraft[msg.n_aircraft]->nac_v = 0;
+                msg.aircraft[msg.n_aircraft]->sil = 0;
+                msg.aircraft[msg.n_aircraft]->gva = 0;
+                msg.aircraft[msg.n_aircraft]->sda = 0;
+                msg.aircraft[msg.n_aircraft]->alert = 0;
+                msg.aircraft[msg.n_aircraft]->spi = 0;
+                msg.aircraft[msg.n_aircraft]->air_ground = 0;
+                msg.aircraft[msg.n_aircraft]->nic = 0;
+                msg.aircraft[msg.n_aircraft]->rc = 0;
+                msg.aircraft[msg.n_aircraft]->seen_pos = 0;
+                msg.aircraft[msg.n_aircraft]->version = 0;
+                msg.aircraft[msg.n_aircraft]->sil_type = 0;
+                msg.aircraft[msg.n_aircraft]->messages = 0;
+                msg.aircraft[msg.n_aircraft]->seen = 0;
+                msg.aircraft[msg.n_aircraft]->rssi = 0;
+                msg.aircraft[msg.n_aircraft]->mag_heading = 0;
+                msg.aircraft[msg.n_aircraft]->true_heading = 0;
+*/                
                 msg.aircraft[msg.n_aircraft]->nav_modes = NULL;
                 msg.aircraft[msg.n_aircraft]->valid_source = NULL;
                 msg.n_aircraft += 1;
                 continue;
             }
 
-            if (a->meta.addr_type != AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO) {
-                msg.aircraft[msg.n_aircraft]->has_addr_type = true;
-            }
             if (trackDataValid(&a->callsign_valid)) {
                 msg.aircraft[msg.n_aircraft]->flight = a->callsign;
             }
-            if (a->meta.category != 0) {
-                msg.aircraft[msg.n_aircraft]->has_category = true;
-            }
-            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND) {
-                msg.aircraft[msg.n_aircraft]->has_alt_baro = false;
-            } else {
-                msg.aircraft[msg.n_aircraft]->has_alt_baro = (trackDataValid(&a->altitude_baro_valid) & (a->altitude_baro_reliable >= 3));
-                msg.aircraft[msg.n_aircraft]->has_alt_geom = trackDataValid(&a->altitude_geom_valid);
-            }
-            msg.aircraft[msg.n_aircraft]->has_mag_heading = trackDataValid(&a->mag_heading_valid);
-            msg.aircraft[msg.n_aircraft]->has_true_heading = trackDataValid(&a->true_heading_valid);
-            msg.aircraft[msg.n_aircraft]->has_gs = trackDataValid(&a->gs_valid);
-            msg.aircraft[msg.n_aircraft]->has_ias = trackDataValid(&a->ias_valid);
-            msg.aircraft[msg.n_aircraft]->has_tas = trackDataValid(&a->tas_valid);
-            msg.aircraft[msg.n_aircraft]->has_mach = trackDataValid(&a->mach_valid);
-            msg.aircraft[msg.n_aircraft]->has_track = trackDataValid(&a->track_valid);
-            msg.aircraft[msg.n_aircraft]->has_track_rate = trackDataValid(&a->track_rate_valid);
-            msg.aircraft[msg.n_aircraft]->has_roll = trackDataValid(&a->roll_valid);
-            msg.aircraft[msg.n_aircraft]->has_baro_rate = trackDataValid(&a->baro_rate_valid);
-            msg.aircraft[msg.n_aircraft]->has_geom_rate = trackDataValid(&a->geom_rate_valid);
-            msg.aircraft[msg.n_aircraft]->has_squawk = trackDataValid(&a->squawk_valid);
-            msg.aircraft[msg.n_aircraft]->has_emergency = trackDataValid(&a->emergency_valid);
-            msg.aircraft[msg.n_aircraft]->has_nav_qnh = trackDataValid(&a->nav_qnh_valid);
-            msg.aircraft[msg.n_aircraft]->has_nav_altitude_mcp = trackDataValid(&a->nav_altitude_mcp_valid);
-            msg.aircraft[msg.n_aircraft]->has_nav_altitude_fms = trackDataValid(&a->nav_altitude_fms_valid);
-            msg.aircraft[msg.n_aircraft]->has_nav_heading = trackDataValid(&a->nav_heading_valid);
-            msg.aircraft[msg.n_aircraft]->has_nic_baro = trackDataValid(&a->nic_baro_valid);
-            msg.aircraft[msg.n_aircraft]->has_nac_p = trackDataValid(&a->nac_p_valid);
-            msg.aircraft[msg.n_aircraft]->has_nac_v = trackDataValid(&a->nac_v_valid);
-            msg.aircraft[msg.n_aircraft]->has_sil = trackDataValid(&a->sil_valid);
-            msg.aircraft[msg.n_aircraft]->has_gva = trackDataValid(&a->gva_valid);
-            msg.aircraft[msg.n_aircraft]->has_sda = trackDataValid(&a->sda_valid);
-            msg.aircraft[msg.n_aircraft]->has_alert = trackDataValid(&a->alert_valid);
-            msg.aircraft[msg.n_aircraft]->has_spi = trackDataValid(&a->spi_valid);
-            msg.aircraft[msg.n_aircraft]->has_air_ground = trackDataValid(&a->airground_valid);
 
             if (trackDataValid(&a->nav_modes_valid)) {
                 msg.aircraft[msg.n_aircraft]->nav_modes = &a->nav_modes;
             }
             if (trackDataValid(&a->position_valid)) {
-                msg.aircraft[msg.n_aircraft]->has_nic = true;
-                msg.aircraft[msg.n_aircraft]->has_rc = true;
                 msg.aircraft[msg.n_aircraft]->seen_pos = (now - a->position_valid.updated) / 1000.0;
-                msg.aircraft[msg.n_aircraft]->has_seen_pos = true;
                 // Update position statistics.
                 Modes.stats_current.with_positions += 1;
                 if (a->position_valid.source == SOURCE_MLAT) {
@@ -2048,21 +1999,14 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
             }
             if (a->adsb_version >= 0) {
                 msg.aircraft[msg.n_aircraft]->version = a->adsb_version;
-                msg.aircraft[msg.n_aircraft]->has_version = true;
-            }
-            if (a->meta.sil_type != AIRCRAFT_META__SIL_TYPE__SIL_INVALID) {
-                msg.aircraft[msg.n_aircraft]->has_sil_type = true;
             }
 
             // Create valid source information
             generateValidSourceMessage(a);
             msg.aircraft[msg.n_aircraft]->valid_source = &a->valid_source;
 
-            msg.aircraft[msg.n_aircraft]->has_messages = true;
-            msg.aircraft[msg.n_aircraft]->has_seen = true;
             msg.aircraft[msg.n_aircraft]->rssi = 10 * log10((a->signalLevel[0] + a->signalLevel[1] + a->signalLevel[2] + a->signalLevel[3] +
                     a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8);
-            msg.aircraft[msg.n_aircraft]->has_rssi = true;
             msg.n_aircraft += 1;
         }
     }
@@ -2398,9 +2342,7 @@ struct char_buffer generateStatsJson() {
 static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
     int i;
     e->start = st->start / 1000.0;
-    e->has_start = true;
     e->stop = st->end / 1000.0;
-    e->has_stop = true;
 
     uint64_t demod_cpu_millis = (uint64_t) st->demod_cpu.tv_sec * 1000UL + st->demod_cpu.tv_nsec / 1000000UL;
     uint64_t reader_cpu_millis = (uint64_t) st->reader_cpu.tv_sec * 1000UL + st->reader_cpu.tv_nsec / 1000000UL;
@@ -2408,114 +2350,67 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
 
     if (!Modes.net_only) {
         e->local_samples_processed = st->samples_processed;
-        e->has_local_samples_processed = true;
         e->local_samples_dropped = st->samples_dropped;
-        e->has_local_samples_dropped = true;
         e->local_modeac = st->demod_modeac;
-        e->has_local_modeac = true;
         e->local_modes = st->demod_preambles;
-        e->has_local_modes = true;
         e->local_bad = st->remote_rejected_bad;
-        e->has_local_bad = true;
         e->local_unknown_icao = st->demod_rejected_unknown_icao;
-        e->has_local_unknown_icao = true;
 
         if (st->signal_power_sum > 0 && st->signal_power_count > 0) {
             e->local_signal = 10 * log10(st->signal_power_sum / st->signal_power_count);
-            e->has_local_signal = true;
         }
 
         if (st->noise_power_sum > 0 && st->noise_power_count > 0) {
             e->local_noise = 10 * log10(st->noise_power_sum / st->noise_power_count);
-            e->has_local_noise = true;
         }
 
         if (st->peak_signal_power > 0) {
             e->local_peak_signal = 10 * log10(st->peak_signal_power);
-            e->has_local_peak_signal = true;
         }
         e->local_strong_signals = st->strong_signal_count;
-        e->has_local_strong_signals = true;
         
         for (i = 0; i <= Modes.nfix_crc; ++i) {
             e->local_accepted += st->demod_accepted[i];
-            e->has_local_accepted = true;
         }
     }
 
     if (Modes.net) {
         e->remote_modeac = st->remote_received_modeac;
-        e->has_remote_modeac = true;
         e->remote_modes = st->remote_received_modes;
-        e->has_remote_modes = true;
         e->remote_bad = st->remote_rejected_bad;
-        e->has_remote_bad = true;
         e->remote_unknown_icao = st->remote_rejected_unknown_icao;
-        e->has_remote_unknown_icao = true;
         
         for (i = 0; i <= Modes.nfix_crc; ++i) {
             e->remote_accepted += st->remote_accepted[i];
-            e->has_remote_accepted = true;
         }
     }
 
     e->cpr_surface = st->cpr_surface;
-    e->has_cpr_surface = true;
     e->cpr_airborne = st->cpr_airborne;
-    e->has_cpr_airborne = true;
-
     e->cpr_global_ok = st->cpr_global_ok;
-    e->has_cpr_global_ok = true;
     e->cpr_global_bad = st->cpr_global_bad;
-    e->has_cpr_global_bad = true;
     e->cpr_global_range = st->cpr_global_range_checks;
-    e->has_cpr_global_range = true;
     e->cpr_global_speed = st->cpr_global_speed_checks;
-    e->has_cpr_global_speed = true;
     e->cpr_global_skipped = st->cpr_global_skipped;
-    e->has_cpr_global_skipped = true;
-
     e->cpr_local_ok = st->cpr_local_ok;
-    e->has_cpr_local_ok = true;
     e->cpr_local_aircraft_relative = st->cpr_local_aircraft_relative;
-    e->has_cpr_local_aircraft_relative = true;
     e->cpr_local_receiver_relative = st->cpr_local_receiver_relative;
-    e->has_cpr_local_receiver_relative = true;
     e->cpr_local_skipped = st->cpr_local_skipped;
-    e->has_cpr_local_skipped = true;
     e->cpr_local_range = st->cpr_local_range_checks;
-    e->has_cpr_local_range = true;
     e->cpr_local_speed = st->cpr_local_speed_checks;
-    e->has_cpr_local_speed = true;
     e->cpr_filtered = st->cpr_filtered;
-    e->has_cpr_filtered = true;
-
     e->altitude_suppressed = st->suppressed_altitude_messages;
-    e->has_altitude_suppressed = true;
-
     e->cpu_demod = demod_cpu_millis;
-    e->has_cpu_demod = true;
     e->cpu_reader = reader_cpu_millis;
-    e->has_cpu_reader = true;
     e->cpu_background = background_cpu_millis;
-    e->has_cpu_background = true;
-
     e->tracks_new = st->unique_aircraft;
-    e->has_tracks_new = true;
     e->tracks_single_message = st->single_message_aircraft;
-    e->has_tracks_single_message = true;
     e->tracks_with_position = st->with_positions;
-    e->has_tracks_with_position = true;
     e->tracks_mlat_position = st->mlat_positions;
-    e->has_tracks_mlat_position = true;
     e->tracks_tisb_position = st->tisb_positions;
-    e->has_tracks_tisb_position = true;
     e->messages = st->messages_total;
-    e->has_messages = true;
     e->max_distance_in_metres = st->longest_distance;
-    e->has_max_distance_in_metres = true;
     e->max_distance_in_nautical_miles = st->longest_distance / 1852.0;
-    e->has_max_distance_in_nautical_miles = true;
 }
 
 /**
@@ -2567,9 +2462,7 @@ void generateStatsProtoBuf(const char *file) {
             stats.polar_range[b] = malloc(sizeof (Statistics__PolarRangeEntry));
             statistics__polar_range_entry__init(stats.polar_range[b]);
             stats.polar_range[b]->key = b;
-            stats.polar_range[b]->has_key = true;
             stats.polar_range[b]->value = Modes.stats_range.polar_range[b];
-            stats.polar_range[b]->has_value = true;
         }
         stats.n_polar_range = POLAR_RANGE_BUCKETS;
     }
@@ -2663,9 +2556,7 @@ void generateReceiverProtoBuf(const char *file) {
     Receiver msg = RECEIVER__INIT;
     msg.version = MODES_READSB_VERSION;
     msg.refresh = 1.0 * Modes.json_interval;
-    msg.has_refresh = true;
     msg.history = Modes.json_aircraft_history_next + 1;
-    msg.has_history = true;
 
     if (Modes.json_location_accuracy && (Modes.fUserLat != 0.0 || Modes.fUserLon != 0.0)) {
         if (Modes.json_location_accuracy == 1) {
@@ -2677,7 +2568,6 @@ void generateReceiverProtoBuf(const char *file) {
             msg.latitude = Modes.fUserLat;
             msg.longitude = Modes.fUserLon;
         }
-        msg.has_latitude = msg.has_longitude = true;
     }
 
     // Pack and serialize entire aicraft collection.
@@ -3242,12 +3132,12 @@ static void writeFATSV() {
 
             // Convert new nav modes message to old enum format.
             nav_modes_t nm = 0;
-            if (a->nav_modes.has_autopilot) nm += NAV_MODE_AUTOPILOT;
-            if (a->nav_modes.has_vnav) nm += NAV_MODE_VNAV;
-            if (a->nav_modes.has_althold) nm += NAV_MODE_ALT_HOLD;
-            if (a->nav_modes.has_approach) nm += NAV_MODE_APPROACH;
-            if (a->nav_modes.has_lnav) nm += NAV_MODE_LNAV;
-            if (a->nav_modes.has_tcas) nm += NAV_MODE_TCAS;
+            if (a->nav_modes.autopilot) nm += NAV_MODE_AUTOPILOT;
+            if (a->nav_modes.vnav) nm += NAV_MODE_VNAV;
+            if (a->nav_modes.althold) nm += NAV_MODE_ALT_HOLD;
+            if (a->nav_modes.approach) nm += NAV_MODE_APPROACH;
+            if (a->nav_modes.lnav) nm += NAV_MODE_LNAV;
+            if (a->nav_modes.tcas) nm += NAV_MODE_TCAS;
 
             // if it hasn't changed altitude, heading, or speed much,
             // don't update so often

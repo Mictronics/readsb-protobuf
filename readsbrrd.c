@@ -333,53 +333,18 @@ static void update_from_stats(const char *file_name) {
     }
 
     // Overwrite update time from stats entry if exists, otherwise use unix epoch.
-    if (stats_msg->last_1min->has_stop) {
-        rrd.time_update = stats_msg->last_1min->stop;
-    }
-
-    if (stats_msg->last_1min->has_local_signal) {
-        rrd_update_file(DBFS_SIGNAL, (float) (stats_msg->last_1min->local_signal));
-    }
-
-    if (stats_msg->last_1min->has_local_noise) {
-        rrd_update_file(DBFS_NOISE, (float) (stats_msg->last_1min->local_noise));
-    }
-
-    if (stats_msg->total->has_local_strong_signals) {
-        rrd_update_file(MSG_STRONG_SIGNALS, stats_msg->total->local_strong_signals);
-    }
-
-    if (stats_msg->total->has_cpr_local_ok && stats_msg->total->has_cpr_global_ok) {
-        rrd_update_file(MSG_POSITIONS, (float) (stats_msg->total->cpr_local_ok + stats_msg->total->cpr_global_ok));
-    }
-
-    if (stats_msg->total->has_tracks_new) {
-        rrd_update_file(TRACKS_ALL, (float) (stats_msg->total->tracks_new));
-    }
-
-    if (stats_msg->total->has_tracks_single_message) {
-        rrd_update_file(TRACKS_SINGLE_MSG, (float) (stats_msg->total->tracks_single_message));
-    }
-
-    if (stats_msg->total->has_cpu_demod) {
-        rrd_update_file(CPU_DEMOD, (float) (stats_msg->total->cpu_demod));
-    }
-
-    if (stats_msg->total->has_cpu_reader) {
-        rrd_update_file(CPU_READER, (float) (stats_msg->total->cpu_reader));
-    }
-
-    if (stats_msg->total->has_cpu_background) {
-        rrd_update_file(CPU_BACKGROUND, (float) (stats_msg->total->cpu_background));
-    }
-
-    if (stats_msg->total->has_local_accepted) {
-        rrd_update_file(MSG_LOCAL_ACCEPTED, (float) (stats_msg->total->local_accepted));
-    }
-
-    if (stats_msg->total->has_remote_accepted) {
-        rrd_update_file(MSG_REMOTE_ACCEPTED, (float) (stats_msg->total->remote_accepted));
-    }
+    rrd.time_update = stats_msg->last_1min->stop;
+    rrd_update_file(DBFS_SIGNAL, (float) (stats_msg->last_1min->local_signal));
+    rrd_update_file(DBFS_NOISE, (float) (stats_msg->last_1min->local_noise));
+    rrd_update_file(MSG_STRONG_SIGNALS, stats_msg->total->local_strong_signals);
+    rrd_update_file(MSG_POSITIONS, (float) (stats_msg->total->cpr_local_ok + stats_msg->total->cpr_global_ok));
+    rrd_update_file(TRACKS_ALL, (float) (stats_msg->total->tracks_new));
+    rrd_update_file(TRACKS_SINGLE_MSG, (float) (stats_msg->total->tracks_single_message));
+    rrd_update_file(CPU_DEMOD, (float) (stats_msg->total->cpu_demod));
+    rrd_update_file(CPU_READER, (float) (stats_msg->total->cpu_reader));
+    rrd_update_file(CPU_BACKGROUND, (float) (stats_msg->total->cpu_background));
+    rrd_update_file(MSG_LOCAL_ACCEPTED, (float) (stats_msg->total->local_accepted));
+    rrd_update_file(MSG_REMOTE_ACCEPTED, (float) (stats_msg->total->remote_accepted));
 
     statistics__free_unpacked(stats_msg, NULL);
 }
@@ -476,10 +441,7 @@ static void update_from_aircrafts(const char* file_name) {
     }
 
     // Overwrite update time from aircraft.pb if exists, otherwise use unix epoch.
-    if (aircrafts_msg->has_now) {
-        rrd.time_update = aircrafts_msg->now;
-    }
-
+    rrd.time_update = aircrafts_msg->now;
     n_aircraft = aircrafts_msg->n_aircraft;
 
     if (n_aircraft > 0) {
@@ -501,38 +463,30 @@ static void update_from_aircrafts(const char* file_name) {
 
         for (size_t a = 0; a < n_aircraft; a++) {
             // Get signal RSSI.
-            if (aircrafts_msg->aircraft[a]->has_rssi && aircrafts_msg->aircraft[a]->has_messages && aircrafts_msg->aircraft[a]->has_seen) {
-                seen = (rrd.time_update - (aircrafts_msg->aircraft[a]->seen / 1000));
-                if ((aircrafts_msg->aircraft[a]->messages > 3) && (seen < 30) && (aircrafts_msg->aircraft[a]->rssi > -50.0)) {
-                    signals[a] = aircrafts_msg->aircraft[a]->rssi;
-                }
+            seen = (rrd.time_update - (aircrafts_msg->aircraft[a]->seen / 1000));
+            if ((aircrafts_msg->aircraft[a]->messages > 3) && (seen < 30) && (aircrafts_msg->aircraft[a]->rssi > -50.0)) {
+                signals[a] = aircrafts_msg->aircraft[a]->rssi;
             }
             // Get distances.
-            if (aircrafts_msg->aircraft[a]->has_distance) {
-                distances[a] = (float) aircrafts_msg->aircraft[a]->distance;
-            }
+            distances[a] = (float) aircrafts_msg->aircraft[a]->distance;
 
             // Count total number of aircrafts and with valid position.
-            if (aircrafts_msg->aircraft[a]->has_seen_pos && aircrafts_msg->aircraft[a]->has_seen) {
-                if (seen < 30) {
-                    ac_total += 1;
-                }
+            if (seen < 30) {
+                ac_total += 1;
+            }
 
-                if ((aircrafts_msg->aircraft[a]->seen_pos < 30)) {
-                    ac_with_pos += 1;
-                }
+            if ((aircrafts_msg->aircraft[a]->seen_pos < 30)) {
+                ac_with_pos += 1;
             }
 
             // Count aircraft source type.
             if (aircrafts_msg->aircraft[a]->valid_source != NULL) {
-                if (aircrafts_msg->aircraft[a]->valid_source->has_lat) {
-                    if (aircrafts_msg->aircraft[a]->valid_source->lat == SOURCE_MLAT) {
-                        ac_mlat += 1;
-                    } else if (aircrafts_msg->aircraft[a]->valid_source->lat == SOURCE_TISB) {
-                        ac_tisb += 1;
-                    } else {
-                        ac_gps += 1;
-                    }
+                if (aircrafts_msg->aircraft[a]->valid_source->lat == SOURCE_MLAT) {
+                    ac_mlat += 1;
+                } else if (aircrafts_msg->aircraft[a]->valid_source->lat == SOURCE_TISB) {
+                    ac_tisb += 1;
+                } else {
+                    ac_gps += 1;
                 }
             }
         }

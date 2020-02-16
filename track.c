@@ -283,7 +283,7 @@ static uint32_t update_polar_range(double lat, double lon) {
     int valid_latlon = Modes.bUserFlags & MODES_USER_LATLON_VALID;
 
     if (!valid_latlon)
-        return UINT32_MAX;
+        return 0;
 
     range = greatcircle(Modes.fUserLat, Modes.fUserLon, lat, lon);
 
@@ -671,9 +671,6 @@ static void updatePosition(struct aircraft *a, struct modesMessage *mm) {
         a->meta.distance = false;
         if (a->pos_reliable_odd >= 2 && a->pos_reliable_even >= 2 && mm->source == SOURCE_ADSB) {
             a->meta.distance = update_polar_range(new_lat, new_lon);
-            if (a->meta.distance < UINT32_MAX) {
-                a->meta.has_distance = true;
-            }
         }
     }
 }
@@ -1267,22 +1264,22 @@ struct aircraft *trackUpdateFromMessage(struct modesMessage *mm) {
 
     if (mm->nav.modes_valid && accept_data(&a->nav_modes_valid, mm->source, mm, 0)) {
         if (mm->nav.modes & NAV_MODE_AUTOPILOT) {
-            a->nav_modes.autopilot = a->nav_modes.has_autopilot = true;
+            a->nav_modes.autopilot = true;
         }
         if (mm->nav.modes & NAV_MODE_VNAV) {
-            a->nav_modes.vnav = a->nav_modes.has_vnav = true;
+            a->nav_modes.vnav = true;
         }
         if (mm->nav.modes & NAV_MODE_ALT_HOLD) {
-            a->nav_modes.althold = a->nav_modes.has_althold = true;
+            a->nav_modes.althold = true;
         }
         if (mm->nav.modes & NAV_MODE_APPROACH) {
-            a->nav_modes.approach = a->nav_modes.has_approach = true;
+            a->nav_modes.approach = true;
         }
         if (mm->nav.modes & NAV_MODE_LNAV) {
-            a->nav_modes.lnav = a->nav_modes.has_lnav = true;
+            a->nav_modes.lnav = true;
         }
         if (mm->nav.modes & NAV_MODE_TCAS) {
-            a->nav_modes.tcas = a->nav_modes.has_tcas = true;
+            a->nav_modes.tcas = true;
         }
     }
 
