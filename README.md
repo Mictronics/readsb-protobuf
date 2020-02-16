@@ -16,6 +16,8 @@ This is a personal, hobbyist project with no commercial background.
 
 ## Modifications:
 
+* Add receiver and system performance graphs.
+* Add statistics collector service with Round Robin Database .
 * Range polar plot available as map layer. Generated as server side statistics.
 * Storing and exchanging aircraft meta data using Protocol Buffer.
 * Light and dark theme.

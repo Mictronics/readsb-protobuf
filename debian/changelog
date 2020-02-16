@@ -16,6 +16,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Range polar plot available as map overlay.
   * Range histogram removed.
   * Add RRD file statistics generation as systemd service.
+  * Add receiver and system performance graphs.
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
