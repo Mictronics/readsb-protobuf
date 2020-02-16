@@ -116,6 +116,7 @@ Building the package with `dpkg-buildpackage -b` or by `make all` requires the f
 * libncurses5-dev
 * libprotobuf-c-dev
 * protobuf-c-compiler
+* librrd-dev
 
 ### Dependencies - PlutoSDR (ADALM-PLUTO)
 
