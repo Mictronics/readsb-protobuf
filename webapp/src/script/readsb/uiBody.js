@@ -272,6 +272,9 @@ var READSB;
             evt.preventDefault();
         }
         static RefreshAircraftInformation(pos, ac) {
+            if (!READSB.LMap.Initialized) {
+                return;
+            }
             let isFiltered = false;
             let isHighlight = false;
             if (READSB.AppSettings.EnableFilter) {
@@ -291,7 +294,7 @@ var READSB;
             }
             const mapBounds = READSB.LMap.MapViewBounds;
             let hideOutOfBounds = false;
-            if (ac.Position !== null) {
+            if (mapBounds && ac.Position !== null) {
                 hideOutOfBounds = !mapBounds.contains(ac.Position) && READSB.AppSettings.HideAircraftsNotInView;
             }
             if (!hideOutOfBounds && !isFiltered && ac.Position !== null && ac.SeenPos < 60) {

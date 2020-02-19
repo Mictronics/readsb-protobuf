@@ -428,6 +428,9 @@ namespace READSB {
          * @param ac Aircraft data from backend.
          */
         private static RefreshAircraftInformation(pos: number, ac: IAircraft) {
+            if (!LMap.Initialized) {
+                return;
+            }
             // Check for filtering of this aircraft.
             let isFiltered = false;
             let isHighlight = false;
@@ -451,7 +454,7 @@ namespace READSB {
 
             const mapBounds = LMap.MapViewBounds;
             let hideOutOfBounds = false;
-            if (ac.Position !== null) {
+            if (mapBounds && ac.Position !== null) {
                 hideOutOfBounds = !mapBounds.contains(ac.Position) && AppSettings.HideAircraftsNotInView;
             }
 

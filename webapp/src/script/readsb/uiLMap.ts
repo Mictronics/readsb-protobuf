@@ -159,7 +159,9 @@ namespace READSB {
                     }
                 });
             }
-            this.groupedLayersControl.update();
+            if (this.Initialized) {
+                this.groupedLayersControl.update();
+            }
         }
 
         /**

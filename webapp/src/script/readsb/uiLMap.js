@@ -102,7 +102,9 @@ var READSB;
                     }
                 });
             }
-            this.groupedLayersControl.update();
+            if (this.Initialized) {
+                this.groupedLayersControl.update();
+            }
         }
         static GetDistance(p1, p2) {
             if (this.lMap !== null && p1 !== null && p2 !== null) {
