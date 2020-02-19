@@ -1931,55 +1931,6 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
 
             msg.aircraft[msg.n_aircraft] = &a->meta;
 
-            // History file contains address, position and altitude.
-            // Skip everything else when creating history files.
-            if (is_history) {
-                msg.aircraft[msg.n_aircraft]->flight = NULL;
-/*                
-                msg.aircraft[msg.n_aircraft]->addr_type = 0;
-                msg.aircraft[msg.n_aircraft]->category = 0;
-                msg.aircraft[msg.n_aircraft]->alt_geom = 0;
-                msg.aircraft[msg.n_aircraft]->gs = 0;
-                msg.aircraft[msg.n_aircraft]->ias = 0;
-                msg.aircraft[msg.n_aircraft]->tas = 0;
-                msg.aircraft[msg.n_aircraft]->mach = 0;
-                msg.aircraft[msg.n_aircraft]->track = 0;
-                msg.aircraft[msg.n_aircraft]->track_rate = 0;
-                msg.aircraft[msg.n_aircraft]->roll = 0;
-                msg.aircraft[msg.n_aircraft]->baro_rate = 0;
-                msg.aircraft[msg.n_aircraft]->geom_rate = 0;
-                msg.aircraft[msg.n_aircraft]->squawk = 0;
-                msg.aircraft[msg.n_aircraft]->emergency = 0;
-                msg.aircraft[msg.n_aircraft]->nav_qnh = 0;
-                msg.aircraft[msg.n_aircraft]->nav_altitude_mcp = 0;
-                msg.aircraft[msg.n_aircraft]->nav_altitude_fms = 0;
-                msg.aircraft[msg.n_aircraft]->nav_heading = 0;
-                msg.aircraft[msg.n_aircraft]->nic_baro = 0;
-                msg.aircraft[msg.n_aircraft]->nac_p = 0;
-                msg.aircraft[msg.n_aircraft]->nac_v = 0;
-                msg.aircraft[msg.n_aircraft]->sil = 0;
-                msg.aircraft[msg.n_aircraft]->gva = 0;
-                msg.aircraft[msg.n_aircraft]->sda = 0;
-                msg.aircraft[msg.n_aircraft]->alert = 0;
-                msg.aircraft[msg.n_aircraft]->spi = 0;
-                msg.aircraft[msg.n_aircraft]->air_ground = 0;
-                msg.aircraft[msg.n_aircraft]->nic = 0;
-                msg.aircraft[msg.n_aircraft]->rc = 0;
-                msg.aircraft[msg.n_aircraft]->seen_pos = 0;
-                msg.aircraft[msg.n_aircraft]->version = 0;
-                msg.aircraft[msg.n_aircraft]->sil_type = 0;
-                msg.aircraft[msg.n_aircraft]->messages = 0;
-                msg.aircraft[msg.n_aircraft]->seen = 0;
-                msg.aircraft[msg.n_aircraft]->rssi = 0;
-                msg.aircraft[msg.n_aircraft]->mag_heading = 0;
-                msg.aircraft[msg.n_aircraft]->true_heading = 0;
-*/                
-                msg.aircraft[msg.n_aircraft]->nav_modes = NULL;
-                msg.aircraft[msg.n_aircraft]->valid_source = NULL;
-                msg.n_aircraft += 1;
-                continue;
-            }
-
             if (trackDataValid(&a->callsign_valid)) {
                 msg.aircraft[msg.n_aircraft]->flight = a->callsign;
             }
