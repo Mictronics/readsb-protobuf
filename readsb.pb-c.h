@@ -496,10 +496,19 @@ struct  _Receiver
 struct  _StatisticEntry
 {
   ProtobufCMessage base;
+  /*
+   * the start time (in seconds-since-1-Jan-1970) of this statistics collection period.
+   */
   protobuf_c_boolean has_start;
   uint64_t start;
+  /*
+   * the end time (in seconds-since-1-Jan-1970) of this statistics collection period.
+   */
   protobuf_c_boolean has_stop;
   uint64_t stop;
+  /*
+   * total number of messages accepted by readsb from any source
+   */
   protobuf_c_boolean has_messages;
   uint64_t messages;
   protobuf_c_boolean has_max_distance_in_metres;
@@ -508,8 +517,14 @@ struct  _StatisticEntry
   uint32_t max_distance_in_nautical_miles;
   protobuf_c_boolean has_altitude_suppressed;
   uint64_t altitude_suppressed;
+  /*
+   * total tracks (aircrafts) created. Each track represents a unique aircraft and persists for up to 5 minutes.
+   */
   protobuf_c_boolean has_tracks_new;
   uint64_t tracks_new;
+  /*
+   * tracks consisting of only a single message. These are usually due to message decoding errors that produce a bad aircraft address.
+   */
   protobuf_c_boolean has_tracks_single_message;
   uint64_t tracks_single_message;
   protobuf_c_boolean has_tracks_with_position;
@@ -518,70 +533,181 @@ struct  _StatisticEntry
   uint64_t tracks_mlat_position;
   protobuf_c_boolean has_tracks_tisb_position;
   uint64_t tracks_tisb_position;
+  /*
+   * statistics about CPU use
+   */
+  /*
+   * milliseconds spent doing demodulation and decoding in response to data from a SDR dongle
+   */
   protobuf_c_boolean has_cpu_demod;
   uint64_t cpu_demod;
+  /*
+   * milliseconds spent reading sample data over USB from a SDR dongle
+   */
   protobuf_c_boolean has_cpu_reader;
   uint64_t cpu_reader;
+  /*
+   * milliseconds spent doing network I/O, processing received network messages, and periodic tasks.
+   */
   protobuf_c_boolean has_cpu_background;
   uint64_t cpu_background;
+  /*
+   * statistics about Compact Position Report message decoding.
+   */
+  /*
+   * total number of surface CPR messages received
+   */
   protobuf_c_boolean has_cpr_surface;
   uint64_t cpr_surface;
+  /*
+   * total number of airborne CPR messages received
+   */
   protobuf_c_boolean has_cpr_airborne;
   uint64_t cpr_airborne;
+  /*
+   * global positions successfuly derived
+   */
   protobuf_c_boolean has_cpr_global_ok;
   uint64_t cpr_global_ok;
+  /*
+   * global positions that were rejected because they were inconsistent
+   */
   protobuf_c_boolean has_cpr_global_bad;
   uint64_t cpr_global_bad;
+  /*
+   * global positions that were rejected because they exceeded the receiver max range
+   */
   protobuf_c_boolean has_cpr_global_range;
   uint64_t cpr_global_range;
+  /*
+   * global positions that were rejected because they failed the inter-position speed check
+   */
   protobuf_c_boolean has_cpr_global_speed;
   uint64_t cpr_global_speed;
+  /*
+   * global position attempts skipped because we did not have the right data (e.g. even/odd messages crossed a zone boundary)
+   */
   protobuf_c_boolean has_cpr_global_skipped;
   uint64_t cpr_global_skipped;
+  /*
+   * local (relative) positions successfully found
+   */
   protobuf_c_boolean has_cpr_local_ok;
   uint64_t cpr_local_ok;
+  /*
+   * local positions found relative to a previous aircraft position
+   */
   protobuf_c_boolean has_cpr_local_aircraft_relative;
   uint64_t cpr_local_aircraft_relative;
+  /*
+   * local positions found relative to the receiver position
+   */
   protobuf_c_boolean has_cpr_local_receiver_relative;
   uint64_t cpr_local_receiver_relative;
+  /*
+   * local (relative) positions not used because we did not have the right data
+   */
   protobuf_c_boolean has_cpr_local_skipped;
   uint64_t cpr_local_skipped;
+  /*
+   * local positions not used because they exceeded the receiver max range or fell into the ambiguous part of the receiver range
+   */
   protobuf_c_boolean has_cpr_local_range;
   uint64_t cpr_local_range;
+  /*
+   * local positions not used because they failed the inter-position speed check
+   */
   protobuf_c_boolean has_cpr_local_speed;
   uint64_t cpr_local_speed;
+  /*
+   * number of CPR messages ignored because they matched one of the heuristics for faulty transponder output     
+   */
   protobuf_c_boolean has_cpr_filtered;
   uint64_t cpr_filtered;
+  /*
+   * statistics about messages received from remote clients. Only present in --net or --net-only mode.
+   */
+  /*
+   * number of Mode A / C messages received.
+   */
   protobuf_c_boolean has_remote_modeac;
   uint64_t remote_modeac;
+  /*
+   * number of Mode S messages received.
+   */
   protobuf_c_boolean has_remote_modes;
   uint64_t remote_modes;
+  /*
+   * number of Mode S messages that had bad CRC or were otherwise invalid.
+   */
   protobuf_c_boolean has_remote_bad;
   uint64_t remote_bad;
+  /*
+   * number of Mode S messages which looked like they might be valid but we didn't recognize the ICAO address and it was one of the message types where we can't be sure it's valid in this case.
+   */
   protobuf_c_boolean has_remote_unknown_icao;
   uint64_t remote_unknown_icao;
+  /*
+   * number of valid Mode S messages accepted with N-bit errors corrected.
+   */
   protobuf_c_boolean has_remote_accepted;
   uint64_t remote_accepted;
+  /*
+   * statistics about messages received from a local SDR dongle. Not present in --net-only mode.
+   */
+  /*
+   * number of sample blocks processed
+   */
   protobuf_c_boolean has_local_samples_processed;
   uint64_t local_samples_processed;
+  /*
+   * number of sample blocks dropped before processing. A nonzero value means CPU overload.
+   */
   protobuf_c_boolean has_local_samples_dropped;
   uint64_t local_samples_dropped;
+  /*
+   * number of Mode A / C messages decoded
+   */
   protobuf_c_boolean has_local_modeac;
   uint64_t local_modeac;
+  /*
+   * number of Mode S preambles received. This is *not* the number of valid messages!
+   */
   protobuf_c_boolean has_local_modes;
   uint64_t local_modes;
+  /*
+   * number of Mode S preambles that didn't result in a valid message
+   */
   protobuf_c_boolean has_local_bad;
   uint64_t local_bad;
+  /*
+   * number of Mode S preambles which looked like they might be valid but we didn't recognize the ICAO address and it was one of the message types where we can't be sure it's valid in this case.
+   */
   protobuf_c_boolean has_local_unknown_icao;
   uint64_t local_unknown_icao;
+  /*
+   * number of messages received that had a signal power above -3dBFS.
+   */
   protobuf_c_boolean has_local_strong_signals;
   uint64_t local_strong_signals;
+  /*
+   * mean signal power of successfully received messages, in dbFS; always negative.
+   */
   protobuf_c_boolean has_local_signal;
   float local_signal;
+  /*
+   * calculated receiver noise floor level.
+   */
   protobuf_c_boolean has_local_noise;
   float local_noise;
+  /*
+   * peak signal power of a successfully received message, in dbFS; always negative.
+   */
   protobuf_c_boolean has_local_peak_signal;
   float local_peak_signal;
+  /*
+   * the number of valid Mode S messages accepted with N-bit errors corrected.
+   */
   protobuf_c_boolean has_local_accepted;
   uint64_t local_accepted;
 };
@@ -610,11 +736,29 @@ struct  _Statistics__PolarRangeEntry
 struct  _Statistics
 {
   ProtobufCMessage base;
+  /*
+   * covers the time between the end of the "last1min" period and the current time.
+   */
   StatisticEntry *latest;
+  /*
+   * covers a recent 15-minute period. As above, this may be up to 1 minute out of date.
+   */
   StatisticEntry *last_1min;
+  /*
+   * covers a recent 5-minute period. As above, this may be up to 1 minute out of date.
+   */
   StatisticEntry *last_5min;
+  /*
+   * covers a recent 1-minute period. This may be up to 1 minute out of date (i.e. "end" may be up to 1 minute old).
+   */
   StatisticEntry *last_15min;
+  /*
+   * covers the entire period from when readsb was started up to the current time
+   */
   StatisticEntry *total;
+  /*
+   * maximum range per bearing, 0 to 359 degree, default resolution 5 degree.
+   */
   size_t n_polar_range;
   Statistics__PolarRangeEntry **polar_range;
 };

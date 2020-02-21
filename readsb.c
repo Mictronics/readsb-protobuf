@@ -138,7 +138,7 @@ static void sigtermHandler(int dummy) {
 
 void receiverPositionChanged(float lat, float lon, float alt) {
     log_with_timestamp("Autodetected receiver location: %.5f, %.5f at %.0fm AMSL", lat, lon, alt);
-    writeJsonToFile("receiver.json", generateReceiverJson()); // location changed
+    generateReceiverProtoBuf("receiver.pb"); // location changed
 }
 
 
@@ -166,8 +166,8 @@ static void modesInitConfig(void) {
     Modes.net_output_vrs_ports = strdup("0");
     Modes.net_connector_delay = 30 * 1000;
     Modes.interactive_display_ttl = MODES_INTERACTIVE_DISPLAY_TTL;
-    Modes.json_interval = 1000;
-    Modes.json_location_accuracy = 1;
+    Modes.output_interval = 1000;
+    Modes.rx_location_accuracy = 1;
     Modes.maxRange = 1852 * 300; // 300NM default max range
     Modes.mode_ac_auto = 1;
     Modes.nfix_crc = 1;
@@ -177,7 +177,6 @@ static void modesInitConfig(void) {
     Modes.net_output_flush_size = 1200; // Default to 1200 Bytes
     Modes.net_output_flush_interval = 50; // Default to 50 ms
     Modes.basestation_is_mlat = 1;
-    Modes.protobuf_out = 0; // Default output is JSON format;
 
     sdrInitConfig();
 }
@@ -334,7 +333,7 @@ static void display_total_stats(void) {
 static void backgroundTasks(void) {
     static uint64_t next_stats_display;
     static uint64_t next_stats_update;
-    static uint64_t next_json, next_history;
+    static uint64_t next_full, next_history;
 
     uint64_t now = mstime();
 
@@ -377,12 +376,8 @@ static void backgroundTasks(void) {
             reset_stats(&Modes.stats_current);
             Modes.stats_current.start = Modes.stats_current.end = now;
 
-            if (Modes.json_dir) {
-                if (Modes.protobuf_out) {
-                    generateStatsProtoBuf("stats.pb");                    
-                } else {
-                    writeJsonToFile("stats.json", generateStatsJson());
-                }
+            if (Modes.output_dir) {
+                generateStatsProtoBuf("stats.pb");                    
             }
 
             next_stats_update += 60000;
@@ -405,36 +400,23 @@ static void backgroundTasks(void) {
         }
     }
 
-    if (Modes.json_dir && now >= next_json) {
-        if (Modes.protobuf_out) {
-            generateAircraftProtoBuf("aircraft.pb", false);
-        } else {
-            writeJsonToFile("aircraft.json", generateAircraftJson());
-        }
-        next_json = now + Modes.json_interval;
+    if (Modes.output_dir && now >= next_full) {
+        generateAircraftProtoBuf("aircraft.pb", false);
+        next_full = now + Modes.output_interval;
     }
 
-    if (Modes.json_dir && now >= next_history) {
+    if (Modes.output_dir && now >= next_history) {
         char filebuf[PATH_MAX];
-        if (Modes.protobuf_out) {
-            snprintf(filebuf, PATH_MAX, "history_%d.pb", Modes.json_aircraft_history_next);
-            generateAircraftProtoBuf(filebuf, true);
-        } else {
-            snprintf(filebuf, PATH_MAX, "history_%d.json", Modes.json_aircraft_history_next);
-            writeJsonToFile(filebuf, generateAircraftJson());
+        snprintf(filebuf, PATH_MAX, "history_%d.pb", Modes.aircraft_history_next);
+        generateAircraftProtoBuf(filebuf, true);
+
+        if (!Modes.aircraft_history_full) {
+            generateReceiverProtoBuf("receiver.pb");
+            if (Modes.aircraft_history_next == HISTORY_SIZE - 1)
+                Modes.aircraft_history_full = 1;
         }
 
-        if (!Modes.json_aircraft_history_full) {
-            if (Modes.protobuf_out) {
-                generateReceiverProtoBuf("receiver.pb");
-            } else {
-                writeJsonToFile("receiver.json", generateReceiverJson()); // number of history entries changed
-            }
-            if (Modes.json_aircraft_history_next == HISTORY_SIZE - 1)
-                Modes.json_aircraft_history_full = 1;
-        }
-
-        Modes.json_aircraft_history_next = (Modes.json_aircraft_history_next + 1) % HISTORY_SIZE;
+        Modes.aircraft_history_next = (Modes.aircraft_history_next + 1) % HISTORY_SIZE;
         next_history = now + HISTORY_INTERVAL;
     }
 }
@@ -450,7 +432,7 @@ static void cleanup_and_exit(int code) {
     /* Free only when pointing to string in heap (strdup allocated when given as run parameter)
      * otherwise points to const string
      */
-    free(Modes.json_dir);
+    free(Modes.output_dir);
     free(Modes.net_bind_address);
     free(Modes.net_input_beast_ports);
     free(Modes.net_output_beast_ports);
@@ -620,19 +602,16 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             cleanup_and_exit(0);
             break;
 #ifndef _WIN32
-        case OptJsonDir:
-            Modes.json_dir = strdup(arg);
+        case OptOutputDir:
+            Modes.output_dir = strdup(arg);
             break;
-        case OptJsonTime:
-            Modes.json_interval = (uint64_t) (1000 * atof(arg));
-            if (Modes.json_interval < 100) // 0.1s
-                Modes.json_interval = 100;
+        case OptOutputTime:
+            Modes.output_interval = (uint64_t) (1000 * atof(arg));
+            if (Modes.output_interval < 100) // 0.1s
+                Modes.output_interval = 100;
             break;
-        case OptJsonLocAcc:
-            Modes.json_location_accuracy = atoi(arg);
-            break;
-        case OptProtobufOut:
-            Modes.protobuf_out = 1;
+        case OptRxLocAcc:
+            Modes.rx_location_accuracy = atoi(arg);
             break;
 #endif
         case OptNetHeartbeat:
@@ -857,16 +836,10 @@ int main(int argc, char **argv) {
     for (j = 0; j < 15; ++j)
         Modes.stats_1min[j].start = Modes.stats_1min[j].end = Modes.stats_current.start;
 
-    // write initial json files so they're not missing
-    if (Modes.protobuf_out) {
-        generateReceiverProtoBuf("receiver.pb");
-        generateStatsProtoBuf("stats.pb");
-        generateAircraftProtoBuf("aircraft.pb", false);
-    } else {
-        writeJsonToFile("receiver.json", generateReceiverJson());
-        writeJsonToFile("stats.json", generateStatsJson());
-        writeJsonToFile("aircraft.json", generateAircraftJson());
-    }
+    // write initial protocol buffer files so they're not missing
+    generateReceiverProtoBuf("receiver.pb");
+    generateStatsProtoBuf("stats.pb");
+    generateAircraftProtoBuf("aircraft.pb", false);
 
     interactiveInit();
 

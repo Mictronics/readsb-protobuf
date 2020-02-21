@@ -1684,72 +1684,6 @@ static const char *jsonEscapeString(const char *str) {
     return buf;
 }
 
-static char *append_flags(char *p, char *end, struct aircraft *a, datasource_t source) {
-    p = safe_snprintf(p, end, "[");
-
-    char *start = p;
-    if (a->callsign_valid.source == source)
-        p = safe_snprintf(p, end, "\"callsign\",");
-    if (a->altitude_baro_valid.source == source)
-        p = safe_snprintf(p, end, "\"altitude\",");
-    if (a->altitude_geom_valid.source == source)
-        p = safe_snprintf(p, end, "\"alt_geom\",");
-    if (a->gs_valid.source == source)
-        p = safe_snprintf(p, end, "\"gs\",");
-    if (a->ias_valid.source == source)
-        p = safe_snprintf(p, end, "\"ias\",");
-    if (a->tas_valid.source == source)
-        p = safe_snprintf(p, end, "\"tas\",");
-    if (a->mach_valid.source == source)
-        p = safe_snprintf(p, end, "\"mach\",");
-    if (a->track_valid.source == source)
-        p = safe_snprintf(p, end, "\"track\",");
-    if (a->track_rate_valid.source == source)
-        p = safe_snprintf(p, end, "\"track_rate\",");
-    if (a->roll_valid.source == source)
-        p = safe_snprintf(p, end, "\"roll\",");
-    if (a->mag_heading_valid.source == source)
-        p = safe_snprintf(p, end, "\"mag_heading\",");
-    if (a->true_heading_valid.source == source)
-        p = safe_snprintf(p, end, "\"true_heading\",");
-    if (a->baro_rate_valid.source == source)
-        p = safe_snprintf(p, end, "\"baro_rate\",");
-    if (a->geom_rate_valid.source == source)
-        p = safe_snprintf(p, end, "\"geom_rate\",");
-    if (a->squawk_valid.source == source)
-        p = safe_snprintf(p, end, "\"squawk\",");
-    if (a->emergency_valid.source == source)
-        p = safe_snprintf(p, end, "\"emergency\",");
-    if (a->nav_qnh_valid.source == source)
-        p = safe_snprintf(p, end, "\"nav_qnh\",");
-    if (a->nav_altitude_mcp_valid.source == source)
-        p = safe_snprintf(p, end, "\"nav_altitude_mcp\",");
-    if (a->nav_altitude_fms_valid.source == source)
-        p = safe_snprintf(p, end, "\"nav_altitude_fms\",");
-    if (a->nav_heading_valid.source == source)
-        p = safe_snprintf(p, end, "\"nav_heading\",");
-    if (a->nav_modes_valid.source == source)
-        p = safe_snprintf(p, end, "\"nav_modes\",");
-    if (a->position_valid.source == source)
-        p = safe_snprintf(p, end, "\"lat\",\"lon\",\"nic\",\"rc\",");
-    if (a->nic_baro_valid.source == source)
-        p = safe_snprintf(p, end, "\"nic_baro\",");
-    if (a->nac_p_valid.source == source)
-        p = safe_snprintf(p, end, "\"nac_p\",");
-    if (a->nac_v_valid.source == source)
-        p = safe_snprintf(p, end, "\"nac_v\",");
-    if (a->sil_valid.source == source)
-        p = safe_snprintf(p, end, "\"sil\",\"sil_type\",");
-    if (a->gva_valid.source == source)
-        p = safe_snprintf(p, end, "\"gva\",");
-    if (a->sda_valid.source == source)
-        p = safe_snprintf(p, end, "\"sda\",");
-    if (p != start)
-        --p;
-    p = safe_snprintf(p, end, "]");
-    return p;
-}
-
 static char *append_nav_modes(char *p, char *end, AircraftMeta__NavModes flags, const char *quote, const char *sep) {
     if (flags.autopilot) {
         p = safe_snprintf(p, end, "%sautopilot%s%s", quote, quote, sep);
@@ -1885,11 +1819,11 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     int fd;
     mode_t mask;
 
-    if (!Modes.json_dir) {
+    if (!Modes.output_dir) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.json_dir, file);
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -1899,7 +1833,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     uint64_t now = mstime();
     struct aircraft *a;
     size_t j;
-    // The entire collection of tracked aircrafts. Equal to aircraft.json content.
+    // The entire collection of tracked aircrafts.
     AircraftsUpdate msg = AIRCRAFTS_UPDATE__INIT;
 
     msg.n_aircraft = 0;
@@ -1914,7 +1848,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
         for (a = Modes.aircrafts[j]; a; a = a->next) {
             if ((a->meta.messages < 2) || (now > (a->meta.seen + 90E3))) {
                 // Basic filter for bad decodes and
-                // don't include stale aircraft in the JSON.
+                // don't include stale aircraft.
                 continue;
             }
 
@@ -1974,7 +1908,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -1984,310 +1918,6 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     // Free up all allocated memory.
     free(buf);
     free(msg.aircraft);
-}
-
-struct char_buffer generateAircraftJson() {
-    struct char_buffer cb;
-    uint64_t now = mstime();
-    struct aircraft *a;
-    int buflen = 256 * 1024; // The initial buffer is resized as needed
-    char *buf = (char *) malloc(buflen), *p = buf, *end = buf + buflen;
-    char *line_start;
-    int first = 1;
-
-    _messageNow = now;
-
-    p = safe_snprintf(p, end,
-            "{ \"now\" : %.1f,\n"
-            "  \"messages\" : %u,\n"
-            "  \"aircraft\" : [",
-            now / 1000.0,
-            Modes.stats_current.messages_total + Modes.stats_alltime.messages_total);
-
-    for (int j = 0; j < AIRCRAFTS_BUCKETS; j++) {
-        for (a = Modes.aircrafts[j]; a; a = a->next) {
-            if (a->meta.messages < 2) { // basic filter for bad decodes
-                continue;
-            }
-            if ((now - a->meta.seen) > 90E3) // don't include stale aircraft in the JSON
-                continue;
-
-            if (first)
-                first = 0;
-            else
-                *p++ = ',';
-
-retry:
-            line_start = p;
-            p = safe_snprintf(p, end, "\n    {\"hex\":\"%s%06x\"", (a->meta.addr & MODES_NON_ICAO_ADDRESS) ? "~" : "", a->meta.addr & 0xFFFFFF);
-            if (a->meta.addr_type != AIRCRAFT_META__ADDR_TYPE__ADDR_ADSB_ICAO)
-                p = safe_snprintf(p, end, ",\"type\":\"%s\"", addrtype_enum_string(a->meta.addr_type));
-            if (trackDataValid(&a->callsign_valid))
-                p = safe_snprintf(p, end, ",\"flight\":\"%s\"", jsonEscapeString(a->callsign));
-            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND)
-                p = safe_snprintf(p, end, ",\"alt_baro\":\"ground\"");
-            else {
-                if (trackDataValid(&a->altitude_baro_valid) && a->altitude_baro_reliable >= 3)
-                    p = safe_snprintf(p, end, ",\"alt_baro\":%d", a->meta.alt_baro);
-                if (trackDataValid(&a->altitude_geom_valid))
-                    p = safe_snprintf(p, end, ",\"alt_geom\":%d", a->meta.alt_geom);
-            }
-            if (trackDataValid(&a->gs_valid))
-                p = safe_snprintf(p, end, ",\"gs\":%d", a->meta.gs);
-            if (trackDataValid(&a->ias_valid))
-                p = safe_snprintf(p, end, ",\"ias\":%u", a->meta.ias);
-            if (trackDataValid(&a->tas_valid))
-                p = safe_snprintf(p, end, ",\"tas\":%u", a->meta.tas);
-            if (trackDataValid(&a->mach_valid))
-                p = safe_snprintf(p, end, ",\"mach\":%.3f", a->meta.mach);
-            if (trackDataValid(&a->track_valid))
-                p = safe_snprintf(p, end, ",\"track\":%d", a->meta.track);
-            if (trackDataValid(&a->track_rate_valid))
-                p = safe_snprintf(p, end, ",\"track_rate\":%.2f", a->meta.track_rate);
-            if (trackDataValid(&a->roll_valid))
-                p = safe_snprintf(p, end, ",\"roll\":%.1f", a->meta.roll);
-            if (trackDataValid(&a->mag_heading_valid))
-                p = safe_snprintf(p, end, ",\"mag_heading\":%d", a->meta.mag_heading);
-            if (trackDataValid(&a->true_heading_valid))
-                p = safe_snprintf(p, end, ",\"true_heading\":%d", a->meta.true_heading);
-            if (trackDataValid(&a->baro_rate_valid))
-                p = safe_snprintf(p, end, ",\"baro_rate\":%d", a->meta.baro_rate);
-            if (trackDataValid(&a->geom_rate_valid))
-                p = safe_snprintf(p, end, ",\"geom_rate\":%d", a->meta.geom_rate);
-            if (trackDataValid(&a->squawk_valid))
-                p = safe_snprintf(p, end, ",\"squawk\":\"%04x\"", a->meta.squawk);
-            if (trackDataValid(&a->emergency_valid))
-                p = safe_snprintf(p, end, ",\"emergency\":\"%s\"", emergency_enum_string(a->meta.emergency));
-            if (a->meta.category != 0)
-                p = safe_snprintf(p, end, ",\"category\":\"%02X\"", a->meta.category);
-            if (trackDataValid(&a->nav_qnh_valid))
-                p = safe_snprintf(p, end, ",\"nav_qnh\":%.1f", a->meta.nav_qnh);
-            if (trackDataValid(&a->nav_altitude_mcp_valid))
-                p = safe_snprintf(p, end, ",\"nav_altitude_mcp\":%d", a->meta.nav_altitude_mcp);
-            if (trackDataValid(&a->nav_altitude_fms_valid))
-                p = safe_snprintf(p, end, ",\"nav_altitude_fms\":%d", a->meta.nav_altitude_fms);
-            if (trackDataValid(&a->nav_heading_valid))
-                p = safe_snprintf(p, end, ",\"nav_heading\":%d", a->meta.nav_heading);
-            if (trackDataValid(&a->nav_modes_valid)) {
-                p = safe_snprintf(p, end, ",\"nav_modes\":[");
-                p = append_nav_modes(p, end, a->nav_modes, "\"", ",");
-                p = safe_snprintf(p, end, "]");
-            }
-            if (trackDataValid(&a->position_valid)) {
-                p = safe_snprintf(p, end, ",\"lat\":%f,\"lon\":%f,\"nic\":%u,\"rc\":%u,\"seen_pos\":%.1f", a->meta.lat, a->meta.lon, a->meta.nic, a->meta.rc, (now - a->position_valid.updated) / 1000.0);
-                // Update position statistics.
-                Modes.stats_current.with_positions += 1;
-                if (a->position_valid.source == SOURCE_MLAT) {
-                    Modes.stats_current.mlat_positions += 1;
-                } else if (a->position_valid.source == SOURCE_TISB) {
-                    Modes.stats_current.tisb_positions += 1;
-                }
-            }
-            if (a->adsb_version >= 0)
-                p = safe_snprintf(p, end, ",\"version\":%d", a->adsb_version);
-            if (trackDataValid(&a->nic_baro_valid))
-                p = safe_snprintf(p, end, ",\"nic_baro\":%u", a->meta.nic_baro);
-            if (trackDataValid(&a->nac_p_valid))
-                p = safe_snprintf(p, end, ",\"nac_p\":%u", a->meta.nac_p);
-            if (trackDataValid(&a->nac_v_valid))
-                p = safe_snprintf(p, end, ",\"nac_v\":%u", a->meta.nac_v);
-            if (trackDataValid(&a->sil_valid))
-                p = safe_snprintf(p, end, ",\"sil\":%u", a->meta.sil);
-            if (a->meta.sil_type != AIRCRAFT_META__SIL_TYPE__SIL_INVALID)
-                p = safe_snprintf(p, end, ",\"sil_type\":\"%s\"", sil_type_enum_string(a->meta.sil_type));
-            if (trackDataValid(&a->gva_valid))
-                p = safe_snprintf(p, end, ",\"gva\":%u", a->meta.gva);
-            if (trackDataValid(&a->sda_valid))
-                p = safe_snprintf(p, end, ",\"sda\":%u", a->meta.sda);
-            if (trackDataValid(&a->alert_valid))
-                p = safe_snprintf(p, end, ",\"alert\":%u", a->meta.alert);
-            if (trackDataValid(&a->spi_valid))
-                p = safe_snprintf(p, end, ",\"spi\":%u", a->meta.spi);
-
-            p = safe_snprintf(p, end, ",\"mlat\":");
-            p = append_flags(p, end, a, SOURCE_MLAT);
-            p = safe_snprintf(p, end, ",\"tisb\":");
-            p = append_flags(p, end, a, SOURCE_TISB);
-
-            p = safe_snprintf(p, end, ",\"messages\":%" PRIu64 ",\"seen\":%.1f,\"rssi\":%.1f}",
-                    a->meta.messages, (now - a->meta.seen) / 1000.0,
-                    10 * log10((a->signalLevel[0] + a->signalLevel[1] + a->signalLevel[2] + a->signalLevel[3] +
-                    a->signalLevel[4] + a->signalLevel[5] + a->signalLevel[6] + a->signalLevel[7] + 1e-5) / 8));
-
-            if ((p + 10) >= end) { // +10 to leave some space for the final line
-                // overran the buffer
-                int used = line_start - buf;
-                buflen *= 2;
-                buf = (char *) realloc(buf, buflen);
-                p = buf + used;
-                end = buf + buflen;
-                goto retry;
-            }
-        }
-    }
-
-    p = safe_snprintf(p, end, "\n  ]\n}\n");
-
-    cb.len = p - buf;
-    cb.buffer = buf;
-    return cb;
-}
-
-static char * appendStatsJson(char *p,
-        char *end,
-        struct stats *st,
-        const char *key) {
-    int i;
-
-    p = safe_snprintf(p, end,
-            "\"%s\":{\"start\":%.1f,\"end\":%.1f",
-            key,
-            st->start / 1000.0,
-            st->end / 1000.0);
-
-    if (!Modes.net_only) {
-        p = safe_snprintf(p, end,
-                ",\"local\":{\"samples_processed\":%llu"
-                ",\"samples_dropped\":%llu"
-                ",\"modeac\":%u"
-                ",\"modes\":%u"
-                ",\"bad\":%u"
-                ",\"unknown_icao\":%u",
-                (unsigned long long) st->samples_processed,
-                (unsigned long long) st->samples_dropped,
-                st->demod_modeac,
-                st->demod_preambles,
-                st->demod_rejected_bad,
-                st->demod_rejected_unknown_icao);
-
-        for (i = 0; i <= Modes.nfix_crc; ++i) {
-            if (i == 0) p = safe_snprintf(p, end, ",\"accepted\":[%u", st->demod_accepted[i]);
-            else p = safe_snprintf(p, end, ",%u", st->demod_accepted[i]);
-        }
-
-        p = safe_snprintf(p, end, "]");
-
-        if (st->signal_power_sum > 0 && st->signal_power_count > 0)
-            p = safe_snprintf(p, end, ",\"signal\":%.1f", 10 * log10(st->signal_power_sum / st->signal_power_count));
-        if (st->noise_power_sum > 0 && st->noise_power_count > 0)
-            p = safe_snprintf(p, end, ",\"noise\":%.1f", 10 * log10(st->noise_power_sum / st->noise_power_count));
-        if (st->peak_signal_power > 0)
-            p = safe_snprintf(p, end, ",\"peak_signal\":%.1f", 10 * log10(st->peak_signal_power));
-
-        p = safe_snprintf(p, end, ",\"strong_signals\":%d}", st->strong_signal_count);
-    }
-
-    if (Modes.net) {
-        p = safe_snprintf(p, end,
-                ",\"remote\":{\"modeac\":%u"
-                ",\"modes\":%u"
-                ",\"bad\":%u"
-                ",\"unknown_icao\":%u",
-                st->remote_received_modeac,
-                st->remote_received_modes,
-                st->remote_rejected_bad,
-                st->remote_rejected_unknown_icao);
-
-        for (i = 0; i <= Modes.nfix_crc; ++i) {
-            if (i == 0) p = safe_snprintf(p, end, ",\"accepted\":[%u", st->remote_accepted[i]);
-            else p = safe_snprintf(p, end, ",%u", st->remote_accepted[i]);
-        }
-
-        p = safe_snprintf(p, end, "]}");
-    }
-
-    {
-        uint64_t demod_cpu_millis = (uint64_t) st->demod_cpu.tv_sec * 1000UL + st->demod_cpu.tv_nsec / 1000000UL;
-        uint64_t reader_cpu_millis = (uint64_t) st->reader_cpu.tv_sec * 1000UL + st->reader_cpu.tv_nsec / 1000000UL;
-        uint64_t background_cpu_millis = (uint64_t) st->background_cpu.tv_sec * 1000UL + st->background_cpu.tv_nsec / 1000000UL;
-
-        p = safe_snprintf(p, end,
-                ",\"cpr\":{\"surface\":%u"
-                ",\"airborne\":%u"
-                ",\"global_ok\":%u"
-                ",\"global_bad\":%u"
-                ",\"global_range\":%u"
-                ",\"global_speed\":%u"
-                ",\"global_skipped\":%u"
-                ",\"local_ok\":%u"
-                ",\"local_aircraft_relative\":%u"
-                ",\"local_receiver_relative\":%u"
-                ",\"local_skipped\":%u"
-                ",\"local_range\":%u"
-                ",\"local_speed\":%u"
-                ",\"filtered\":%u}"
-                ",\"altitude_suppressed\":%u"
-                ",\"cpu\":{\"demod\":%llu,\"reader\":%llu,\"background\":%llu}"
-                ",\"tracks\":{\"new\":%u"
-                ",\"single_message\":%u"
-                ",\"with_position\":%u"
-                ",\"mlat_position\":%u"
-                ",\"tisb_position\":%u}"
-                ",\"messages\":%u"
-                ",\"max_distance_in_metres\":%ld"
-                ",\"max_distance_in_nautical_miles\":%.1lf}",
-                st->cpr_surface,
-                st->cpr_airborne,
-                st->cpr_global_ok,
-                st->cpr_global_bad,
-                st->cpr_global_range_checks,
-                st->cpr_global_speed_checks,
-                st->cpr_global_skipped,
-                st->cpr_local_ok,
-                st->cpr_local_aircraft_relative,
-                st->cpr_local_receiver_relative,
-                st->cpr_local_skipped,
-                st->cpr_local_range_checks,
-                st->cpr_local_speed_checks,
-                st->cpr_filtered,
-                st->suppressed_altitude_messages,
-                (unsigned long long) demod_cpu_millis,
-                (unsigned long long) reader_cpu_millis,
-                (unsigned long long) background_cpu_millis,
-                st->unique_aircraft,
-                st->single_message_aircraft,
-                st->with_positions,
-                st->mlat_positions,
-                st->tisb_positions,
-                st->messages_total,
-                (long) st->longest_distance,
-                st->longest_distance / 1852.0);
-    }
-
-    return p;
-}
-
-/**
- * Generate statistics JSON string.
- * @return JSON string.
- */
-struct char_buffer generateStatsJson() {
-    struct char_buffer cb;
-    struct stats add;
-    char *buf = (char *) malloc(8192), *p = buf, *end = buf + 8192;
-
-    p = safe_snprintf(p, end, "{\n");
-    p = appendStatsJson(p, end, &Modes.stats_periodic, "latest");
-    p = safe_snprintf(p, end, ",\n");
-
-    p = appendStatsJson(p, end, &Modes.stats_1min[Modes.stats_latest_1min], "last1min");
-    p = safe_snprintf(p, end, ",\n");
-
-    p = appendStatsJson(p, end, &Modes.stats_5min, "last5min");
-    p = safe_snprintf(p, end, ",\n");
-
-    p = appendStatsJson(p, end, &Modes.stats_15min, "last15min");
-    p = safe_snprintf(p, end, ",\n");
-
-    add_stats(&Modes.stats_alltime, &Modes.stats_current, &add);
-    p = appendStatsJson(p, end, &add, "total");
-    p = safe_snprintf(p, end, "\n}\n");
-
-    assert(p < end);
-
-    cb.len = p - buf;
-    cb.buffer = buf;
-    return cb;
 }
 
 static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
@@ -2374,11 +2004,11 @@ void generateStatsProtoBuf(const char *file) {
     int fd, b;
     mode_t mask;
 
-    if (!Modes.json_dir) {
+    if (!Modes.output_dir) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.json_dir, file);
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -2431,7 +2061,7 @@ void generateStatsProtoBuf(const char *file) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -2449,41 +2079,6 @@ void generateStatsProtoBuf(const char *file) {
 }
 
 /**
- * Generate receiver description in JSON.
- * @return JSON string.
- */
-struct char_buffer generateReceiverJson() {
-    struct char_buffer cb;
-    char *buf = (char *) malloc(1024), *p = buf;
-
-    p += snprintf(p, 1024, "{ " \
-            "\"version\" : \"%s\", "
-            "\"refresh\" : %.0f, "
-            "\"history\" : %d",
-            MODES_READSB_VERSION, 1.0 * Modes.json_interval, Modes.json_aircraft_history_next + 1);
-
-    if (Modes.json_location_accuracy && (Modes.fUserLat != 0.0 || Modes.fUserLon != 0.0)) {
-        if (Modes.json_location_accuracy == 1) {
-            p += snprintf(p, 1024, ", "                \
-                    "\"lat\" : %.2f, "
-                    "\"lon\" : %.2f",
-                    Modes.fUserLat, Modes.fUserLon); // round to 2dp - about 0.5-1km accuracy - for privacy reasons
-        } else {
-            p += snprintf(p, 1024, ", "                \
-                    "\"lat\" : %.6f, "
-                    "\"lon\" : %.6f",
-                    Modes.fUserLat, Modes.fUserLon); // exact location
-        }
-    }
-
-    p += snprintf(p, 1024, " }\n");
-
-    cb.len = p - buf;
-    cb.buffer = buf;
-    return cb;
-}
-
-/**
  * Generate receiver description in protocol buffer format.
  * @param file File name.
  */
@@ -2493,11 +2088,11 @@ void generateReceiverProtoBuf(const char *file) {
     int fd;
     mode_t mask;
 
-    if (!Modes.json_dir) {
+    if (!Modes.output_dir) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.json_dir, file);
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -2506,11 +2101,11 @@ void generateReceiverProtoBuf(const char *file) {
 
     Receiver msg = RECEIVER__INIT;
     msg.version = MODES_READSB_VERSION;
-    msg.refresh = 1.0 * Modes.json_interval;
-    msg.history = Modes.json_aircraft_history_next + 1;
+    msg.refresh = 1.0 * Modes.output_interval;
+    msg.history = Modes.aircraft_history_next + 1;
 
-    if (Modes.json_location_accuracy && (Modes.fUserLat != 0.0 || Modes.fUserLon != 0.0)) {
-        if (Modes.json_location_accuracy == 1) {
+    if (Modes.rx_location_accuracy && (Modes.fUserLat != 0.0 || Modes.fUserLon != 0.0)) {
+        if (Modes.rx_location_accuracy == 1) {
             // round to 2 decimal digits - about 0.5-1km accuracy - for privacy reasons
             msg.latitude = round(Modes.fUserLat * 100) / 100;
             msg.longitude = round(Modes.fUserLon * 100) / 100;
@@ -2534,7 +2129,7 @@ void generateReceiverProtoBuf(const char *file) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -2543,53 +2138,6 @@ void generateReceiverProtoBuf(const char *file) {
     }
     // Free up all allocated memory.
     free(buf);
-}
-
-/**
- * Write JSON string to file.
- * @param file File name.
- * @param cb JSON string.
- */
-void writeJsonToFile(const char *file, struct char_buffer cb) {
-#ifndef _WIN32
-    char pathbuf[PATH_MAX];
-    char tmppath[PATH_MAX];
-    int fd;
-    int len = cb.len;
-    mode_t mask;
-    char *content = cb.buffer;
-
-    if (!Modes.json_dir) {
-        free(content);
-        return;
-    }
-
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.json_dir, file);
-    tmppath[PATH_MAX - 1] = 0;
-    fd = mkstemp(tmppath);
-    if (fd < 0) {
-        free(content);
-        return;
-    }
-
-    mask = umask(0);
-    umask(mask);
-    fchmod(fd, 0644 & ~mask);
-
-    if (write(fd, content, len) != len) {
-        close(fd);
-    } else {
-        if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.json_dir, file);
-            pathbuf[PATH_MAX - 1] = 0;
-            rename(tmppath, pathbuf);
-        } else {
-            unlink(tmppath);
-        }
-    }
-
-    free(content);
-#endif
 }
 
 static void periodicReadFromClient(struct client *c) {
@@ -3435,7 +2983,7 @@ struct char_buffer generateVRS(int part, int n_parts) {
             if (a->meta.messages < 2) { // basic filter for bad decodes
                 continue;
             }
-            if ((now - a->meta.seen) > 5E3) // don't include stale aircraft in the JSON
+            if ((now - a->meta.seen) > 5E3) // don't include stale aircraft in output
                 continue;
 
             // For now, suppress non-ICAO addresses

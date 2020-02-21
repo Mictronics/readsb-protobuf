@@ -64,8 +64,8 @@ Implies \fB--throttle\fP
 Remove from list if idle for <sec> (default: 60)
 .TP
 .B
-\fB--json-location-accuracy\fP=<n>
-Accuracy of receiver location in json metadata:
+\fB--rx-location-accuracy\fP=<n>
+Accuracy of location in receiver metadata:
 .RS
 .IP 0
 no location
@@ -151,17 +151,13 @@ Show and reset stats every <sec> seconds
 Collect range statistics for polar plot.
 .TP
 .B
-\fB--write-json\fP=<dir>
-Periodically write json output to <dir> (for
+\fB--write-output\fP=<dir>
+Periodically write output to <dir> (for
 external webserver)
 .TP
 .B
-\fB--write-json-every\fP=<t>
-Write json output every t seconds (default 1)
-.TP
-.B
-\fB--protobuf-out\fP
-Write all output (for external webserver) in protocol buffer format.
+\fB--write-output-every\fP=<t>
+Write output every t seconds (default 1)
 .SS  NETWORK OPTIONS
 .TP
 .B

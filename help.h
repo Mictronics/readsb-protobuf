@@ -64,10 +64,9 @@ static struct argp_option options[] = {
     {"dcfilter", OptDcFilter, 0, 0, "Apply a 1Hz DC filter to input data (requires more CPU)", 1},
     {"enable-biastee", OptBiasTee, 0, 0, "Enable bias tee on supporting interfaces (default: disabled)", 1},
 #ifndef _WIN32
-    {"protobuf-out", OptProtobufOut, 0, 0, "Write all output (for external webserver) in protocol buffer format.", 1},
-    {"write-json", OptJsonDir, "<dir>", 0, "Periodically write json output to <dir> (for external webserver)", 1},
-    {"write-json-every", OptJsonTime, "<t>", 0, "Write json output every t seconds (default 1)", 1},
-    {"json-location-accuracy", OptJsonLocAcc, "<n>", 0, "Accuracy of receiver location in json metadata: 0=no location, 1=approximate, 2=exact", 1},
+    {"write-output", OptOutputDir, "<dir>", 0, "Periodically write output to <dir> (for external webserver)", 1},
+    {"write-output-every", OptOutputTime, "<t>", 0, "Write output every t seconds (default 1)", 1},
+    {"rx-location-accuracy", OptRxLocAcc, "<n>", 0, "Accuracy of receiver location in metadata: 0=no location, 1=approximate, 2=exact", 1},
 #endif
 #endif
     {0, 0, 0, 0, "Network options:", 2},

@@ -313,7 +313,7 @@ struct { // Internal state
     double sample_rate; // actual sample rate in use (in hz)
     uint64_t interactive_display_ttl; // Interactive mode: TTL display
     uint64_t stats; // Interval (millis) between stats dumps,
-    uint64_t json_interval; // Interval between rewriting the json aircraft file, in milliseconds; also the advertised map refresh interval
+    uint64_t output_interval; // Interval between rewriting the aircraft file, in milliseconds; also the advertised map refresh interval
     char *net_output_raw_ports; // List of raw output TCP ports
     char *net_input_raw_ports; // List of raw input TCP ports
     char *net_output_sbs_ports; // List of SBS output TCP ports
@@ -329,7 +329,7 @@ struct { // Internal state
     int net_connectors_size;
     char *filename; // Input form file, --ifile option
     char *net_bind_address; // Bind address
-    char *json_dir; // Path to json base directory, or NULL not to write json.
+    char *output_dir; // Path to output base directory, or NULL not to write any output.
     char *beast_serial; // Modes-S Beast device path
 #if defined(__arm__)
     uint32_t padding;
@@ -344,13 +344,12 @@ struct { // Internal state
     int metric; // Use metric units
     int use_gnss; // Use GNSS altitudes with H suffix ("HAE", though it isn't always) when available
     int mlat; // Use Beast ascii format for raw data output, i.e. @...; iso *...;
-    int json_location_accuracy; // Accuracy of location metadata: 0=none, 1=approx, 2=exact
-    int json_aircraft_history_next;
-    int json_aircraft_history_full;
+    int rx_location_accuracy; // Accuracy of location metadata: 0=none, 1=approx, 2=exact
+    int aircraft_history_next;
+    int aircraft_history_full;
     int stats_latest_1min;
     int bUserFlags; // Flags relating to the user details
     int biastee;
-    int protobuf_out;
     struct stats stats_current;
     struct stats stats_alltime;
     struct stats stats_periodic;
@@ -604,9 +603,9 @@ enum {
     OptDebug,
     OptQuiet,
     OptShowOnly,
-    OptJsonDir,
-    OptJsonTime,
-    OptJsonLocAcc,
+    OptOutputDir,
+    OptOutputTime,
+    OptRxLocAcc,
     OptDcFilter,
     OptBiasTee,
     OptNet,
@@ -646,7 +645,6 @@ enum {
     OptBladeBw,
     OptPlutoUri,
     OptPlutoNetwork,
-    OptProtobufOut,
 };
 
 // This one needs modesMessage:

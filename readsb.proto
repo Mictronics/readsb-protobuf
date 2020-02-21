@@ -191,60 +191,64 @@ message Receiver {
  * Single statistcs entry.
  */
 message StatisticEntry {
-    uint64 start = 1;
-    uint64 stop = 2;
-    uint64 messages = 3;
+    uint64 start = 1; // the start time (in seconds-since-1-Jan-1970) of this statistics collection period.
+    uint64 stop = 2; // the end time (in seconds-since-1-Jan-1970) of this statistics collection period.
+    uint64 messages = 3; // total number of messages accepted by readsb from any source
     uint32 max_distance_in_metres = 4;
     uint32 max_distance_in_nautical_miles = 5;
     uint64 altitude_suppressed = 6;
-    uint64 tracks_new = 7;
-    uint64 tracks_single_message = 8;
+    uint64 tracks_new = 7; // total tracks (aircrafts) created. Each track represents a unique aircraft and persists for up to 5 minutes.
+    uint64 tracks_single_message = 8; // tracks consisting of only a single message. These are usually due to message decoding errors that produce a bad aircraft address.
     uint64 tracks_with_position = 9;
     uint64 tracks_mlat_position = 10;
     uint64 tracks_tisb_position = 11;
-    uint64 cpu_demod = 20;
-    uint64 cpu_reader = 21;
-    uint64 cpu_background = 22;
-    uint64 cpr_surface = 40;
-    uint64 cpr_airborne = 41;
-    uint64 cpr_global_ok = 42;
-    uint64 cpr_global_bad = 43;
-    uint64 cpr_global_range = 44;
-    uint64 cpr_global_speed = 45;
-    uint64 cpr_global_skipped = 46;
-    uint64 cpr_local_ok = 47;
-    uint64 cpr_local_aircraft_relative = 48;
-    uint64 cpr_local_receiver_relative = 49;
-    uint64 cpr_local_skipped = 50;
-    uint64 cpr_local_range = 51;
-    uint64 cpr_local_speed = 52;
-    uint64 cpr_filtered = 53;    
-    uint64 remote_modeac = 70;
-    uint64 remote_modes = 71;
-    uint64 remote_bad = 72;
-    uint64 remote_unknown_icao = 73;
-    uint64 remote_accepted = 74;
-    uint64 local_samples_processed = 90;
-    uint64 local_samples_dropped = 91;
-    uint64 local_modeac = 92;
-    uint64 local_modes = 93;
-    uint64 local_bad = 94;
-    uint64 local_unknown_icao = 95;
-    uint64 local_strong_signals = 96;
-    float local_signal = 97;
-    float local_noise = 98;
-    float local_peak_signal = 99;
-    uint64 local_accepted = 100;
+    // statistics about CPU use
+    uint64 cpu_demod = 20; // milliseconds spent doing demodulation and decoding in response to data from a SDR dongle
+    uint64 cpu_reader = 21; // milliseconds spent reading sample data over USB from a SDR dongle
+    uint64 cpu_background = 22; // milliseconds spent doing network I/O, processing received network messages, and periodic tasks.
+    // statistics about Compact Position Report message decoding.
+    uint64 cpr_surface = 40; // total number of surface CPR messages received
+    uint64 cpr_airborne = 41; // total number of airborne CPR messages received
+    uint64 cpr_global_ok = 42; // global positions successfuly derived
+    uint64 cpr_global_bad = 43; // global positions that were rejected because they were inconsistent
+    uint64 cpr_global_range = 44; // global positions that were rejected because they exceeded the receiver max range
+    uint64 cpr_global_speed = 45; // global positions that were rejected because they failed the inter-position speed check
+    uint64 cpr_global_skipped = 46; // global position attempts skipped because we did not have the right data (e.g. even/odd messages crossed a zone boundary)
+    uint64 cpr_local_ok = 47; // local (relative) positions successfully found
+    uint64 cpr_local_aircraft_relative = 48; // local positions found relative to a previous aircraft position
+    uint64 cpr_local_receiver_relative = 49; // local positions found relative to the receiver position
+    uint64 cpr_local_skipped = 50; // local (relative) positions not used because we did not have the right data
+    uint64 cpr_local_range = 51; // local positions not used because they exceeded the receiver max range or fell into the ambiguous part of the receiver range
+    uint64 cpr_local_speed = 52; // local positions not used because they failed the inter-position speed check
+    uint64 cpr_filtered = 53; // number of CPR messages ignored because they matched one of the heuristics for faulty transponder output     
+    // statistics about messages received from remote clients. Only present in --net or --net-only mode.
+    uint64 remote_modeac = 70; // number of Mode A / C messages received.
+    uint64 remote_modes = 71; // number of Mode S messages received.
+    uint64 remote_bad = 72; // number of Mode S messages that had bad CRC or were otherwise invalid.
+    uint64 remote_unknown_icao = 73; // number of Mode S messages which looked like they might be valid but we didn't recognize the ICAO address and it was one of the message types where we can't be sure it's valid in this case.
+    uint64 remote_accepted = 74; // number of valid Mode S messages accepted with N-bit errors corrected.
+    // statistics about messages received from a local SDR dongle. Not present in --net-only mode.
+    uint64 local_samples_processed = 90; // number of sample blocks processed
+    uint64 local_samples_dropped = 91; // number of sample blocks dropped before processing. A nonzero value means CPU overload.
+    uint64 local_modeac = 92; // number of Mode A / C messages decoded
+    uint64 local_modes = 93; // number of Mode S preambles received. This is *not* the number of valid messages!
+    uint64 local_bad = 94; // number of Mode S preambles that didn't result in a valid message
+    uint64 local_unknown_icao = 95; // number of Mode S preambles which looked like they might be valid but we didn't recognize the ICAO address and it was one of the message types where we can't be sure it's valid in this case.
+    uint64 local_strong_signals = 96; // number of messages received that had a signal power above -3dBFS.
+    float local_signal = 97; // mean signal power of successfully received messages, in dbFS; always negative.
+    float local_noise = 98; // calculated receiver noise floor level.
+    float local_peak_signal = 99; // peak signal power of a successfully received message, in dbFS; always negative.
+    uint64 local_accepted = 100; // the number of valid Mode S messages accepted with N-bit errors corrected.
 }
 
 /**
  * Readsb receiver statistics.
  */
 message Statistics {
-    StatisticEntry latest = 1;
-    StatisticEntry last_1min = 2;
-    StatisticEntry last_5min = 3;
-    StatisticEntry last_15min = 4;
-    StatisticEntry total = 5;
-    map<uint32, uint32> polar_range = 6;
+    StatisticEntry latest = 1; // covers the time between the end of the "last1min" period and the current time.
+    StatisticEntry last_1min = 2; // covers a recent 15-minute period. As above, this may be up to 1 minute out of date.
+    StatisticEntry last_5min = 3; // covers a recent 5-minute period. As above, this may be up to 1 minute out of date.
+    StatisticEntry last_15min = 4; // covers a recent 1-minute period. This may be up to 1 minute out of date (i.e. "end" may be up to 1 minute old).
+    StatisticEntry total = 5; // covers the entire period from when readsb was started up to the current time
+    map<uint32, uint32> polar_range = 6; // maximum range per bearing, 0 to 359 degree, default resolution 5 degree.
 }
