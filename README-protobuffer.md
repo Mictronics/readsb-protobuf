@@ -17,4 +17,4 @@ The file versions are updated to a temporary file, then atomically renamed to th
 
 Each file contains several protocol buffer messages, defined in readsb.proto. These files can be decoded using the protoc-c compiler.
 
-e.g. protoc-c --decode=AircraftsUpdate readsb.proto < /run/readsb/aircraft.pb
+e.g. ```protoc-c --decode=AircraftsUpdate readsb.proto < /run/readsb/aircraft.pb```

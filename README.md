@@ -16,6 +16,7 @@ This is a personal, hobbyist project with no commercial background.
 
 ## Modifications:
 
+* Protocol buffer binaries output only.
 * Add receiver and system performance graphs.
 * Add statistics collector service with Round Robin Database .
 * Range polar plot available as map layer. Generated as server side statistics.
@@ -71,18 +72,6 @@ is loaded from server on version change, when empty or doesn't exists.**
 To enable support in Firefox: Open URL 'about:config' search 'dom.indexedDB.enabled' set to 'true'.**
 
 *Note: In Android pre-loading the database takes a minute or two, so be patient. Don't stop the script.*
-
-### Protocol Buffer output
-
-Protocol buffer output is (still) disabled by default and JSON files are generated. Therefore this version 
-will not break existing installations.
-
-To enable prtocol buffer output run readsb with parameter:
-```
---protobuf-out
-```
-
-The stats.json will be generated in any case to ensure compatibility with third-party statistic collectors.
 
 ### Push server support
 
@@ -155,7 +144,7 @@ This is packaged with jessie. "sudo apt-get install librtlsdr-dev"
 
 ### Actually building it
 
-Build package with no additional receiver library dependencies: `dpkg-buildpackage -b`.
+Build package with no additional receiver library dependencies: `dpkg-buildpackage -b -d`.
 
 Build with RTLSDR support: `dpkg-buildpackage -b --build-profiles=rtlsdr`
 
