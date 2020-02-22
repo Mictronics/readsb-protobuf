@@ -108,7 +108,8 @@
     "aircrafts": "Aircraft (total/unknown): ",
     "messages": "Messages: ",
     "positions": "(with positions): ",
-    "history": "History: "
+    "history": "History: ",
+    "graphsLink": "Performance Graphs"
   },
   "units": {
     "units": "Units",
