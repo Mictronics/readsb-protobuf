@@ -286,12 +286,7 @@ void *readerThreadEntryPoint(void *arg) {
         Modes.exit = 2; // unexpected exit
     pthread_cond_signal(&Modes.data_cond);
     pthread_mutex_unlock(&Modes.data_mutex);
-
-#ifndef _WIN32
     pthread_exit(NULL);
-#else
-    return NULL;
-#endif
 }
 //
 // ============================== Snip mode =================================
@@ -498,11 +493,7 @@ static void cleanup_and_exit(int code) {
         s = ns;
     }
 
-#ifndef _WIN32
     exit(code);
-#else
-    return (code);
-#endif
 }
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -601,7 +592,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             snipMode(atoi(arg));
             cleanup_and_exit(0);
             break;
-#ifndef _WIN32
         case OptOutputDir:
             Modes.output_dir = strdup(arg);
             break;
@@ -613,7 +603,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case OptRxLocAcc:
             Modes.rx_location_accuracy = atoi(arg);
             break;
-#endif
         case OptNetHeartbeat:
             Modes.net_heartbeat_interval = (uint64_t) (1000 * atof(arg));
             break;
@@ -806,13 +795,6 @@ int main(int argc, char **argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, 0)) {
         cleanup_and_exit(1);
     }
-
-#ifdef _WIN32
-    // Try to comply with the Copyright license conditions for binary distribution
-    if (!Modes.quiet) {
-        showCopyright();
-    }
-#endif
 
     // Initialization
     log_with_timestamp("%s %s starting up.", MODES_READSB_VARIANT, MODES_READSB_VERSION);

@@ -110,17 +110,6 @@ static void view1090Init(void) {
 
     pthread_mutex_init(&Modes.data_mutex, NULL);
     pthread_cond_init(&Modes.data_cond, NULL);
-
-#ifdef _WIN32
-    if ((!Modes.wsaData.wVersion)
-            && (!Modes.wsaData.wHighVersion)) {
-        // Try to start the windows socket support
-        if (WSAStartup(MAKEWORD(2, 1), &Modes.wsaData) != 0) {
-            fprintf(stderr, "WSAStartup returned Error\n");
-        }
-    }
-#endif
-
     // Validate the users Lat/Lon home location inputs
     if ((Modes.fUserLat > 90.0) // Latitude must be -90 to +90
             || (Modes.fUserLat < -90.0) // and
@@ -222,15 +211,6 @@ int main(int argc, char **argv) {
     if (argp_parse(&argp, argc, argv, 0, 0, 0)) {
         goto exit;
     }
-
-#ifdef _WIN32
-    // Try to comply with the Copyright license conditions for binary distribution
-    if (!Modes.quiet) {
-        showCopyright();
-    }
-#define MSG_DONTWAIT 0
-#endif
-
     // We need only one service here created below, no need to call modesInitNet
     Modes.clients = NULL;
     Modes.services = NULL;

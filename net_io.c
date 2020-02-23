@@ -625,13 +625,8 @@ static void flushClients() {
             int done = 0;
 
             do {
-#ifndef _WIN32
                 int nwritten = write(c->fd, psendq, towrite);
                 int err = errno;
-#else
-                int nwritten = send(c->fd, psendq, towrite, 0);
-                int err = WSAGetLastError();
-#endif
                 loops++;
                 // If we get -1, it's only fatal if it's not EAGAIN/EWOULDBLOCK
                 if (nwritten < 0) {
@@ -1949,7 +1944,7 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
             e->local_peak_signal = 10 * log10(st->peak_signal_power);
         }
         e->local_strong_signals = st->strong_signal_count;
-        
+
         for (i = 0; i <= Modes.nfix_crc; ++i) {
             e->local_accepted += st->demod_accepted[i];
         }
@@ -1960,7 +1955,7 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
         e->remote_modes = st->remote_received_modes;
         e->remote_bad = st->remote_rejected_bad;
         e->remote_unknown_icao = st->remote_rejected_unknown_icao;
-        
+
         for (i = 0; i <= Modes.nfix_crc; ++i) {
             e->remote_accepted += st->remote_accepted[i];
         }
@@ -2144,7 +2139,6 @@ static void periodicReadFromClient(struct client *c) {
     int nread, err;
     char buf[512];
 
-    /* FIXME:  Not Win32 safe networking */
     nread = read(c->fd, buf, sizeof (buf));
     err = errno;
 
@@ -2190,15 +2184,9 @@ static void modesReadFromClient(struct client *c) {
             left = MODES_CLIENT_BUF_SIZE;
             // If there is garbage, read more to discard it ASAP
         }
-#ifndef _WIN32
+
         nread = read(c->fd, c->buf + c->buflen, left);
         int err = errno;
-#else
-        nread = recv(c->fd, c->buf + c->buflen, left, 0);
-        if (nread < 0) {
-            errno = WSAGetLastError();
-        }
-#endif
 
         // If we didn't get all the data we asked for, then return once we've processed what we did get.
         if (nread != left) {
@@ -2217,12 +2205,8 @@ static void modesReadFromClient(struct client *c) {
             return;
         }
 
-#ifndef _WIN32
-        if (nread < 0 && (err == EAGAIN || err == EWOULDBLOCK)) // No data available (not really an error)
-#else
-        if (nread < 0 && errno == EWOULDBLOCK) // No data available (not really an error)
-#endif
-        {
+        if (nread < 0 && (err == EAGAIN || err == EWOULDBLOCK)) {
+            // No data available (not really an error)
             return;
         }
 

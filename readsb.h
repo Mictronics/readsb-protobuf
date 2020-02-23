@@ -64,8 +64,6 @@
 #endif
 
 // ============================= Include files ==========================
-
-#ifndef _WIN32
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -83,9 +81,6 @@
 #include <sys/ioctl.h>
 #include <time.h>
 #include <limits.h>
-#else
-#include "winstubs.h" //Put everything Windows specific in here
-#endif
 
 #include "compat/compat.h"
 
@@ -288,10 +283,6 @@ struct { // Internal state
     struct net_writer sbs_out; // SBS-format output
     struct net_writer vrs_out; // SBS-format output
     struct net_writer fatsv_out; // FATSV-format output
-
-#ifdef _WIN32
-    WSADATA wsaData; // Windows socket initialisation
-#endif
 
     // Configuration
     int nfix_crc; // Number of crc bit error(s) to correct

@@ -63,11 +63,9 @@ static struct argp_option options[] = {
     {"quiet", OptQuiet, 0, 0, "Disable output. Use for daemon applications", 1},
     {"dcfilter", OptDcFilter, 0, 0, "Apply a 1Hz DC filter to input data (requires more CPU)", 1},
     {"enable-biastee", OptBiasTee, 0, 0, "Enable bias tee on supporting interfaces (default: disabled)", 1},
-#ifndef _WIN32
     {"write-output", OptOutputDir, "<dir>", 0, "Periodically write output to <dir> (for external webserver)", 1},
     {"write-output-every", OptOutputTime, "<t>", 0, "Write output every t seconds (default 1)", 1},
     {"rx-location-accuracy", OptRxLocAcc, "<n>", 0, "Accuracy of receiver location in metadata: 0=no location, 1=approximate, 2=exact", 1},
-#endif
 #endif
     {0, 0, 0, 0, "Network options:", 2},
 #if defined(READSB) || defined(VIEWADSB)
