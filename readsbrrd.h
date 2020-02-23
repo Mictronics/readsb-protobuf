@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
+#include <semaphore.h>
 
 #define NOTUSED(V) ((void) V)
 

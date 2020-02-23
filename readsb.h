@@ -81,6 +81,7 @@
 #include <sys/ioctl.h>
 #include <time.h>
 #include <limits.h>
+#include <semaphore.h>
 
 #include "compat/compat.h"
 
@@ -283,6 +284,7 @@ struct { // Internal state
     struct net_writer sbs_out; // SBS-format output
     struct net_writer vrs_out; // SBS-format output
     struct net_writer fatsv_out; // FATSV-format output
+    sem_t* stats_semptr; // Statistics semaphore to syncronize with readsbrrd
 
     // Configuration
     int nfix_crc; // Number of crc bit error(s) to correct

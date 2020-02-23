@@ -28,6 +28,7 @@ const char *argp_program_version = "readsbrrd v1.0.0";
 const char doc[] = "readsbrrd - Readsb Round Robin Database statistics collector.";
 const char args_doc[] = "";
 static struct argp argp = {options, parse_opt, args_doc, doc, NULL, NULL, NULL};
+static sem_t* stats_semptr = NULL;
 
 /*
  * Order and file names must correspond with rrd_file_type_t.
@@ -137,6 +138,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
  * @param code Exit code.
  */
 static void cleanup_and_exit(int code) {
+    sem_close(stats_semptr);
     free(rrd.path);
     for (int i = 0; i < MAX_RRD_ARGV; i++)
         free(rrd.argv[i]);
@@ -540,6 +542,7 @@ static void update_from_aircrafts(const char* file_name) {
  * @return 
  */
 int main(int argc, char** argv) {
+    struct timespec ts;
     char stats_file_path[PATH_MAX];
     char aircrafts_file_path[PATH_MAX];
     snprintf(stats_file_path, PATH_MAX, "%s/stats.pb", DEFAULT_READSB_RUN_PATH);
@@ -562,13 +565,21 @@ int main(int argc, char** argv) {
         cleanup_and_exit(4);
     }
 
+    stats_semptr = sem_open("/readsbStatsTrigger", O_CREAT, 0644, 0);
+    if (stats_semptr == (void*) - 1) {
+        fprintf(stderr, "error creating stats semaphore: %s\n", strerror(errno));
+        cleanup_and_exit(4);
+    }
+    
     // Run this until we get a termination signal.
     while (!readsbrrd_exit) {
+        clock_gettime(CLOCK_REALTIME, &ts);
+        ts.tv_sec += rrd.step;
         update_from_system();
         update_from_stats(stats_file_path);
         update_from_aircrafts(aircrafts_file_path);
-        // Sleep until next RRD update cycle.
-        sleep(rrd.step);
+        // Wait for new statistic from readsb process, or read anyway on timeout.
+        sem_timedwait(stats_semptr, &ts);
     }
 
     cleanup_and_exit(EXIT_SUCCESS);

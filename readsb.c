@@ -189,7 +189,12 @@ static void modesInit(void) {
 
     pthread_mutex_init(&Modes.data_mutex, NULL);
     pthread_cond_init(&Modes.data_cond, NULL);
-
+    
+    Modes.stats_semptr = sem_open("/readsbStatsTrigger", O_CREAT, 0644, 0);
+    if (Modes.stats_semptr == (void*) - 1) {
+        fprintf(stderr, "error creating stats semaphore: %s\n", strerror(errno));
+    }
+    
     Modes.sample_rate = (double) 2400000.0;
 
     // Allocate the various buffers used by Modes
@@ -372,7 +377,10 @@ static void backgroundTasks(void) {
             Modes.stats_current.start = Modes.stats_current.end = now;
 
             if (Modes.output_dir) {
-                generateStatsProtoBuf("stats.pb");                    
+                generateStatsProtoBuf("stats.pb");
+                if (sem_post(Modes.stats_semptr) < 0) {
+                    fprintf(stderr, "error posting stats semaphore: %s\n", strerror(errno));
+                }
             }
 
             next_stats_update += 60000;
@@ -420,6 +428,7 @@ static void backgroundTasks(void) {
 // Clean up memory prior to exit.
 
 static void cleanup_and_exit(int code) {
+    sem_close(Modes.stats_semptr);
     // Free any used memory
     interactiveCleanup();
     free(Modes.dev_name);
