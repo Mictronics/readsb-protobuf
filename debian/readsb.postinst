@@ -56,7 +56,6 @@ case "$1" in
         then
             echo "Enabling lighttpd integration.." >&2
             lighty-enable-mod readsb || true
-            lighty-enable-mod readsb-graphs || true
 
             # only enable the statcache config if there is nothing else around that already
             # configures it, because lighttpd fails if it's configured twice
