@@ -2,4 +2,4 @@ webapp/src/* usr/share/readsb/html
 debian/lighttpd/* etc/lighttpd/conf-available
 bladerf/* usr/share/readsb/bladerf
 debian/graphs/* usr/share/readsb/graphs
-debian/collectd/* etc/collectd
+debian/collectd/* etc/collectd/

@@ -47,7 +47,7 @@ case "$1" in
 
         # Make a backup of existing collectd configuration
         cp /etc/collectd/collectd.conf /etc/collectd/collectd.conf.bak
-        mv /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
+        cp /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
         echo "Restarting lighttpd.." >&2
         service collectd restart
 

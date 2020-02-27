@@ -25,8 +25,8 @@ case "$1" in
         rm -rf /var/lib/collectd/rrd/localhost/readsb
         rm -rf /usr/share/readsb/graphs
         rm -rf /usr/share/readsb
-        rm -f /etc/collectd/collectd.conf
-        mv /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
+        rm -f /etc/collectd/readsb.collectd.conf
+        cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
         service collectd restart
         deluser readsb plugdev
         deluser readsb dialout
@@ -35,8 +35,7 @@ case "$1" in
 
     remove)
         # Restore original collectd configuration
-        mv /etc/collectd/collectd.conf /etc/collectd/readsb.collectd.conf
-        mv /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
+        cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
         service collectd restart
 
         changed=false
