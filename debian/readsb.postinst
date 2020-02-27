@@ -47,9 +47,11 @@ case "$1" in
 
         # Make a backup of existing collectd configuration
         cp /etc/collectd/collectd.conf /etc/collectd/collectd.conf.bak
-        cp /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
-        echo "Restarting lighttpd.." >&2
-        service collectd restart
+        if [ -f "/etc/collectd/readsb.collectd.conf" ] ; then
+            cp /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
+            echo "Restarting collectd.." >&2
+            service collectd restart
+        fi
 
         # set up lighttpd
         if dpkg --compare-versions "$2" lt "3.1.0"
