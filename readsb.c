@@ -138,7 +138,7 @@ static void sigtermHandler(int dummy) {
 
 void receiverPositionChanged(float lat, float lon, float alt) {
     log_with_timestamp("Autodetected receiver location: %.5f, %.5f at %.0fm AMSL", lat, lon, alt);
-    generateReceiverProtoBuf("receiver.pb"); // location changed
+    generateReceiverProtoBuf(); // location changed
 }
 
 
@@ -377,7 +377,7 @@ static void backgroundTasks(void) {
             Modes.stats_current.start = Modes.stats_current.end = now;
 
             if (Modes.output_dir) {
-                generateStatsProtoBuf("stats.pb");
+                generateStatsProtoBuf();
                 if (sem_post(Modes.stats_semptr) < 0) {
                     fprintf(stderr, "error posting stats semaphore: %s\n", strerror(errno));
                 }
@@ -414,7 +414,7 @@ static void backgroundTasks(void) {
         generateHistoryProtoBuf(filebuf);
 
         if (!Modes.aircraft_history_full) {
-            generateReceiverProtoBuf("receiver.pb");
+            generateReceiverProtoBuf();
             if (Modes.aircraft_history_next == HISTORY_SIZE - 1)
                 Modes.aircraft_history_full = 1;
         }
@@ -830,8 +830,8 @@ int main(int argc, char **argv) {
         Modes.stats_1min[j].start = Modes.stats_1min[j].end = Modes.stats_current.start;
 
     // write initial protocol buffer files so they're not missing
-    generateReceiverProtoBuf("receiver.pb");
-    generateStatsProtoBuf("stats.pb");
+    generateReceiverProtoBuf();
+    generateStatsProtoBuf();
     generateAircraftProtoBuf();
 
     interactiveInit();

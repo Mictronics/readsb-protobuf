@@ -2083,7 +2083,7 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
  * Generate statistics in protocol buffer format.
  * @param file File name.
  */
-void generateStatsProtoBuf(const char *file) {
+void generateStatsProtoBuf() {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
     int fd, b;
@@ -2093,7 +2093,7 @@ void generateStatsProtoBuf(const char *file) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
+    snprintf(tmppath, PATH_MAX, "%s/stats.pb.XXXXXX", Modes.output_dir);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -2146,7 +2146,7 @@ void generateStatsProtoBuf(const char *file) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
+            snprintf(pathbuf, PATH_MAX, "%s/stats.pb", Modes.output_dir);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -2167,7 +2167,7 @@ void generateStatsProtoBuf(const char *file) {
  * Generate receiver description in protocol buffer format.
  * @param file File name.
  */
-void generateReceiverProtoBuf(const char *file) {
+void generateReceiverProtoBuf() {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
     int fd;
@@ -2177,7 +2177,7 @@ void generateReceiverProtoBuf(const char *file) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
+    snprintf(tmppath, PATH_MAX, "%s/receiver.pb.XXXXXX", Modes.output_dir);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -2214,7 +2214,7 @@ void generateReceiverProtoBuf(const char *file) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
+            snprintf(pathbuf, PATH_MAX, "%s/receiver.pb", Modes.output_dir);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {

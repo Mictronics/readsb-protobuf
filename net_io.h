@@ -148,7 +148,7 @@ struct char_buffer generateVRS(int part, int n_parts);
 void writeJsonToNet(struct net_writer *writer, struct char_buffer cb);
 void generateAircraftProtoBuf(void);
 void generateHistoryProtoBuf(const char *file);
-void generateReceiverProtoBuf(const char *file);
-void generateStatsProtoBuf(const char *file);
+void generateReceiverProtoBuf(void);
+void generateStatsProtoBuf(void);
 
 #endif
