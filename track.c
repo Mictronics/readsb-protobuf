@@ -1567,6 +1567,8 @@ void trackPeriodicUpdate() {
     if (now >= next_update) {
         next_update = now + 1000;
         trackRemoveStaleAircraft(now);
-        trackMatchAC(now);
+        if (Modes.mode_ac) {
+            trackMatchAC(now);
+        }
     }
 }
