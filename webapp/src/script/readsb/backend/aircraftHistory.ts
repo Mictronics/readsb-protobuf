@@ -104,7 +104,7 @@ namespace READSB {
             PositionHistoryBuffer.sort((x, y) => x.now - y.now);
             // Process history
             for (const h of PositionHistoryBuffer) {
-                h.aircraft.forEach((ac: IAircraftMeta, i: number) => {
+                h.history.forEach((ac: IAircraftHistory, i: number) => {
                     if ((ac.lat !== null) && (ac.lon !== null) && (ac.alt_baro !== null)) {
                         const pos = new Array(ac.lat, ac.lon, ac.alt_baro);
                         const msg = { type: "Update", data: [ac.addr.toString(16).padStart(6, "0"), pos, h.now] };

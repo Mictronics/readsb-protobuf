@@ -72,7 +72,7 @@ var READSB;
         if (PositionHistoryBuffer.length > 0) {
             PositionHistoryBuffer.sort((x, y) => x.now - y.now);
             for (const h of PositionHistoryBuffer) {
-                h.aircraft.forEach((ac, i) => {
+                h.history.forEach((ac, i) => {
                     if ((ac.lat !== null) && (ac.lon !== null) && (ac.alt_baro !== null)) {
                         const pos = new Array(ac.lat, ac.lon, ac.alt_baro);
                         const msg = { type: "Update", data: [ac.addr.toString(16).padStart(6, "0"), pos, h.now] };

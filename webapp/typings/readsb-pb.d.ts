@@ -109,10 +109,18 @@ declare namespace READSB {
         version?: number;
     }
 
+    export interface IAircraftHistory {
+        addr?: number;
+        alt_baro?: number;
+        lat?: number;
+        lon?: number;
+    }
+
     export interface IAircraftsUpdate {
         now?: number;
         messages?: number;
         aircraft?: IAircraftMeta[];
+        history?: IAircraftHistory[];
     }
 
     export interface IReceiver {

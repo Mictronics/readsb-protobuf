@@ -146,7 +146,8 @@ void modesReadSerialClient(void);
 
 struct char_buffer generateVRS(int part, int n_parts);
 void writeJsonToNet(struct net_writer *writer, struct char_buffer cb);
-void generateAircraftProtoBuf(const char *file, bool is_history);
+void generateAircraftProtoBuf(void);
+void generateHistoryProtoBuf(const char *file);
 void generateReceiverProtoBuf(const char *file);
 void generateStatsProtoBuf(const char *file);
 

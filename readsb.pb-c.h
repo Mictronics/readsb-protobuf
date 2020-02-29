@@ -18,6 +18,7 @@ PROTOBUF_C__BEGIN_DECLS
 typedef struct _AircraftMeta AircraftMeta;
 typedef struct _AircraftMeta__NavModes AircraftMeta__NavModes;
 typedef struct _AircraftMeta__ValidSource AircraftMeta__ValidSource;
+typedef struct _AircraftHistory AircraftHistory;
 typedef struct _AircraftsUpdate AircraftsUpdate;
 typedef struct _Receiver Receiver;
 typedef struct _StatisticEntry StatisticEntry;
@@ -424,6 +425,35 @@ struct  _AircraftMeta
     , 0,0, NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, NULL, NULL }
 
 
+struct  _AircraftHistory
+{
+  ProtobufCMessage base;
+  /*
+   * The 24-bit ICAO identifier of the aircraft, as 6 hex digits.
+   */
+  protobuf_c_boolean has_addr;
+  uint32_t addr;
+  /*
+   * The aircraft barometric altitude in feet.
+   */
+  protobuf_c_boolean has_alt_baro;
+  int32_t alt_baro;
+  /*
+   * Aircraft position latitude in decimal degrees.
+   */
+  protobuf_c_boolean has_lat;
+  double lat;
+  /*
+   * Aircraft position longitude in decimal degrees.
+   */
+  protobuf_c_boolean has_lon;
+  double lon;
+};
+#define AIRCRAFT_HISTORY__INIT \
+ { PROTOBUF_C_MESSAGE_INIT (&aircraft_history__descriptor) \
+    , 0,0, 0,0, 0,0, 0,0 }
+
+
 /*
  **
  * Collection of tracked aircrafts.
@@ -442,6 +472,11 @@ struct  _AircraftsUpdate
   protobuf_c_boolean has_messages;
   uint64_t messages;
   /*
+   * Aircraft position history collection.
+   */
+  size_t n_history;
+  AircraftHistory **history;
+  /*
    * The aircraft collection.
    */
   size_t n_aircraft;
@@ -449,7 +484,7 @@ struct  _AircraftsUpdate
 };
 #define AIRCRAFTS_UPDATE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&aircrafts_update__descriptor) \
-    , 0,0, 0,0, 0,NULL }
+    , 0,0, 0,0, 0,NULL, 0,NULL }
 
 
 /*
@@ -792,6 +827,25 @@ AircraftMeta *
 void   aircraft_meta__free_unpacked
                      (AircraftMeta *message,
                       ProtobufCAllocator *allocator);
+/* AircraftHistory methods */
+void   aircraft_history__init
+                     (AircraftHistory         *message);
+size_t aircraft_history__get_packed_size
+                     (const AircraftHistory   *message);
+size_t aircraft_history__pack
+                     (const AircraftHistory   *message,
+                      uint8_t             *out);
+size_t aircraft_history__pack_to_buffer
+                     (const AircraftHistory   *message,
+                      ProtobufCBuffer     *buffer);
+AircraftHistory *
+       aircraft_history__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data);
+void   aircraft_history__free_unpacked
+                     (AircraftHistory *message,
+                      ProtobufCAllocator *allocator);
 /* AircraftsUpdate methods */
 void   aircrafts_update__init
                      (AircraftsUpdate         *message);
@@ -882,6 +936,9 @@ typedef void (*AircraftMeta__ValidSource_Closure)
 typedef void (*AircraftMeta_Closure)
                  (const AircraftMeta *message,
                   void *closure_data);
+typedef void (*AircraftHistory_Closure)
+                 (const AircraftHistory *message,
+                  void *closure_data);
 typedef void (*AircraftsUpdate_Closure)
                  (const AircraftsUpdate *message,
                   void *closure_data);
@@ -910,6 +967,7 @@ extern const ProtobufCEnumDescriptor    aircraft_meta__air_ground__descriptor;
 extern const ProtobufCEnumDescriptor    aircraft_meta__addr_type__descriptor;
 extern const ProtobufCEnumDescriptor    aircraft_meta__emergency__descriptor;
 extern const ProtobufCEnumDescriptor    aircraft_meta__sil_type__descriptor;
+extern const ProtobufCMessageDescriptor aircraft_history__descriptor;
 extern const ProtobufCMessageDescriptor aircrafts_update__descriptor;
 extern const ProtobufCMessageDescriptor receiver__descriptor;
 extern const ProtobufCMessageDescriptor statistic_entry__descriptor;

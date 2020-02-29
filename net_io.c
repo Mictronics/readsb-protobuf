@@ -1805,10 +1805,8 @@ static void generateValidSourceMessage(struct aircraft *a) {
 
 /**
  * Generate aircraft metadata collection as protocol buffer file.
- * @param file File name for protocol buffer output.
- * @param is_history True when history file is generated with reduced parameter set.
  */
-void generateAircraftProtoBuf(const char *file, bool is_history) {
+void generateAircraftProtoBuf(void) {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
     int fd;
@@ -1818,7 +1816,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
+    snprintf(tmppath, PATH_MAX, "%s/aircraft.pb.XXXXXX", Modes.output_dir);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -1844,11 +1842,6 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
             if ((a->meta.messages < 2) || (now > (a->meta.seen + 90E3))) {
                 // Basic filter for bad decodes and
                 // don't include stale aircraft.
-                continue;
-            }
-
-            // Record only aircrafts with position in history.
-            if (!trackDataValid(&a->position_valid) && is_history) {
                 continue;
             }
 
@@ -1903,7 +1896,7 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
+            snprintf(pathbuf, PATH_MAX, "%s/aircraft.pb", Modes.output_dir);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -1913,6 +1906,103 @@ void generateAircraftProtoBuf(const char *file, bool is_history) {
     // Free up all allocated memory.
     free(buf);
     free(msg.aircraft);
+}
+
+/**
+ * Generate aircraft metadata collection as protocol buffer file.
+ * @param file File name for protocol buffer output.
+ */
+void generateHistoryProtoBuf(const char *file) {
+    char pathbuf[PATH_MAX];
+    char tmppath[PATH_MAX];
+    int fd;
+    mode_t mask;
+
+    if (!Modes.output_dir) {
+        return;
+    }
+
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
+    tmppath[PATH_MAX - 1] = 0;
+    fd = mkstemp(tmppath);
+    if (fd < 0) {
+        return;
+    }
+
+    uint64_t now = mstime();
+    struct aircraft *a;
+    size_t j;
+    // The entire collection of tracked aircrafts.
+    AircraftsUpdate msg = AIRCRAFTS_UPDATE__INIT;
+
+    msg.n_history = 0;
+    msg.now = (uint64_t) (now / 1000);
+
+    for (j = 0; j < AIRCRAFTS_BUCKETS; j++) {
+        for (a = Modes.aircrafts[j]; a; a = a->next) {
+            if ((a->meta.messages < 2) || (now > (a->meta.seen + 90E3))) {
+                // Basic filter for bad decodes and
+                // don't include stale aircraft.
+                continue;
+            }
+
+            // Record only aircrafts with position in history.
+            if (!trackDataValid(&a->position_valid)) {
+                continue;
+            }
+
+            if (msg.history == NULL) {
+                msg.history = malloc(sizeof (AircraftHistory*));
+            } else {
+                msg.history = realloc(msg.history, sizeof (AircraftHistory*) * (msg.n_history + 1));
+            }
+                        
+            msg.history[msg.n_history] = malloc(sizeof (AircraftHistory));
+            aircraft_history__init (msg.history[msg.n_history]);
+            msg.history[msg.n_history]->addr = a->meta.addr;
+            msg.history[msg.n_history]->lat = a->meta.lat;
+            msg.history[msg.n_history]->lon = a->meta.lon;
+
+            if (trackDataValid(&a->airground_valid) && a->airground_valid.source >= SOURCE_MODE_S_CHECKED && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND)
+                msg.history[msg.n_history]->alt_baro = INVALID_ALTITUDE;
+            else {
+                if (trackDataValid(&a->altitude_baro_valid) && a->altitude_baro_reliable >= 3) {
+                    msg.history[msg.n_history]->alt_baro = a->meta.alt_baro;
+                }
+                else if (trackDataValid(&a->altitude_geom_valid)) {
+                    msg.history[msg.n_history]->alt_baro = a->meta.alt_geom;
+                }
+            }            
+            
+            msg.n_history += 1;
+        }
+    }
+    // Pack and serialize entire aicraft collection.
+    ssize_t len = aircrafts_update__get_packed_size(&msg);
+    void *buf = malloc(len);
+    aircrafts_update__pack(&msg, buf);
+    // Write aircraft collection to file.
+    mask = umask(0);
+    umask(mask);
+    fchmod(fd, 0644 & ~mask);
+
+    if (write(fd, buf, len) != len) {
+        close(fd);
+    } else {
+        if (close(fd) == 0) {
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
+            pathbuf[PATH_MAX - 1] = 0;
+            rename(tmppath, pathbuf);
+        } else {
+            unlink(tmppath);
+        }
+    }
+    // Free up all allocated memory.
+    free(buf);
+    for(j = 0; j < msg.n_history; j++) {
+        free(msg.history[j]);
+    }
+    free(msg.history);    
 }
 
 static void createStatisticEntry(StatisticEntry *e, struct stats *st) {

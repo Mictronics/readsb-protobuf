@@ -613,12 +613,51 @@ var READSB;
             }
         },
     };
+    READSB.AircraftHistory = {
+        read(pbf, end) {
+            return pbf.readFields(this._readField, {
+                addr: null,
+                alt_baro: null,
+                lat: null,
+                lon: null,
+            }, end);
+        },
+        _readField(tag, obj, pbf) {
+            if (tag === 1) {
+                obj.addr = pbf.readVarint();
+            }
+            else if (tag === 5) {
+                obj.alt_baro = pbf.readVarint(true);
+            }
+            else if (tag === 8) {
+                obj.lat = pbf.readDouble();
+            }
+            else if (tag === 9) {
+                obj.lon = pbf.readDouble();
+            }
+        },
+        write(obj, pbf) {
+            if (obj.addr) {
+                pbf.writeVarintField(1, obj.addr);
+            }
+            if (obj.alt_baro) {
+                pbf.writeVarintField(5, obj.alt_baro);
+            }
+            if (obj.lat) {
+                pbf.writeDoubleField(8, obj.lat);
+            }
+            if (obj.lon) {
+                pbf.writeDoubleField(9, obj.lon);
+            }
+        },
+    };
     READSB.AircraftsUpdate = {
         read(pbf, end) {
             return pbf.readFields(this._readField, {
                 now: 0,
                 messages: 0,
                 aircraft: [],
+                history: [],
             }, end);
         },
         _readField(tag, obj, pbf) {
@@ -627,6 +666,9 @@ var READSB;
             }
             else if (tag === 2) {
                 obj.messages = pbf.readVarint();
+            }
+            else if (tag === 14) {
+                obj.history.push(READSB.AircraftHistory.read(pbf, pbf.readVarint() + pbf.pos));
             }
             else if (tag === 15) {
                 obj.aircraft.push(READSB.AircraftMeta.read(pbf, pbf.readVarint() + pbf.pos));
@@ -638,6 +680,11 @@ var READSB;
             }
             if (obj.messages) {
                 pbf.writeVarintField(2, obj.messages);
+            }
+            if (obj.history) {
+                for (const ac of obj.history) {
+                    pbf.writeMessage(14, READSB.AircraftHistory.write, ac);
+                }
             }
             if (obj.aircraft) {
                 for (const ac of obj.aircraft) {

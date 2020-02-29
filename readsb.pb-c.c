@@ -62,6 +62,49 @@ void   aircraft_meta__free_unpacked
   assert(message->base.descriptor == &aircraft_meta__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
+void   aircraft_history__init
+                     (AircraftHistory         *message)
+{
+  static AircraftHistory init_value = AIRCRAFT_HISTORY__INIT;
+  *message = init_value;
+}
+size_t aircraft_history__get_packed_size
+                     (const AircraftHistory *message)
+{
+  assert(message->base.descriptor == &aircraft_history__descriptor);
+  return protobuf_c_message_get_packed_size ((const ProtobufCMessage*)(message));
+}
+size_t aircraft_history__pack
+                     (const AircraftHistory *message,
+                      uint8_t       *out)
+{
+  assert(message->base.descriptor == &aircraft_history__descriptor);
+  return protobuf_c_message_pack ((const ProtobufCMessage*)message, out);
+}
+size_t aircraft_history__pack_to_buffer
+                     (const AircraftHistory *message,
+                      ProtobufCBuffer *buffer)
+{
+  assert(message->base.descriptor == &aircraft_history__descriptor);
+  return protobuf_c_message_pack_to_buffer ((const ProtobufCMessage*)message, buffer);
+}
+AircraftHistory *
+       aircraft_history__unpack
+                     (ProtobufCAllocator  *allocator,
+                      size_t               len,
+                      const uint8_t       *data)
+{
+  return (AircraftHistory *)
+     protobuf_c_message_unpack (&aircraft_history__descriptor,
+                                allocator, len, data);
+}
+void   aircraft_history__free_unpacked
+                     (AircraftHistory *message,
+                      ProtobufCAllocator *allocator)
+{
+  assert(message->base.descriptor == &aircraft_history__descriptor);
+  protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
+}
 void   aircrafts_update__init
                      (AircraftsUpdate         *message)
 {
@@ -1546,7 +1589,86 @@ const ProtobufCMessageDescriptor aircraft_meta__descriptor =
   (ProtobufCMessageInit) aircraft_meta__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor aircrafts_update__field_descriptors[3] =
+static const ProtobufCFieldDescriptor aircraft_history__field_descriptors[4] =
+{
+  {
+    "addr",
+    1,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(AircraftHistory, has_addr),
+    offsetof(AircraftHistory, addr),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "alt_baro",
+    5,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_INT32,
+    offsetof(AircraftHistory, has_alt_baro),
+    offsetof(AircraftHistory, alt_baro),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "lat",
+    8,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_DOUBLE,
+    offsetof(AircraftHistory, has_lat),
+    offsetof(AircraftHistory, lat),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "lon",
+    9,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_DOUBLE,
+    offsetof(AircraftHistory, has_lon),
+    offsetof(AircraftHistory, lon),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+};
+static const unsigned aircraft_history__field_indices_by_name[] = {
+  0,   /* field[0] = addr */
+  1,   /* field[1] = alt_baro */
+  2,   /* field[2] = lat */
+  3,   /* field[3] = lon */
+};
+static const ProtobufCIntRange aircraft_history__number_ranges[3 + 1] =
+{
+  { 1, 0 },
+  { 5, 1 },
+  { 8, 2 },
+  { 0, 4 }
+};
+const ProtobufCMessageDescriptor aircraft_history__descriptor =
+{
+  PROTOBUF_C__MESSAGE_DESCRIPTOR_MAGIC,
+  "AircraftHistory",
+  "AircraftHistory",
+  "AircraftHistory",
+  "",
+  sizeof(AircraftHistory),
+  4,
+  aircraft_history__field_descriptors,
+  aircraft_history__field_indices_by_name,
+  3,  aircraft_history__number_ranges,
+  (ProtobufCMessageInit) aircraft_history__init,
+  NULL,NULL,NULL    /* reserved[123] */
+};
+static const ProtobufCFieldDescriptor aircrafts_update__field_descriptors[4] =
 {
   {
     "now",
@@ -1573,6 +1695,18 @@ static const ProtobufCFieldDescriptor aircrafts_update__field_descriptors[3] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
+    "history",
+    14,
+    PROTOBUF_C_LABEL_REPEATED,
+    PROTOBUF_C_TYPE_MESSAGE,
+    offsetof(AircraftsUpdate, n_history),
+    offsetof(AircraftsUpdate, history),
+    &aircraft_history__descriptor,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
     "aircraft",
     15,
     PROTOBUF_C_LABEL_REPEATED,
@@ -1586,15 +1720,16 @@ static const ProtobufCFieldDescriptor aircrafts_update__field_descriptors[3] =
   },
 };
 static const unsigned aircrafts_update__field_indices_by_name[] = {
-  2,   /* field[2] = aircraft */
+  3,   /* field[3] = aircraft */
+  2,   /* field[2] = history */
   1,   /* field[1] = messages */
   0,   /* field[0] = now */
 };
 static const ProtobufCIntRange aircrafts_update__number_ranges[2 + 1] =
 {
   { 1, 0 },
-  { 15, 2 },
-  { 0, 3 }
+  { 14, 2 },
+  { 0, 4 }
 };
 const ProtobufCMessageDescriptor aircrafts_update__descriptor =
 {
@@ -1604,7 +1739,7 @@ const ProtobufCMessageDescriptor aircrafts_update__descriptor =
   "AircraftsUpdate",
   "",
   sizeof(AircraftsUpdate),
-  3,
+  4,
   aircrafts_update__field_descriptors,
   aircrafts_update__field_indices_by_name,
   2,  aircrafts_update__number_ranges,

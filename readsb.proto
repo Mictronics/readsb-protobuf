@@ -166,13 +166,21 @@ message AircraftMeta {
 	ValidSource valid_source = 151;
 }
 
+message AircraftHistory {
+	uint32 addr = 1; // The 24-bit ICAO identifier of the aircraft, as 6 hex digits.
+	int32 alt_baro = 5; // The aircraft barometric altitude in feet.
+	double lat = 8; // Aircraft position latitude in decimal degrees.
+	double lon = 9; // Aircraft position longitude in decimal degrees.
+}
+
 /**
  * Collection of tracked aircrafts.
  */
 message AircraftsUpdate {
 	uint64 now = 1; // The time this file was generated, in seconds since Unix epoch.
 	uint64 messages = 2; // The total number of Mode S messages processed since readsb started.
-	reserved 3 to 14; // Reserved for future use.
+	reserved 3 to 13; // Reserved for future use.
+    repeated AircraftHistory history = 14; // Aircraft position history collection.
 	repeated AircraftMeta aircraft = 15; // The aircraft collection.
 }
 

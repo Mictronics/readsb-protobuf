@@ -404,14 +404,14 @@ static void backgroundTasks(void) {
     }
 
     if (Modes.output_dir && now >= next_full) {
-        generateAircraftProtoBuf("aircraft.pb", false);
+        generateAircraftProtoBuf();
         next_full = now + Modes.output_interval;
     }
 
     if (Modes.output_dir && now >= next_history) {
         char filebuf[PATH_MAX];
         snprintf(filebuf, PATH_MAX, "history_%d.pb", Modes.aircraft_history_next);
-        generateAircraftProtoBuf(filebuf, true);
+        generateHistoryProtoBuf(filebuf);
 
         if (!Modes.aircraft_history_full) {
             generateReceiverProtoBuf("receiver.pb");
@@ -832,7 +832,7 @@ int main(int argc, char **argv) {
     // write initial protocol buffer files so they're not missing
     generateReceiverProtoBuf("receiver.pb");
     generateStatsProtoBuf("stats.pb");
-    generateAircraftProtoBuf("aircraft.pb", false);
+    generateAircraftProtoBuf();
 
     interactiveInit();
 
