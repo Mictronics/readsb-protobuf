@@ -20,6 +20,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Removed JSON file generation
   * Removed preprocessor definitions for WIN32.
   * Trigger RRD update from readsb process through semaphore.
+  * Improvement of SBS decoding. (by wiedehopf)
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
