@@ -669,7 +669,7 @@ static void updatePosition(struct aircraft *a, struct modesMessage *mm) {
         a->meta.rc = new_rc;
 
         a->meta.distance = false;
-        if (a->pos_reliable_odd >= 2 && a->pos_reliable_even >= 2 && mm->source == SOURCE_ADSB) {
+        if (a->pos_reliable_odd >= 1 && a->pos_reliable_even >= 1 && mm->source == SOURCE_ADSB) {
             a->meta.distance = update_polar_range(new_lat, new_lon);
         }
     }
