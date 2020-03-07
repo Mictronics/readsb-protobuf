@@ -110,17 +110,15 @@ aircraft_graph() {
 		"CDEF:tisb0=tisb,UN,0,tisb,IF" \
 		"CDEF:noloc=all,pos,-" \
 		"CDEF:cgps=pos,tisb0,-,mlat,-" \
-		"CDEF:gps=rgps,UN,cgps,rgps,IF" \
 		"VDEF:avgac=all,AVERAGE" \
 		"VDEF:maxac=all_max,MAXIMUM" \
 		"AREA:all#$GREEN:Aircraft Seen / Tracked,   " \
 		"GPRINT:avgac:Average\:%3.0lf     " \
 		"GPRINT:maxac:Maximum\:%3.0lf\c" \
-		"LINE1:gps#$BLUE:w/ ADS-B pos." \
+		"LINE1:cgps#$BLUE:w/ ADS-B pos." \
 		"LINE1:mlat#000000:w/ MLAT pos." \
 		"LINE1:tisb#DD8800:w/ TIS-B pos." \
 		"LINE1:noloc#$RED:w/o pos." \
-		"LINE1:gps#$BLUE:" \
 		--watermark "Drawn: $nowlit";
 	mv "$1.tmp" "$1"
 	}
