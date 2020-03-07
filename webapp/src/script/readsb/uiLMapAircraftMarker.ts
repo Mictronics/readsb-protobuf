@@ -561,6 +561,7 @@ namespace READSB {
         E145: "jet_swept",
         E170: "jet_swept",
         E45X: "jet_swept",
+        EMER: "ground_emergency",
         EUFI: "hi_perf",
         F1: "hi_perf",
         F100: "hi_perf",
@@ -580,6 +581,7 @@ namespace READSB {
         GLF4: "jet_swept",
         GLF5: "jet_swept",
         GLF6: "jet_swept",
+        GND: "ground_unknown",
         H25A: "jet_swept",
         H25B: "jet_swept",
         H25C: "jet_swept",
@@ -607,6 +609,7 @@ namespace READSB {
         RFAL: "hi_perf",
         S3: "hi_perf",
         S37: "hi_perf",
+        SERV: "ground_service",
         SR71: "hi_perf",
         SU15: "hi_perf",
         SU24: "hi_perf",
@@ -619,13 +622,11 @@ namespace READSB {
         T4: "hi_perf",
         TOR: "hi_perf",
         TU22: "hi_perf",
+        TWR: "ground_fixed",
         VAUT: "hi_perf",
         WB57: "hi_perf",
         Y130: "hi_perf",
         YK28: "hi_perf",
-        // 'BE20': _b200,
-        // 'C130': _c130,
-        // 'C30J': _c130
     };
 
     // Maps ICAO aircraft type description codes (e.g. "L2J") to aircraft icons. This is used if the ICAO type designator (e.g. "B731")

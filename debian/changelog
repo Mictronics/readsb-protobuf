@@ -21,6 +21,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Removed preprocessor definitions for WIN32.
   * Trigger RRD update from readsb process through semaphore.
   * Improvement of SBS decoding. (by wiedehopf)
+  * Add marker types for ground vehicles and towers.
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
