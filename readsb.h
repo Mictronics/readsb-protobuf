@@ -229,6 +229,7 @@ typedef enum {
 #include "convert.h"
 #include "sdr.h"
 #include "readsb.pb-c.h"
+#include "geomag.h"
 
 //======================== structure declarations =========================
 

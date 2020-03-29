@@ -810,6 +810,7 @@ int main(int argc, char **argv) {
     // Initialization
     log_with_timestamp("%s %s starting up.", MODES_READSB_VARIANT, MODES_READSB_VERSION);
     modesInit();
+    geomag_init();
 
     if (!sdrOpen()) {
         cleanup_and_exit(1);
