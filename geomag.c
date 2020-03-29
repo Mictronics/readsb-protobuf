@@ -73,6 +73,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #define NaN log(-1.0)
 
@@ -85,6 +86,7 @@
  * https://www.ngdc.noaa.gov/geomag/WMM/soft.shtml#downloads
  */
 const double epoch = 2020.0;
+
 const struct {
     int n;
     int m;
@@ -201,7 +203,7 @@ static int maxdeg;
  * @param gv Grid variation
  * @return 0 on SUCCESS, 1 on ERROR
  */
-static int E0000(int IENTRY, int *maxdeg, double alt, double lat, double lon, double time, double *dec, double *dip, double *ti, double *gv) {
+static int E0000(int IENTRY, int *maxdeg, double alt, double lat, double lon, double decimal_year, double *dec, double *dip, double *ti, double *gv) {
     static int maxord, n, m, j, D1, D2, D3, D4;
     static double c[13][13], cd[13][13], tc[13][13], dp[13][13], snorm[169],
             sp[13], cp[13], fn[13], fm[13], pp[13], k[13][13], pi, dtr, a, b, re,
@@ -210,6 +212,8 @@ static int E0000(int IENTRY, int *maxdeg, double alt, double lat, double lon, do
             crlat2, q, q1, q2, ct, st, r2, r, d, ca, sa, aor, ar, br, bt, bp, bpp,
             par, temp1, temp2, parp, bx, by, bz, bh;
     static double *p = snorm;
+    time_t rawtime;
+    struct tm *info;
 
     switch (IENTRY) {
         case 0: goto INIT;
@@ -281,8 +285,14 @@ INIT:
     return 0;
 
 CALC:
+    // Calculate decimal year when not provided.
+    if (decimal_year < 0.0) {
+        time(&rawtime);
+        info = gmtime(&rawtime);
+        decimal_year = epoch + ((double)info->tm_yday / 365.0);
+    }
 
-    dt = time - epoch;
+    dt = decimal_year - epoch;
 
     pi = 3.14159265359;
     dtr = pi / 180.0;
