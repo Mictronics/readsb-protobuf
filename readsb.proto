@@ -78,6 +78,9 @@ message AircraftMeta {
 	bool spi = 43; // Flight status special position identification bit.
 	uint32 gva = 44; // Geometric Vertical Accuracy
     uint32 sda = 45; // System Design Assurance
+    double declination = 46; // Geomagnetic declination depending on position
+    float wind_speed = 47; // Calculated wind speed
+    float wind_direction = 48; // Calculated wind direction
 	
 	// Type of underlying message, one of:
 	enum AddrType {

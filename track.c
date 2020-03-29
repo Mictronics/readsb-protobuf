@@ -668,6 +668,13 @@ static void updatePosition(struct aircraft *a, struct modesMessage *mm) {
         a->meta.nic = new_nic;
         a->meta.rc = new_rc;
 
+        double dip, ti, gv;
+        // Update magnetic declination whenever position changes
+        if(trackDataValid(&a->altitude_geom_valid)){
+            // Altitude given in feet but required to be in kilometer above WGS84 ellipsoid.
+            geomag_calc(a->meta.alt_geom * 0.0003048, a->meta.lat, a->meta.lon, -1.0, &a->meta.declination, &dip, &ti, &gv);
+        }
+        
         a->meta.distance = false;
         if (a->pos_reliable_odd >= 1 && a->pos_reliable_even >= 1 && mm->source == SOURCE_ADSB) {
             a->meta.distance = update_polar_range(new_lat, new_lon);

@@ -411,6 +411,21 @@ struct  _AircraftMeta
    */
   protobuf_c_boolean has_sda;
   uint32_t sda;
+  /*
+   * Geomagnetic declination depending on position
+   */
+  protobuf_c_boolean has_declination;
+  double declination;
+  /*
+   * Calculated wind speed
+   */
+  protobuf_c_boolean has_wind_speed;
+  float wind_speed;
+  /*
+   * Calculated wind direction
+   */
+  protobuf_c_boolean has_wind_direction;
+  float wind_direction;
   protobuf_c_boolean has_addr_type;
   AircraftMeta__AddrType addr_type;
   protobuf_c_boolean has_emergency;
@@ -422,7 +437,7 @@ struct  _AircraftMeta
 };
 #define AIRCRAFT_META__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&aircraft_meta__descriptor) \
-    , 0,0, NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, NULL, NULL }
+    , 0,0, NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, NULL, NULL }
 
 
 struct  _AircraftHistory
