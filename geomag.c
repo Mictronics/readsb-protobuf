@@ -187,66 +187,42 @@ const struct {
     {12, 12, -0.3, 0.5, -0.1, -0.1}
 };
 
-static int maxdeg;
+#define MAXDEG  12
+#define RE      6371.2
+#define A       6378.137
+#define B       6356.7523142
+#define A2      (double)(A * A)
+#define B2      (double)(B * B)
+#define C2      (double)(A2 - B2)
+#define A4      (double)(A2 * A2)
+#define B4      (double)(B2 * B2)
+#define C4      (double)(A4 - B4)
+
+static double c[13][13], cd[13][13], tc[13][13], dp[13][13], snorm[169];
+static double sp[13], cp[13], fn[13], fm[13], pp[13], k[13][13];
+static double *p = snorm;
 
 /**
- * 
- * @param IENTRY Switch init (0) or calculation (1)
- * @param maxdeg
- * @param alt Altitude above WGS84 ellipsoid in km
- * @param lat Latitude in decimal degrees
- * @param lon Longitude in decimal degrees
- * @param time Decimal year
- * @param dec https://en.wikipedia.org/wiki/Magnetic_declination
- * @param dip https://en.wikipedia.org/wiki/Magnetic_dip
- * @param ti Total intensity in nano Tesla nT
- * @param gv Grid variation
+ * Initialize library.
  * @return 0 on SUCCESS, 1 on ERROR
  */
-static int E0000(int IENTRY, int *maxdeg, double alt, double lat, double lon, double decimal_year, double *dec, double *dip, double *ti, double *gv) {
-    static int maxord, n, m, j, D1, D2, D3, D4;
-    static double c[13][13], cd[13][13], tc[13][13], dp[13][13], snorm[169],
-            sp[13], cp[13], fn[13], fm[13], pp[13], k[13][13], pi, dtr, a, b, re,
-            a2, b2, c2, a4, b4, c4, flnmj,
-            dt, rlon, rlat, srlon, srlat, crlon, crlat, srlat2,
-            crlat2, q, q1, q2, ct, st, r2, r, d, ca, sa, aor, ar, br, bt, bp, bpp,
-            par, temp1, temp2, parp, bx, by, bz, bh;
-    static double *p = snorm;
-    time_t rawtime;
-    struct tm *info;
-
-    switch (IENTRY) {
-        case 0: goto INIT;
-        default:
-        case 1: goto CALC;
-    }
-
-INIT:
-
-    /* Initialize constants */
-    maxord = *maxdeg;
+int geomag_init() {
+    /* Initialize geomag routine */
+    int m, n, j, D1, D2;
+    double flnmj;
     sp[0] = 0.0;
     cp[0] = *p = pp[0] = 1.0;
     dp[0][0] = 0.0;
-    a = 6378.137;
-    b = 6356.7523142;
-    re = 6371.2;
-    a2 = a*a;
-    b2 = b*b;
-    c2 = a2 - b2;
-    a4 = a2*a2;
-    b4 = b2*b2;
-    c4 = a4 - b4;
 
     /* Read world magnetic model spherical harmonic coefficients */
     c[0][0] = 0.0;
     cd[0][0] = 0.0;
 
     for (int i = 0; i < 90; i++) {
-        if (wmm_obj[i].n > maxord) break;
+        if (wmm_obj[i].n > MAXDEG) break;
         if (wmm_obj[i].m > wmm_obj[i].n || wmm_obj[i].m < 0.0) {
-            fprintf(stderr, "Corrupt record %d in wmm model in geomag.c\n", i);
-            return 1;
+            fprintf(stderr, "Corrupt record %d in model wmm_string in geomag.c\n", i);
+            return -1;
         }
 
         if (wmm_obj[i].m <= wmm_obj[i].n) {
@@ -262,7 +238,7 @@ INIT:
     /* Convert Schmidt normalized Gauss coefficients to unnormalized */
     *snorm = 1.0;
     fm[0] = 0.0;
-    for (n = 1; n <= maxord; n++) {
+    for (n = 1; n <= MAXDEG; n++) {
         *(snorm + n) = *(snorm + n - 1)*(double) (2 * n - 1) / (double) n;
         j = 2;
         for (m = 0, D1 = 1, D2 = (n - m + D1) / D1; D2 > 0; D2--, m += D1) {
@@ -283,51 +259,71 @@ INIT:
     k[1][1] = 0.0;
 
     return 0;
+}
 
-CALC:
+/**
+ * Calculate geo magnetic paramters for given position and altitude.
+ * @param alt Altitude above WGS84 ellipsoid in km
+ * @param lat Latitude in decimal degrees
+ * @param lon Longitude in decimal degrees
+ * @param time Decimal year
+ * @param dec https://en.wikipedia.org/wiki/Magnetic_declination
+ * @param dip https://en.wikipedia.org/wiki/Magnetic_dip
+ * @param ti Total intensity in nano Tesla nT
+ * @param gv Grid variation
+ * @return 0 on SUCCESS, 1 on ERROR
+ */
+int geomag_calc(double alt, double lat, double lon, double decimal_year, double *dec, double *dip, double *ti, double *gv) {
+    time_t rawtime;
+    struct tm *info;
     // Calculate decimal year when not provided.
     if (decimal_year < 0.0) {
         time(&rawtime);
         info = gmtime(&rawtime);
-        decimal_year = epoch + ((double)info->tm_yday / 365.0);
+        decimal_year = epoch + ((double) info->tm_yday / 365.0);
     }
 
-    dt = decimal_year - epoch;
-
-    pi = 3.14159265359;
-    dtr = pi / 180.0;
-    rlon = lon*dtr;
-    rlat = lat*dtr;
-    srlon = sin(rlon);
-    srlat = sin(rlat);
-    crlon = cos(rlon);
-    crlat = cos(rlat);
-    srlat2 = srlat*srlat;
-    crlat2 = crlat*crlat;
+    double dt = decimal_year - epoch;
+    double dtr = M_PI / 180.0;
+    double rlon = lon*dtr;
+    double rlat = lat*dtr;
+    double srlon = sin(rlon);
+    double srlat = sin(rlat);
+    double crlon = cos(rlon);
+    double crlat = cos(rlat);
+    double srlat2 = srlat*srlat;
+    double crlat2 = crlat*crlat;
     sp[1] = srlon;
     cp[1] = crlon;
 
     /* Convert from geodetic coordinates to spherical coordinates. */
-    q = sqrt(a2 - c2 * srlat2);
-    q1 = alt*q;
-    q2 = ((q1 + a2) / (q1 + b2))*((q1 + a2) / (q1 + b2));
-    ct = srlat / sqrt(q2 * crlat2 + srlat2);
-    st = sqrt(1.0 - (ct * ct));
-    r2 = (alt * alt) + 2.0 * q1 + (a4 - c4 * srlat2) / (q * q);
-    r = sqrt(r2);
-    d = sqrt(a2 * crlat2 + b2 * srlat2);
-    ca = (alt + d) / r;
-    sa = c2 * crlat * srlat / (r * d);
+    double q = sqrt(A2 - C2 * srlat2);
+    double q1 = alt*q;
+    double q2 = ((q1 + A2) / (q1 + B2))*((q1 + A2) / (q1 + B2));
+    double ct = srlat / sqrt(q2 * crlat2 + srlat2);
+    double st = sqrt(1.0 - (ct * ct));
+    double r2 = (alt * alt) + 2.0 * q1 + (A4 - C4 * srlat2) / (q * q);
+    double r = sqrt(r2);
+    double d = sqrt(A2 * crlat2 + B2 * srlat2);
+    double ca = (alt + d) / r;
+    double sa = C2 * crlat * srlat / (r * d);
 
-    for (m = 2; m <= maxord; m++) {
+    int n, m, D3, D4;
+
+    for (m = 2; m <= MAXDEG; m++) {
         sp[m] = sp[1] * cp[m - 1] + cp[1] * sp[m - 1];
         cp[m] = cp[1] * cp[m - 1] - sp[1] * sp[m - 1];
     }
 
-    aor = re / r;
-    ar = aor*aor;
-    br = bt = bp = bpp = 0.0;
-    for (n = 1; n <= maxord; n++) {
+    double aor = RE / r;
+    double ar = aor*aor;
+    double br = 0.0;
+    double bt = 0.0;
+    double bp = 0.0;
+    double bpp = 0.0;
+    double par, temp1, temp2, parp;
+
+    for (n = 1; n <= MAXDEG; n++) {
         ar = ar*aor;
         for (m = 0, D3 = 1, D4 = (n + m + D3) / D3; D4 > 0; D4--, m += D3) {
             /* Compute unnormalized associated legendre polynomials
@@ -380,13 +376,13 @@ S50:
     /* Rotate magnetic vector components from spherical to
      * geodetic coordinates.
      */
-    bx = -bt * ca - br*sa;
-    by = bp;
-    bz = bt * sa - br*ca;
+    double bx = -bt * ca - br*sa;
+    double by = bp;
+    double bz = bt * sa - br*ca;
     /* Compute declination (dec), inclination (dip) and
      * total intensity (ti).
      */
-    bh = sqrt((bx * bx)+(by * by));
+    double bh = sqrt((bx * bx)+(by * by));
     *ti = sqrt((bh * bh)+(bz * bz));
     *dec = atan2(by, bx) / dtr;
     *dip = atan2(bz, bh) / dtr;
@@ -405,34 +401,4 @@ S50:
         if (*gv < -180.0) *gv += 360.0;
     }
     return 0;
-}
-
-static int geomag_E0_init(int *maxdeg) {
-    return E0000(0, maxdeg, 0.0, 0.0, 0.0, 0.0, NULL, NULL, NULL, NULL);
-}
-
-/**
- * Initialize library.
- * @return 0 on SUCCESS, 1 on ERROR
- */
-int geomag_init() {
-    /* Initialize geomag routine */
-    maxdeg = 12;
-    return geomag_E0_init(&maxdeg);
-}
-
-/**
- * Calculate geo magnetic paramters for given position and altitude.
- * @param alt Altitude above WGS84 ellipsoid in km
- * @param lat Latitude in decimal degrees
- * @param lon Longitude in decimal degrees
- * @param time Decimal year
- * @param dec https://en.wikipedia.org/wiki/Magnetic_declination
- * @param dip https://en.wikipedia.org/wiki/Magnetic_dip
- * @param ti Total intensity in nano Tesla nT
- * @param gv Grid variation
- * @return 0 on SUCCESS, 1 on ERROR
- */
-int geomag_calc(double alt, double glat, double glon, double time, double *dec, double *dip, double *ti, double *gv) {
-    return E0000(1, NULL, alt, glat, glon, time, dec, dip, ti, gv);
 }
