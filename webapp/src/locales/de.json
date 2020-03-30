@@ -64,7 +64,8 @@
       "sil": "Wahrscheinlichkeit mit der sich die Position des Flugzeuges ausserhalb des Kreisradius Rc befindet.",
       "nacv": "Kategorie der Genauigkeit für die Geschwindigkeit des Flugzeuges.",
       "nicBaro": "Die angezeigte barometrische Höhe wurde gegen andere Quellen der barometrischen Höhe geprüft.",
-      "rc": "Radius des Kreises, in dem sich die wahre Position des Flugzeuges befindet."
+      "rc": "Radius des Kreises, in dem sich die wahre Position des Flugzeuges befindet.",
+      "declination": "Abweichung des Kompass von der geographischen Nordrichtung."
     },
     "name": {
       "type": "Typ: ",
@@ -101,7 +102,8 @@
       "sil": "SIL: ",
       "nacv": "NAC<sub>V</sub>: ",
       "nicBaro": "NIC<sub>BARO</sub>: ",
-      "rc": "R<sub>C</sub>: "
+      "rc": "R<sub>C</sub>: ",
+      "declination": "Deklination: "
     }
   },
   "info": {

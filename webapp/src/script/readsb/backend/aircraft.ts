@@ -79,6 +79,9 @@ namespace READSB {
         public DataSource: string = null;
         public ExternalInfoLink: string = null;
         public AirGround: eAirGround = eAirGround.invalid;
+        public Declination: number = null;
+        public WindDirection: number = null;
+        public WindSpeed: number = null;
         private LastPositionTime: number = null;
         private OperatorChecked: boolean = false;
 
@@ -127,6 +130,7 @@ namespace READSB {
             this.SPIdent = !!data.spi;
             this.SilType = eSilType[data.sil_type];
             this.AirGround = data.air_ground;
+            this.Declination = data.declination;
 
             if (data.squawk !== null) {
                 this.Squawk = data.squawk.toString(16).padStart(4, "0");
@@ -220,6 +224,15 @@ namespace READSB {
                 this.Speed = data.ias;
             } else {
                 this.Speed = null;
+            }
+
+            // Copy wind data if valid.
+            if (data.valid_source.wind !== eDataSource.Invalid) {
+                this.WindDirection = data.wind_direction;
+                this.WindSpeed = data.wind_speed;
+            } else {
+                this.WindDirection = null;
+                this.WindSpeed = null;
             }
         }
 

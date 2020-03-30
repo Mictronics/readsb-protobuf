@@ -235,6 +235,9 @@ declare namespace READSB {
         Alert: boolean;
         SPIdent: boolean;
         AirGround: eAirGround;
+        Declination: number;
+        WindSpeed: number;
+        WindDirection: number;
         UpdateData(receiverTimestamp: number, data: IAircraftMeta): void;
         UpdateVisibility(receiverTimestamp: number): boolean;
     }

@@ -674,30 +674,18 @@ var READSB;
             else {
                 document.getElementById("selectedAdsbVersion").innerText = "v" + ac.Version;
             }
-            if (ac.Gs !== null && ac.Tas !== null && ac.Track !== null && ac.MagHeading !== null) {
-                ac.Track = (ac.Track || 0) * 1 || 0;
-                ac.MagHeading = (ac.MagHeading || 0) * 1 || 0;
-                ac.Tas = (ac.Tas || 0) * 1 || 0;
-                ac.Gs = (ac.Gs || 0) * 1 || 0;
-                const trk = (Math.PI / 180) * ac.Track;
-                const hdg = (Math.PI / 180) * ac.MagHeading;
-                const ws = Math.round(Math.sqrt(Math.pow(ac.Tas - ac.Gs, 2) + 4 * ac.Tas * ac.Gs * Math.pow(Math.sin((hdg - trk) / 2), 2)));
-                let wd = trk + Math.atan2(ac.Tas * Math.sin(hdg - trk), ac.Tas * Math.cos(hdg - trk) - ac.Gs);
-                if (wd < 0) {
-                    wd = wd + 2 * Math.PI;
-                }
-                if (wd > 2 * Math.PI) {
-                    wd = wd - 2 * Math.PI;
-                }
-                wd = Math.round((180 / Math.PI) * wd);
-                document.getElementById("selectedWindSpeed").innerText = READSB.Format.SpeedLong(ws, READSB.AppSettings.DisplayUnits);
-                document.getElementById("selectedWindDirection").innerText = READSB.Format.TrackLong(wd);
+            if (ac.Declination !== null) {
+                document.getElementById("selectedDeclination").innerText = `${ac.Declination.toFixed(1)}°`;
+            }
+            if (ac.WindDirection !== null && ac.WindSpeed !== null) {
+                document.getElementById("selectedWindSpeed").innerText = READSB.Format.SpeedLong(ac.WindSpeed, READSB.AppSettings.DisplayUnits);
+                document.getElementById("selectedWindDirection").innerText = READSB.Format.TrackLong(ac.WindDirection);
                 document.getElementById("windArrow").classList.remove("hidden");
                 const C = Math.PI / 180;
-                const arrowx1 = 20 - 12 * Math.sin(C * wd);
-                const arrowx2 = 20 + 12 * Math.sin(C * wd);
-                const arrowy1 = 20 + 12 * Math.cos(C * wd);
-                const arrowy2 = 20 - 12 * Math.cos(C * wd);
+                const arrowx1 = 20 - 12 * Math.sin(C * ac.WindDirection);
+                const arrowx2 = 20 + 12 * Math.sin(C * ac.WindDirection);
+                const arrowy1 = 20 + 12 * Math.cos(C * ac.WindDirection);
+                const arrowy2 = 20 - 12 * Math.cos(C * ac.WindDirection);
                 document.getElementById("windArrow").setAttribute("x1", arrowx1.toString());
                 document.getElementById("windArrow").setAttribute("x2", arrowx2.toString());
                 document.getElementById("windArrow").setAttribute("y1", arrowy1.toString());

@@ -64,7 +64,8 @@
       "sil": "Prawdopodobieństwo, z jakim położenie statku powietrznego znajduje się poza promieniem okręgu Rc.",
       "nacv": "Kategoria dokładności dla prędkości statku powietrznego.",
       "nicBaro": "Wskazywana wysokość barometryczna została sprawdzona w stosunku do innych źródeł wysokości barometrycznej.",
-      "rc": "Promień okręgu, w którym znajduje się prawdziwa pozycja samolotu."
+      "rc": "Promień okręgu, w którym znajduje się prawdziwa pozycja samolotu.",
+      "declination": "Kąt poziomy w danym miejscu na powierzchni Ziemi pomiędzy południkiem magnetycznym i geograficznym."
     },
     "name": {
       "type": "Typ: ",
@@ -101,7 +102,8 @@
       "sil": "SIL: ",
       "nacv": "NAC<sub>V</sub>: ",
       "nicBaro": "NIC<sub>BARO</sub>: ",
-      "rc": "R<sub>C</sub>: "
+      "rc": "R<sub>C</sub>: ",
+      "declination": "Deklinacja magnetyczna: "
     }
   },
   "info": {

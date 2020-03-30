@@ -63,6 +63,9 @@ var READSB;
             this.DataSource = null;
             this.ExternalInfoLink = null;
             this.AirGround = READSB.eAirGround.invalid;
+            this.Declination = null;
+            this.WindDirection = null;
+            this.WindSpeed = null;
             this.LastPositionTime = null;
             this.OperatorChecked = false;
             this.Icao = icao;
@@ -99,6 +102,7 @@ var READSB;
             this.SPIdent = !!data.spi;
             this.SilType = READSB.eSilType[data.sil_type];
             this.AirGround = data.air_ground;
+            this.Declination = data.declination;
             if (data.squawk !== null) {
                 this.Squawk = data.squawk.toString(16).padStart(4, "0");
             }
@@ -198,6 +202,14 @@ var READSB;
             }
             else {
                 this.Speed = null;
+            }
+            if (data.valid_source.wind !== READSB.eDataSource.Invalid) {
+                this.WindDirection = data.wind_direction;
+                this.WindSpeed = data.wind_speed;
+            }
+            else {
+                this.WindDirection = null;
+                this.WindSpeed = null;
             }
         }
         UpdateVisibility(receiverTimestamp) {

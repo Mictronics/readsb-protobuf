@@ -64,7 +64,8 @@
       "sil": "Surveillance integrity level (probability of positions lying outside the claimed radius of containment).",
       "nacv": "Navigation accuracy category of the velocity (95% bound on velocities).",
       "nicBaro": "Whether the reported pressure altitude has been crosschecked against another source of pressure altitude.",
-      "rc": "Radius of containment. The reported position of the aircraft is expected to be within this distance of the true position, with a failure rate defined by SIL."
+      "rc": "Radius of containment. The reported position of the aircraft is expected to be within this distance of the true position, with a failure rate defined by SIL.",
+      "declination": "The deviation of the compass from true north."
     },
     "name": {
       "type": "Type: ",
@@ -101,7 +102,8 @@
       "sil": "SIL: ",
       "nacv": "NAC<sub>V</sub>: ",
       "nicBaro": "NIC<sub>BARO</sub>: ",
-      "rc": "R<sub>C</sub>: "
+      "rc": "R<sub>C</sub>: ",
+      "declination": "Declination: "
     }
   },
   "info": {
