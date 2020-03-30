@@ -1905,6 +1905,34 @@ void generateAircraftProtoBuf(void) {
                 msg.aircraft[msg.n_aircraft]->version = a->adsb_version;
             }
 
+            if (trackDataValid(&a->gs_valid) && trackDataValid(&a->tas_valid) && trackDataValid(&a->track_valid) && trackDataValid(&a->mag_heading_valid)) {
+                if (trackDataAge(&a->gs_valid) <= 5000 && trackDataAge(&a->tas_valid) <= 5000 && trackDataAge(&a->track_valid) <= 5000 && trackDataAge(&a->mag_heading_valid) <= 5000) {
+                    if (a->meta.tas > 0 && a->meta.gs > 0) {
+                        double hdg = a->meta.mag_heading + a->meta.declination;
+                        double trk = (M_PI / 180) * a->meta.track;
+                        hdg = (M_PI / 180) * hdg;
+                        double tas = a->meta.tas;
+                        double gs = a->meta.gs;
+                        double crab = hdg - trk;
+
+                        double hw = tas - cos(crab) * gs;
+                        double cw = sin(crab) * gs;
+                        a->meta.wind_speed = (uint32_t) round(sqrt(hw * hw + cw * cw));
+                        double wd = hdg + atan2(cw, hw);
+                        if (wd < 0) {
+                            wd = wd + 2 * M_PI;
+                        }
+                        if (wd > 2 * M_PI) {
+                            wd = wd - 2 * M_PI;
+                        }
+                        a->meta.wind_direction = (uint32_t) round((180 / M_PI) * wd);
+                        a->valid_source.wind = SOURCE_MODE_S;
+                    } else {
+                        a->valid_source.wind = SOURCE_INVALID;
+                    }
+                }
+            }
+
             // Create valid source information
             generateValidSourceMessage(a);
             msg.aircraft[msg.n_aircraft]->valid_source = &a->valid_source;

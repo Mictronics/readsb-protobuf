@@ -202,10 +202,12 @@ struct  _AircraftMeta__ValidSource
   uint32_t gva;
   protobuf_c_boolean has_sda;
   uint32_t sda;
+  protobuf_c_boolean has_wind;
+  uint32_t wind;
 };
 #define AIRCRAFT_META__VALID_SOURCE__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&aircraft_meta__valid_source__descriptor) \
-    , 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
+    , 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
 
 
 /*
@@ -420,12 +422,12 @@ struct  _AircraftMeta
    * Calculated wind speed
    */
   protobuf_c_boolean has_wind_speed;
-  float wind_speed;
+  uint32_t wind_speed;
   /*
    * Calculated wind direction
    */
   protobuf_c_boolean has_wind_direction;
-  float wind_direction;
+  uint32_t wind_direction;
   protobuf_c_boolean has_addr_type;
   AircraftMeta__AddrType addr_type;
   protobuf_c_boolean has_emergency;

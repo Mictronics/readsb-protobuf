@@ -79,8 +79,8 @@ message AircraftMeta {
 	uint32 gva = 44; // Geometric Vertical Accuracy
     uint32 sda = 45; // System Design Assurance
     double declination = 46; // Geomagnetic declination depending on position
-    float wind_speed = 47; // Calculated wind speed
-    float wind_direction = 48; // Calculated wind direction
+    uint32 wind_speed = 47; // Calculated wind speed
+    uint32 wind_direction = 48; // Calculated wind direction
 	
 	// Type of underlying message, one of:
 	enum AddrType {
@@ -165,6 +165,7 @@ message AircraftMeta {
         uint32 sil_type = 129;
         uint32 gva = 130; 
         uint32 sda = 131;
+        uint32 wind = 132;
 	}
 	ValidSource valid_source = 151;
 }

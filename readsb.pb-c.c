@@ -386,7 +386,7 @@ const ProtobufCMessageDescriptor aircraft_meta__nav_modes__descriptor =
   (ProtobufCMessageInit) aircraft_meta__nav_modes__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descriptors[32] =
+static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descriptors[33] =
 {
   {
     "callsign",
@@ -772,6 +772,18 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
+  {
+    "wind",
+    132,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(AircraftMeta__ValidSource, has_wind),
+    offsetof(AircraftMeta__ValidSource, wind),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
 };
 static const unsigned aircraft_meta__valid_source__field_indices_by_name[] = {
   2,   /* field[2] = alt_geom */
@@ -806,11 +818,12 @@ static const unsigned aircraft_meta__valid_source__field_indices_by_name[] = {
   7,   /* field[7] = track */
   8,   /* field[8] = track_rate */
   11,   /* field[11] = true_heading */
+  32,   /* field[32] = wind */
 };
 static const ProtobufCIntRange aircraft_meta__valid_source__number_ranges[1 + 1] =
 {
   { 100, 0 },
-  { 0, 32 }
+  { 0, 33 }
 };
 const ProtobufCMessageDescriptor aircraft_meta__valid_source__descriptor =
 {
@@ -820,7 +833,7 @@ const ProtobufCMessageDescriptor aircraft_meta__valid_source__descriptor =
   "AircraftMeta__ValidSource",
   "",
   sizeof(AircraftMeta__ValidSource),
-  32,
+  33,
   aircraft_meta__valid_source__field_descriptors,
   aircraft_meta__valid_source__field_indices_by_name,
   1,  aircraft_meta__valid_source__number_ranges,
@@ -1473,7 +1486,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
     "wind_speed",
     47,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_FLOAT,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta, has_wind_speed),
     offsetof(AircraftMeta, wind_speed),
     NULL,
@@ -1485,7 +1498,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
     "wind_direction",
     48,
     PROTOBUF_C_LABEL_OPTIONAL,
-    PROTOBUF_C_TYPE_FLOAT,
+    PROTOBUF_C_TYPE_UINT32,
     offsetof(AircraftMeta, has_wind_direction),
     offsetof(AircraftMeta, wind_direction),
     NULL,
