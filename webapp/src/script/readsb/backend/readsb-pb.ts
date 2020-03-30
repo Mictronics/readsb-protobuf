@@ -87,6 +87,7 @@ namespace READSB {
                         track: eDataSource.Invalid,
                         track_rate: eDataSource.Invalid,
                         true_heading: eDataSource.Invalid,
+                        wind: eDataSource.Invalid,
                     }, end);
             },
             _readField(tag: number, obj: any, pbf: Pbf): void {
@@ -122,6 +123,7 @@ namespace READSB {
                 else if (tag === 129) { obj.sil_type = pbf.readVarint(); }
                 else if (tag === 130) { obj.gva = pbf.readVarint(); }
                 else if (tag === 131) { obj.sda = pbf.readVarint(); }
+                else if (tag === 132) { obj.wind = pbf.readVarint(); }
             },
             write(obj: IValidSource, pbf: Pbf): void {
                 if (obj.callsign) { pbf.writeVarintField(100, obj.callsign); }
@@ -156,6 +158,7 @@ namespace READSB {
                 if (obj.sil_type) { pbf.writeVarintField(129, obj.sil_type); }
                 if (obj.gva) { pbf.writeVarintField(130, obj.gva); }
                 if (obj.sda) { pbf.writeVarintField(131, obj.sda); }
+                if (obj.wind) { pbf.writeVarintField(132, obj.wind); }
             },
         },
         read(pbf: Pbf, end?: number): IAircraftMeta {
@@ -169,6 +172,7 @@ namespace READSB {
                     alt_geom: null,
                     baro_rate: null,
                     category: null,
+                    declination: null,
                     distance: null,
                     emergency: null,
                     flight: null,
@@ -207,6 +211,8 @@ namespace READSB {
                     track_rate: null,
                     true_heading: null,
                     version: null,
+                    wind_direction: null,
+                    wind_speed: null,
                 }, end);
         },
         _readField(tag: number, obj: any, pbf: Pbf): void {
@@ -250,6 +256,9 @@ namespace READSB {
             else if (tag === 43) { obj.spi = pbf.readBoolean(); }
             else if (tag === 44) { obj.gva = pbf.readVarint(); }
             else if (tag === 45) { obj.sda = pbf.readVarint(); }
+            else if (tag === 46) { obj.declination = pbf.readDouble(); }
+            else if (tag === 47) { obj.wind_speed = pbf.readVarint(); }
+            else if (tag === 48) { obj.wind_direction = pbf.readVarint(); }
             else if (tag === 100) { obj.addr_type = pbf.readVarint(); }
             else if (tag === 101) { obj.emergency = pbf.readVarint(); }
             else if (tag === 102) { obj.sil_type = pbf.readVarint(); }
@@ -297,6 +306,9 @@ namespace READSB {
             if (obj.spi) { pbf.writeBooleanField(43, obj.spi); }
             if (obj.gva) { pbf.writeVarintField(44, obj.gva); }
             if (obj.sda) { pbf.writeVarintField(45, obj.sda); }
+            if (obj.declination) { pbf.writeDoubleField(46, obj.declination); }
+            if (obj.wind_speed) { pbf.writeVarintField(47, obj.wind_speed); }
+            if (obj.wind_direction) { pbf.writeVarintField(48, obj.wind_direction); }
             if (obj.addr_type) { pbf.writeVarintField(100, obj.addr_type); }
             if (obj.emergency) { pbf.writeVarintField(101, obj.emergency); }
             if (obj.sil_type) { pbf.writeVarintField(102, obj.sil_type); }

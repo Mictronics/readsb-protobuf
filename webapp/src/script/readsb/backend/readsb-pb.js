@@ -89,6 +89,7 @@ var READSB;
                     track: READSB.eDataSource.Invalid,
                     track_rate: READSB.eDataSource.Invalid,
                     true_heading: READSB.eDataSource.Invalid,
+                    wind: READSB.eDataSource.Invalid,
                 }, end);
             },
             _readField(tag, obj, pbf) {
@@ -188,6 +189,9 @@ var READSB;
                 else if (tag === 131) {
                     obj.sda = pbf.readVarint();
                 }
+                else if (tag === 132) {
+                    obj.wind = pbf.readVarint();
+                }
             },
             write(obj, pbf) {
                 if (obj.callsign) {
@@ -286,6 +290,9 @@ var READSB;
                 if (obj.sda) {
                     pbf.writeVarintField(131, obj.sda);
                 }
+                if (obj.wind) {
+                    pbf.writeVarintField(132, obj.wind);
+                }
             },
         },
         read(pbf, end) {
@@ -298,6 +305,7 @@ var READSB;
                 alt_geom: null,
                 baro_rate: null,
                 category: null,
+                declination: null,
                 distance: null,
                 emergency: null,
                 flight: null,
@@ -336,6 +344,8 @@ var READSB;
                 track_rate: null,
                 true_heading: null,
                 version: null,
+                wind_direction: null,
+                wind_speed: null,
             }, end);
         },
         _readField(tag, obj, pbf) {
@@ -458,6 +468,15 @@ var READSB;
             }
             else if (tag === 45) {
                 obj.sda = pbf.readVarint();
+            }
+            else if (tag === 46) {
+                obj.declination = pbf.readDouble();
+            }
+            else if (tag === 47) {
+                obj.wind_speed = pbf.readVarint();
+            }
+            else if (tag === 48) {
+                obj.wind_direction = pbf.readVarint();
             }
             else if (tag === 100) {
                 obj.addr_type = pbf.readVarint();
@@ -595,6 +614,15 @@ var READSB;
             }
             if (obj.sda) {
                 pbf.writeVarintField(45, obj.sda);
+            }
+            if (obj.declination) {
+                pbf.writeDoubleField(46, obj.declination);
+            }
+            if (obj.wind_speed) {
+                pbf.writeVarintField(47, obj.wind_speed);
+            }
+            if (obj.wind_direction) {
+                pbf.writeVarintField(48, obj.wind_direction);
             }
             if (obj.addr_type) {
                 pbf.writeVarintField(100, obj.addr_type);

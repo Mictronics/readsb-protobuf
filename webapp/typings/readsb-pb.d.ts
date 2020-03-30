@@ -59,6 +59,7 @@ declare namespace READSB {
         track?: eDataSource;
         track_rate?: eDataSource;
         true_heading?: eDataSource;
+        wind?: eDataSource;
     }
 
     export interface IAircraftMeta {
@@ -70,6 +71,7 @@ declare namespace READSB {
         alt_geom?: number;
         baro_rate?: number;
         category?: number;
+        declination: number;
         distance?: number;
         emergency?: eEmergency;
         flight?: string;
@@ -107,6 +109,8 @@ declare namespace READSB {
         true_heading?: number;
         valid_source?: IValidSource;
         version?: number;
+        wind_direction: number;
+        wind_speed: number;
     }
 
     export interface IAircraftHistory {
