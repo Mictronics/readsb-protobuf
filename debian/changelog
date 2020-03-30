@@ -23,6 +23,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Improvement of SBS decoding. (by wiedehopf)
   * Add marker types for ground vehicles and towers.
   * Add world magnetic model and geomagnetism calculation.
+  * Performing wind calculation server side for better time correlation of used values.
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
