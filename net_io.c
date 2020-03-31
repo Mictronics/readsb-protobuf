@@ -1836,8 +1836,6 @@ static void generateValidSourceMessage(struct aircraft *a) {
 
 static void compute_wind(struct aircraft *a) {
 
-    a->valid_source.wind = SOURCE_INVALID;
-
     if (trackDataAge(&a->gs_valid) > 5000 ||
             trackDataAge(&a->tas_valid) > 5000 ||
             trackDataAge(&a->track_valid) > 5000 ||
@@ -1873,6 +1871,8 @@ static void compute_wind(struct aircraft *a) {
             }
             a->meta.wind_direction = (uint32_t) round((180 / M_PI) * wd);
             a->valid_source.wind = SOURCE_MODE_S;
+        } else {
+            a->valid_source.wind = SOURCE_INVALID;
         }
     }
 }
