@@ -1187,18 +1187,18 @@ struct aircraft *trackUpdateFromMessage(struct modesMessage *mm) {
     }
 
     if (mm->heading_valid) {
-        heading_type_t htype = mm->heading_type;
-        if (htype == HEADING_MAGNETIC_OR_TRUE) {
-            htype = a->adsb_hrd;
-        } else if (htype == HEADING_TRACK_OR_HEADING) {
-            htype = a->adsb_tah;
+        a->heading_type = mm->heading_type;
+        if (a->heading_type == HEADING_MAGNETIC_OR_TRUE) {
+            a->heading_type = a->adsb_hrd;
+        } else if (a->heading_type == HEADING_TRACK_OR_HEADING) {
+            a->heading_type = a->adsb_tah;
         }
 
-        if (htype == HEADING_GROUND_TRACK && accept_data(&a->track_valid, mm->source, mm, 1)) {
+        if (a->heading_type == HEADING_GROUND_TRACK && accept_data(&a->track_valid, mm->source, mm, 1)) {
             a->meta.track = mm->heading;
-        } else if (htype == HEADING_MAGNETIC && accept_data(&a->mag_heading_valid, mm->source, mm, 1)) {
+        } else if (a->heading_type == HEADING_MAGNETIC && accept_data(&a->mag_heading_valid, mm->source, mm, 1)) {
             a->meta.mag_heading = mm->heading;
-        } else if (htype == HEADING_TRUE && accept_data(&a->true_heading_valid, mm->source, mm, 1)) {
+        } else if (a->heading_type == HEADING_TRUE && accept_data(&a->true_heading_valid, mm->source, mm, 1)) {
             a->meta.true_heading = mm->heading;
         }
     }

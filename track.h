@@ -160,6 +160,7 @@ struct aircraft {
     int tisb_version; // As above, for TIS-B messages
     heading_type_t adsb_hrd; // Heading Reference Direction setting (from ADS-B operational status)
     heading_type_t adsb_tah; // Track Angle / Heading setting (from ADS-B operational status)
+    heading_type_t heading_type; // Type of indicated heading, mag or true
     unsigned nic_a : 1; // NIC supplement A from opstatus
     unsigned nic_c : 1; // NIC supplement C from opstatus
     int modeA_hit; // did our squawk match a possible mode A reply in the last check period?
