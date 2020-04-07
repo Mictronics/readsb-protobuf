@@ -27,6 +27,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Contribution wiedehopf:
     * Connection timed out: remove misleading explanation
     * keepalive: set and check for error in net_io.c instead of blindly doing it in anet.c
+    * Add custom keepalive settings that will time out a broken connection after 30 seconds.
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
