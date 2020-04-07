@@ -24,6 +24,9 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Add marker types for ground vehicles and towers.
   * Add world magnetic model and geomagnetism calculation.
   * Performing wind calculation server side for better time correlation of used values.
+  * Contribution wiedehopf:
+    * Connection timed out: remove misleading explanation
+    * keepalive: set and check for error in net_io.c instead of blindly doing it in anet.c
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
