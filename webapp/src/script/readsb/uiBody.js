@@ -1009,6 +1009,9 @@ var READSB;
                     typeDesignator: ac.IcaoType,
                     wtc: ac.Wtc,
                 });
+                if (icon.options.noRotate || false) {
+                    rotation = 0;
+                }
                 marker = L.aircraftMarker(ac.Position, {
                     draggable: false,
                     fillColor,
