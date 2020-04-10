@@ -206,6 +206,7 @@ var READSB;
                 case "ReceiverPosition":
                     READSB.AppSettings.SiteLat = msg.data[0];
                     READSB.AppSettings.SiteLon = msg.data[1];
+                    READSB.Input.SetSiteCoordinates();
                     break;
                 case "Error":
                     if (msg.data === false) {

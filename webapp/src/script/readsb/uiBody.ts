@@ -334,6 +334,7 @@ namespace READSB {
                 case "ReceiverPosition":
                     AppSettings.SiteLat = msg.data[0];
                     AppSettings.SiteLon = msg.data[1];
+                    Input.SetSiteCoordinates();
                     break;
                 case "Error":
                     if (msg.data === false) {
