@@ -18,6 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 self.importScripts("../../pbf.js");
+self.importScripts("../../subworkers.js");
 self.importScripts("../enums.js");
 self.importScripts("database.js");
 self.importScripts("registration.js");
