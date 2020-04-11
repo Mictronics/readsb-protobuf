@@ -1,5 +1,6 @@
 "use strict";
 self.importScripts("../../pbf.js");
+self.importScripts("../../subworkers.js");
 self.importScripts("../enums.js");
 self.importScripts("database.js");
 self.importScripts("registration.js");
