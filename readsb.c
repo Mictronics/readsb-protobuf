@@ -189,12 +189,12 @@ static void modesInit(void) {
 
     pthread_mutex_init(&Modes.data_mutex, NULL);
     pthread_cond_init(&Modes.data_cond, NULL);
-    
+
     Modes.stats_semptr = sem_open("/readsbStatsTrigger", O_CREAT, 0644, 0);
     if (Modes.stats_semptr == (void*) - 1) {
         fprintf(stderr, "error creating stats semaphore: %s\n", strerror(errno));
     }
-    
+
     Modes.sample_rate = (double) 2400000.0;
 
     // Allocate the various buffers used by Modes
@@ -334,6 +334,7 @@ static void backgroundTasks(void) {
     static uint64_t next_stats_display;
     static uint64_t next_stats_update;
     static uint64_t next_full, next_history;
+    static uint64_t last_second;
 
     uint64_t now = mstime();
 
@@ -342,6 +343,10 @@ static void backgroundTasks(void) {
 
     if (Modes.net) {
         modesNetPeriodicWork();
+        if (last_second + 1000 < now) {
+            modesNetSecondWork();
+            last_second = now;
+        }
     }
 
 
@@ -463,46 +468,7 @@ static void cleanup_and_exit(int code) {
     }
     crcCleanupTables();
 
-    for (int i = 0; i < Modes.net_connectors_count; i++) {
-        struct net_connector *con = Modes.net_connectors[i];
-        free(con->address);
-        freeaddrinfo(con->addr_info);
-        if (con->mutex) {
-            pthread_mutex_unlock(con->mutex);
-            pthread_mutex_destroy(con->mutex);
-            free(con->mutex);
-        }
-        free(con);
-    }
-    free(Modes.net_connectors);
-
-    /* Cleanup network setup */
-    struct client *c = Modes.clients, *nc;
-    while (c) {
-        nc = c->next;
-        errno = 0;
-        if (fcntl(c->fd, F_GETFD) != -1 || errno != EBADF) {
-            close(c->fd);
-        }
-        if (c->sendq) {
-            free(c->sendq);
-            c->sendq = NULL;
-        }
-        free(c);
-        c = nc;
-    }
-
-    struct net_service *s = Modes.services, *ns;
-    while (s) {
-        ns = s->next;
-        free(s->listener_fds);
-        if (s->writer && s->writer->data) {
-            free(s->writer->data);
-            s->writer->data = NULL;
-        }
-        if (s) free(s);
-        s = ns;
-    }
+    cleanupNetwork();
 
     exit(code);
 }

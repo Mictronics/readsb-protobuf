@@ -212,7 +212,6 @@ int main(int argc, char **argv) {
         goto exit;
     }
     // We need only one service here created below, no need to call modesInitNet
-    Modes.clients = NULL;
     Modes.services = NULL;
 
     // Try to connect to the selected ip address and port. We only support *ONE* input connection which we initiate.here.

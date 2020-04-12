@@ -64,6 +64,7 @@ struct net_service {
     const char *read_sep; // hander details for input data
     int read_sep_len;
     const char *descr;
+    struct client *clients; // linked list of clients connected to this service
 };
 
 // Client connection
@@ -141,8 +142,10 @@ void sendBeastSettings(int fd, const char *settings);
 
 void modesInitNet(void);
 void modesQueueOutput(struct modesMessage *mm, struct aircraft *a);
+void modesNetSecondWork(void);
 void modesNetPeriodicWork(void);
 void modesReadSerialClient(void);
+void cleanupNetwork(void);
 
 struct char_buffer generateVRS(int part, int n_parts);
 void writeJsonToNet(struct net_writer *writer, struct char_buffer cb);
