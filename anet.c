@@ -205,7 +205,10 @@ static int anetTcpGenericConnect(char *err, char *addr, char *service, int flags
             if (ss) {
                 memcpy(ss, p->ai_addr, sizeof (*ss));
             }
-            freeaddrinfo(gai_result);
+            if (gai_result) {
+                freeaddrinfo(gai_result);
+                gai_result = NULL;
+            }
             return s;
         }
 
@@ -213,7 +216,10 @@ static int anetTcpGenericConnect(char *err, char *addr, char *service, int flags
         anetCloseSocket(s);
     }
 
-    freeaddrinfo(gai_result);
+    if (gai_result) {
+        freeaddrinfo(gai_result);
+        gai_result = NULL;
+    }
     return ANET_ERR;
 }
 
@@ -354,7 +360,10 @@ int anetTcpServer(char *err, char *service, char *bindaddr, int *fds, int nfds) 
         fds[i++] = s;
     }
 
-    freeaddrinfo(gai_result);
+    if (gai_result) {
+        freeaddrinfo(gai_result);
+        gai_result = NULL;
+    }
     return (i > 0 ? i : ANET_ERR);
 }
 
