@@ -526,10 +526,40 @@ struct  _Receiver
   protobuf_c_boolean has_latitude;
   double latitude;
   /*
-   * Receiver location longitude;
+   * Receiver location longitude.
    */
   protobuf_c_boolean has_longitude;
   double longitude;
+  /*
+   * Receiver altitude.
+   */
+  protobuf_c_boolean has_altitude;
+  uint32_t altitude;
+  /*
+   * Antenna serial number.
+   */
+  protobuf_c_boolean has_antenna_serial;
+  uint32_t antenna_serial;
+  /*
+   * Antenna status flags.
+   */
+  protobuf_c_boolean has_antenna_flags;
+  uint32_t antenna_flags;
+  /*
+   * Antenna GPS satellites used in fix.
+   */
+  protobuf_c_boolean has_antenna_gps_sats;
+  uint32_t antenna_gps_sats;
+  /*
+   * Antenna GPS HDOP*10, thus 12 is HDOP 1.2.
+   */
+  protobuf_c_boolean has_antenna_gps_hdop;
+  uint32_t antenna_gps_hdop;
+  /*
+   * Antenna internal use.
+   */
+  protobuf_c_boolean has_antenna_reserved;
+  uint32_t antenna_reserved;
   /*
    * Aircraft history size.
    */
@@ -538,7 +568,7 @@ struct  _Receiver
 };
 #define RECEIVER__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&receiver__descriptor) \
-    , NULL, 0,0, 0,0, 0,0, 0,0 }
+    , NULL, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0, 0,0 }
 
 
 /*

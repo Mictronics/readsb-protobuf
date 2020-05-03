@@ -1798,7 +1798,7 @@ const ProtobufCMessageDescriptor aircrafts_update__descriptor =
   (ProtobufCMessageInit) aircrafts_update__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor receiver__field_descriptors[5] =
+static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
 {
   {
     "version",
@@ -1849,6 +1849,78 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[5] =
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
+    "altitude",
+    5,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Receiver, has_altitude),
+    offsetof(Receiver, altitude),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "antenna_serial",
+    6,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Receiver, has_antenna_serial),
+    offsetof(Receiver, antenna_serial),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "antenna_flags",
+    7,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Receiver, has_antenna_flags),
+    offsetof(Receiver, antenna_flags),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "antenna_gps_sats",
+    8,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Receiver, has_antenna_gps_sats),
+    offsetof(Receiver, antenna_gps_sats),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "antenna_gps_hdop",
+    9,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Receiver, has_antenna_gps_hdop),
+    offsetof(Receiver, antenna_gps_hdop),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
+    "antenna_reserved",
+    14,
+    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_TYPE_UINT32,
+    offsetof(Receiver, has_antenna_reserved),
+    offsetof(Receiver, antenna_reserved),
+    NULL,
+    NULL,
+    0,             /* flags */
+    0,NULL,NULL    /* reserved1,reserved2, etc */
+  },
+  {
     "history",
     15,
     PROTOBUF_C_LABEL_OPTIONAL,
@@ -1862,7 +1934,13 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[5] =
   },
 };
 static const unsigned receiver__field_indices_by_name[] = {
-  4,   /* field[4] = history */
+  4,   /* field[4] = altitude */
+  6,   /* field[6] = antenna_flags */
+  8,   /* field[8] = antenna_gps_hdop */
+  7,   /* field[7] = antenna_gps_sats */
+  9,   /* field[9] = antenna_reserved */
+  5,   /* field[5] = antenna_serial */
+  10,   /* field[10] = history */
   2,   /* field[2] = latitude */
   3,   /* field[3] = longitude */
   1,   /* field[1] = refresh */
@@ -1871,8 +1949,8 @@ static const unsigned receiver__field_indices_by_name[] = {
 static const ProtobufCIntRange receiver__number_ranges[2 + 1] =
 {
   { 1, 0 },
-  { 15, 4 },
-  { 0, 5 }
+  { 14, 9 },
+  { 0, 11 }
 };
 const ProtobufCMessageDescriptor receiver__descriptor =
 {
@@ -1882,7 +1960,7 @@ const ProtobufCMessageDescriptor receiver__descriptor =
   "Receiver",
   "",
   sizeof(Receiver),
-  5,
+  11,
   receiver__field_descriptors,
   receiver__field_indices_by_name,
   2,  receiver__number_ranges,

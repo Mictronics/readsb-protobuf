@@ -195,7 +195,13 @@ message Receiver {
     string version = 1; // Readsb version
     float refresh = 2; // Data refresh period.
     double latitude = 3; // Receiver location latitude.
-    double longitude = 4; // Receiver location longitude;
+    double longitude = 4; // Receiver location longitude.
+    uint32 altitude = 5; // Receiver altitude.
+    uint32 antenna_serial = 6; // Antenna serial number.
+    uint32 antenna_flags = 7; // Antenna status flags.
+    uint32 antenna_gps_sats = 8; // Antenna GPS satellites used in fix.
+    uint32 antenna_gps_hdop = 9; // Antenna GPS HDOP*10, thus 12 is HDOP 1.2.
+    uint32 antenna_reserved = 14; // Antenna internal use.
     uint32 history = 15; // Aircraft history size.
 }
 

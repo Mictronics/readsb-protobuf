@@ -287,6 +287,7 @@ struct { // Internal state
     sem_t* stats_semptr; // Statistics semaphore to syncronize with readsbrrd
 
     // Configuration
+    Receiver receiver; // Receiver configuration
     int nfix_crc; // Number of crc bit error(s) to correct
     int check_crc; // Only display messages with good CRC
     int raw; // Raw output format
@@ -300,8 +301,6 @@ struct { // Internal state
     int filter_persistence; // Maximum number of consecutive implausible positions from global CPR to invalidate a known position.
     uint64_t net_heartbeat_interval; // TCP heartbeat interval (milliseconds)
     uint64_t net_output_flush_interval; // Maximum interval (in milliseconds) between outputwrites
-    double fUserLat; // Users receiver/antenna lat/lon needed for initial surface location
-    double fUserLon; // Users receiver/antenna lat/lon needed for initial surface location
     double maxRange; // Absolute maximum decoding range, in *metres*
     double sample_rate; // actual sample rate in use (in hz)
     uint64_t interactive_display_ttl; // Interactive mode: TTL display

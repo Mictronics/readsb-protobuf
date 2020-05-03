@@ -121,6 +121,24 @@ struct net_writer {
     uint64_t lastWrite; // time of last write to clients
 };
 
+// GNS HULC status message
+
+typedef union __packed {
+    unsigned char buf[24];
+
+    struct _packed {
+        uint32_t serial;
+        uint16_t flags;
+        uint16_t reserved;
+        uint32_t epoch;
+        uint32_t latitude;
+        uint32_t longitude;
+        uint16_t altitude;
+        uint8_t satellites;
+        uint8_t hdop;
+    } status;
+} hulc_status_msg_t;
+
 struct net_service *serviceInit(const char *descr, struct net_writer *writer, heartbeat_fn hb_handler, read_mode_t mode, const char *sep, read_fn read_handler);
 struct client *serviceConnect(struct net_connector *con);
 void serviceReconnectCallback(uint64_t now);
