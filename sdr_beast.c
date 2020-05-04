@@ -34,18 +34,13 @@ static struct {
 static void beastSetOption(char opt) {
     char optionsmsg[3] = {0x1a, '1', opt};
     if (write(Modes.beast_fd, optionsmsg, 3) < 3) {
-        fprintf(stderr, "Beast failed to set option: %s", strerror(errno));
+        fprintf(stderr, "Beast failed to set option: %s\n", strerror(errno));
     }
 }
 
 void beastInitConfig(void) {
     free(Modes.beast_serial);
-    if (Modes.sdr_type == SDR_GNS) {
-        // GNS5894 hat by default on USART0
-        Modes.beast_serial = strdup("/dev/ttyAMA0");
-    } else {
-        Modes.beast_serial = strdup("/dev/ttyUSB0");
-    }
+    Modes.beast_serial = strdup("/dev/ttyUSB0");
     BeastSettings.filter_df045 = false;
     BeastSettings.filter_df1117 = false;
     BeastSettings.mode_ac = false;
@@ -96,6 +91,7 @@ static void signalHandlerIO(int sig, siginfo_t *siginfo, void *context) {
 
 bool beastOpen(void) {
     struct termios tios;
+    speed_t baud = B3000000;
     struct sigaction saio;
     saio.sa_sigaction = &signalHandlerIO;
     saio.sa_flags = SA_SIGINFO;
@@ -117,30 +113,28 @@ bool beastOpen(void) {
     tios.c_iflag = IGNPAR;
     tios.c_oflag = 0;
     tios.c_lflag = 0;
-    if (Modes.sdr_type == SDR_MODESBEAST) {
-        tios.c_cflag = CS8 | CRTSCTS;
-        tios.c_cc[VMIN] = 11;
-        tios.c_cc[VTIME] = 0;
-    } else {
-        tios.c_cflag = CS8 | CLOCAL | CREAD;
-        tios.c_lflag = ICANON;
+    tios.c_cflag = CS8 | CRTSCTS;
+    tios.c_cc[VMIN] = 11;
+    tios.c_cc[VTIME] = 0;
 
-        sigaction(SIGIO, &saio, NULL);
+    sigaction(SIGIO, &saio, NULL);
 
-        fcntl(Modes.beast_fd, F_SETFL, FNDELAY);
-        fcntl(Modes.beast_fd, F_SETOWN, getpid());
-        fcntl(Modes.beast_fd, F_SETFL, O_ASYNC);
+    fcntl(Modes.beast_fd, F_SETFL, FNDELAY);
+    fcntl(Modes.beast_fd, F_SETOWN, getpid());
+    fcntl(Modes.beast_fd, F_SETFL, O_ASYNC);
+    if (Modes.sdr_type == SDR_GNS) {
+        baud = B921600;
     }
 
-    if (cfsetispeed(&tios, B3000000) < 0) {
-        fprintf(stderr, "Beast cfsetispeed(%s, 3000000): %s\n",
-                Modes.beast_serial, strerror(errno));
+    if (cfsetispeed(&tios, baud) < 0) {
+        fprintf(stderr, "Beast cfsetispeed(%s, %d): %s\n",
+                Modes.beast_serial, baud, strerror(errno));
         return false;
     }
 
-    if (cfsetospeed(&tios, B3000000) < 0) {
-        fprintf(stderr, "Beast cfsetospeed(%s, 3000000): %s\n",
-                Modes.beast_serial, strerror(errno));
+    if (cfsetospeed(&tios, baud) < 0) {
+        fprintf(stderr, "Beast cfsetospeed(%s, %d): %s\n",
+                Modes.beast_serial, baud, strerror(errno));
         return false;
     }
 
@@ -187,6 +181,15 @@ bool beastOpen(void) {
         else
             beastSetOption('j'); /* Mode A/C disabled */
     }
+
+    // Request firmware message from GNS HULC
+    if (Modes.sdr_type == SDR_GNS) {
+        char optionsmsg[4] = {'#', '0', '0', '\r'};
+        if (write(Modes.beast_fd, optionsmsg, 4) < 4) {
+            fprintf(stderr, "GNS HULC request firmware failed: %s\n", strerror(errno));
+        }
+    }
+
     /* Kick on handshake and start reception */
     int RTSDTR_flag = TIOCM_RTS | TIOCM_DTR;
     ioctl(Modes.beast_fd, TIOCMBIS, &RTSDTR_flag); //Set RTS&DTR pin
@@ -194,7 +197,7 @@ bool beastOpen(void) {
     if (Modes.sdr_type == SDR_MODESBEAST) {
         fprintf(stderr, "Running Mode-S Beast via USB.\n");
     } else {
-        fprintf(stderr, "Running serial GNS5894.\n");
+        fprintf(stderr, "Running GNS HULC via USB.\n");
     }
     return true;
 }

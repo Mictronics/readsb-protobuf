@@ -285,7 +285,7 @@ static uint32_t update_polar_range(double lat, double lon) {
     if (!valid_latlon)
         return 0;
 
-    range = greatcircle(Modes.fUserLat, Modes.fUserLon, lat, lon);
+    range = greatcircle(Modes.receiver.latitude, Modes.receiver.longitude, lat, lon);
 
     if ((range <= Modes.maxRange || Modes.maxRange == 0) && range > Modes.stats_current.longest_distance) {
         Modes.stats_current.longest_distance = range;
@@ -293,7 +293,7 @@ static uint32_t update_polar_range(double lat, double lon) {
 
     if (Modes.stats_polar_range) {
         // Round bearing to polarplot resolution.
-        int bucket = round(getBearing(Modes.fUserLat, Modes.fUserLon, lat, lon) / POLAR_RANGE_RESOLUTION);
+        int bucket = round(getBearing(Modes.receiver.longitude, Modes.receiver.latitude, lat, lon) / POLAR_RANGE_RESOLUTION);
         if (Modes.stats_range.polar_range[bucket] < range) {
             Modes.stats_range.polar_range[bucket] = (uint32_t) range;
         }
@@ -382,8 +382,8 @@ static int doGlobalCPR(struct aircraft *a, struct modesMessage *mm, double *lat,
             reflat = a->meta.lat;
             reflon = a->meta.lon;
         } else if (Modes.bUserFlags & MODES_USER_LATLON_VALID) {
-            reflat = Modes.fUserLat;
-            reflon = Modes.fUserLon;
+            reflat = Modes.receiver.latitude;
+            reflon = Modes.receiver.longitude;
         } else {
             // No local reference, give up
             return (-1);
@@ -415,7 +415,7 @@ static int doGlobalCPR(struct aircraft *a, struct modesMessage *mm, double *lat,
 
     // check max range
     if (Modes.maxRange > 0 && (Modes.bUserFlags & MODES_USER_LATLON_VALID)) {
-        double range = greatcircle(Modes.fUserLat, Modes.fUserLon, *lat, *lon);
+        double range = greatcircle(Modes.receiver.latitude, Modes.receiver.longitude, *lat, *lon);
         if (range > Modes.maxRange) {
 #ifdef DEBUG_CPR_CHECKS
             fprintf(stderr, "Global range check failed: %06x: %.3f,%.3f, max range %.1fkm, actual %.1fkm\n",
@@ -479,8 +479,8 @@ static int doLocalCPR(struct aircraft *a, struct modesMessage *mm, double *lat, 
 
         relative_to = 1;
     } else if (!surface && (Modes.bUserFlags & MODES_USER_LATLON_VALID)) {
-        reflat = Modes.fUserLat;
-        reflon = Modes.fUserLon;
+        reflat = Modes.receiver.latitude;
+        reflon = Modes.receiver.longitude;
 
         // The cell size is at least 360NM, giving a nominal
         // max range of 180NM (half a cell).
@@ -670,11 +670,11 @@ static void updatePosition(struct aircraft *a, struct modesMessage *mm) {
 
         double dip, ti, gv;
         // Update magnetic declination whenever position changes
-        if(trackDataValid(&a->altitude_geom_valid)){
+        if (trackDataValid(&a->altitude_geom_valid)) {
             // Altitude given in feet but required to be in kilometer above WGS84 ellipsoid.
             geomag_calc(a->meta.alt_geom * 0.0003048, a->meta.lat, a->meta.lon, -1.0, &a->meta.declination, &dip, &ti, &gv);
         }
-        
+
         a->meta.distance = false;
         if (a->pos_reliable_odd >= 1 && a->pos_reliable_even >= 1 && mm->source == SOURCE_ADSB) {
             a->meta.distance = update_polar_range(new_lat, new_lon);

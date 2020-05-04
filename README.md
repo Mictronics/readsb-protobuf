@@ -16,6 +16,7 @@ This is a personal, hobbyist project with no commercial background.
 
 ## Modifications:
 
+* Full support [GNS HULC](https://www.gns-electronics.de/flight-information-for-avionics/) antenna, including GPS on M version.
 * Protocol buffer binaries output only.
 * Add receiver and system performance graphs.
 * Add statistics collector service with Round Robin Database .

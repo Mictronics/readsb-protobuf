@@ -111,13 +111,13 @@ static void view1090Init(void) {
     pthread_mutex_init(&Modes.data_mutex, NULL);
     pthread_cond_init(&Modes.data_cond, NULL);
     // Validate the users Lat/Lon home location inputs
-    if ((Modes.fUserLat > 90.0) // Latitude must be -90 to +90
-            || (Modes.fUserLat < -90.0) // and
-            || (Modes.fUserLon > 360.0) // Longitude must be -180 to +360
-            || (Modes.fUserLon < -180.0)) {
-        Modes.fUserLat = Modes.fUserLon = 0.0;
-    } else if (Modes.fUserLon > 180.0) { // If Longitude is +180 to +360, make it -180 to 0
-        Modes.fUserLon -= 360.0;
+    if ((Modes.receiver.latitude > 90.0) // Latitude must be -90 to +90
+            || (Modes.receiver.latitude < -90.0) // and
+            || (Modes.receiver.longitude > 360.0) // Longitude must be -180 to +360
+            || (Modes.receiver.longitude < -180.0)) {
+        Modes.receiver.latitude = Modes.receiver.longitude = 0.0;
+    } else if (Modes.receiver.longitude > 180.0) { // If Longitude is +180 to +360, make it -180 to 0
+        Modes.receiver.longitude -= 360.0;
     }
     // If both Lat and Lon are 0.0 then the users location is either invalid/not-set, or (s)he's in the
     // Atlantic ocean off the west coast of Africa. This is unlikely to be correct.
@@ -125,7 +125,7 @@ static void view1090Init(void) {
     // is at 0.0 Lon,so we must check for either fLat or fLon being non zero not both.
     // Testing the flag at runtime will be much quicker than ((fLon != 0.0) || (fLat != 0.0))
     Modes.bUserFlags &= ~MODES_USER_LATLON_VALID;
-    if ((Modes.fUserLat != 0.0) || (Modes.fUserLon != 0.0)) {
+    if ((Modes.receiver.latitude != 0.0) || (Modes.receiver.longitude != 0.0)) {
         Modes.bUserFlags |= MODES_USER_LATLON_VALID;
     }
 
@@ -168,10 +168,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             Modes.interactive_display_ttl = (uint64_t) (1000 * atof(arg));
             break;
         case OptLat:
-            Modes.fUserLat = atof(arg);
+            Modes.receiver.latitude = atof(arg);
             break;
         case OptLon:
-            Modes.fUserLon = atof(arg);
+            Modes.receiver.longitude = atof(arg);
             break;
         case OptMaxRange:
             Modes.maxRange = atof(arg) * 1852.0; // convert to metres

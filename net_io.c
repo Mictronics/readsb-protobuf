@@ -462,7 +462,6 @@ struct net_service *makeFatsvOutputService(void) {
 }
 
 void modesInitNet(void) {
-    struct net_service *s;
     struct net_service *beast_out;
     struct net_service *beast_reduce_out;
     struct net_service *beast_in;
@@ -505,13 +504,9 @@ void modesInitNet(void) {
     serviceListen(beast_in, Modes.net_bind_address, Modes.net_input_beast_ports);
 
     /* Beast input from local Modes-S Beast via USB */
-    if (Modes.sdr_type == SDR_MODESBEAST) {
+    if (Modes.sdr_type == SDR_MODESBEAST || Modes.sdr_type == SDR_GNS) {
+        beast_in->serial_service = 1;
         createGenericClient(beast_in, Modes.beast_fd);
-    } else if (Modes.sdr_type == SDR_GNS) {
-        /* Hex input from local GNS5894 via USART0 */
-        s = serviceInit("Hex GNSHAT input", NULL, NULL, READ_MODE_ASCII, "\n", decodeHexMessage);
-        s->serial_service = 1;
-        createGenericClient(s, Modes.beast_fd);
     }
 
     for (int i = 0; i < Modes.net_connectors_count; i++) {
@@ -609,6 +604,11 @@ static void modesCloseClient(struct client *c) {
     if (!c->service) {
         fprintf(stderr, "warning: double close of net client\n");
         return;
+    }
+
+    if (Modes.sdr_type == SDR_MODESBEAST || Modes.sdr_type == SDR_GNS) {
+        fprintf(stderr, "Closing client: USB handle failed?\n");
+        Modes.exit = 1;
     }
 
     anetCloseSocket(c->fd);
@@ -1333,10 +1333,10 @@ static void handle_radarcape_position(float lat, float lon, float alt) {
     writeFATSVPositionUpdate(lat, lon, alt);
 
     if (!(Modes.bUserFlags & MODES_USER_LATLON_VALID)) {
-        Modes.fUserLat = lat;
-        Modes.fUserLon = lon;
+        Modes.receiver.latitude = lat;
+        Modes.receiver.longitude = lon;
         Modes.bUserFlags |= MODES_USER_LATLON_VALID;
-        receiverPositionChanged(lat, lon, alt);
+        generateReceiverProtoBuf(); // location changed
     }
 }
 
@@ -1404,6 +1404,67 @@ static int handleBeastCommand(struct client *c, char *p, int remote) {
     return 0;
 }
 
+/**
+ * Convert 32bit binary angular measure to double degree.
+ * See https://www.globalspec.com/reference/14722/160210/Chapter-7-5-3-Binary-Angular-Measure
+ * @param data Data buffer start (MSB first)
+ * @return Angular degree.
+ */
+static double bam32ToDouble(uint32_t bam) {
+    return (double) ((__bswap_32(bam) * 4.65661287307739E-10d) * 180.0d);
+}
+
+//
+//=========================================================================
+//
+// This function decodes a GNS HULC protocol message
+
+static void decodeHulcMessage(char *p) {
+    int alt = 0;
+    double lat = 0.0;
+    double lon = 0.0;
+    char id = *p++; //Get message id
+    unsigned char len = *p++; // Get message length
+    hulc_status_msg_t hsm;
+
+    if (id == 0x01 && len == 0x18) {
+        // HULC Status message
+        memcpy(&hsm, p, len);
+        // Antenna serial
+        Modes.receiver.antenna_serial = __bswap_32(hsm.status.serial);
+        // Antenna status flags
+        Modes.receiver.antenna_flags = __bswap_16(hsm.status.flags);
+        // Reserved for internal use
+        Modes.receiver.antenna_reserved = __bswap_16(hsm.status.reserved);
+        // Antenna Unix epoch (not used)
+        // Antenna GPS latitude
+        lat = bam32ToDouble(hsm.status.latitude);
+        // Antenna GPS longitude
+        lon = bam32ToDouble(hsm.status.longitude);
+        // Antenna GPS altitude
+        alt = __bswap_16(hsm.status.altitude);
+        // Antenna GPS satellites used for fix
+        Modes.receiver.antenna_gps_sats = hsm.status.satellites;
+        // Antenna GPS HDOP*10, thus 12 is HDOP 1.2
+        Modes.receiver.antenna_gps_hdop = hsm.status.hdop;
+        // Use only valid GPS position
+        if ((Modes.receiver.antenna_flags & 0xE000) == 0xE000) {
+            if (!isfinite(lat) || lat < -90 || lat > 90 || !isfinite(lon) || lon < -180 || lon > 180) {
+                return;
+            }
+            Modes.receiver.latitude = lat;
+            Modes.receiver.longitude = lon;
+            Modes.receiver.altitude = alt;
+            Modes.bUserFlags |= MODES_USER_LATLON_VALID;
+        }
+    } else if (id == 0x01 && len > 0x18) {
+        // Future use planed.
+    } else if (id == 0x24 && len == 0x10) {
+        // Response to command #00
+        fprintf(stderr, "Firmware: v%0u.%0u.%0u\n", *(p + 5), *(p + 6), *(p + 7));
+    }
+}
+
 //
 //=========================================================================
 //
@@ -1460,6 +1521,9 @@ static int decodeBinMessage(struct client *c, char *p, int remote) {
         alt = ieee754_binary32_le_to_float(msg + 12);
 
         handle_radarcape_position(lat, lon, alt);
+    } else if (ch == 'H') {
+        decodeHulcMessage(p);
+        return 0;
     } else {
         // Ignore this.
         return 0;
@@ -2272,6 +2336,9 @@ void generateReceiverProtoBuf() {
     char tmppath[PATH_MAX];
     int fd;
     mode_t mask;
+    // Backup precise position
+    double preclat = Modes.receiver.latitude;
+    double preclon = Modes.receiver.longitude;
 
     if (!Modes.output_dir) {
         return;
@@ -2284,27 +2351,23 @@ void generateReceiverProtoBuf() {
         return;
     }
 
-    Receiver msg = RECEIVER__INIT;
-    msg.version = MODES_READSB_VERSION;
-    msg.refresh = 1.0 * Modes.output_interval;
-    msg.history = Modes.aircraft_history_next + 1;
+    Modes.receiver.version = MODES_READSB_VERSION;
+    Modes.receiver.refresh = 1.0 * Modes.output_interval;
+    Modes.receiver.history = Modes.aircraft_history_next + 1;
 
-    if (Modes.rx_location_accuracy && (Modes.fUserLat != 0.0 || Modes.fUserLon != 0.0)) {
+    if (Modes.rx_location_accuracy && (Modes.receiver.latitude != 0.0 || Modes.receiver.longitude != 0.0)) {
+        // Reduce location accuracy if requested
         if (Modes.rx_location_accuracy == 1) {
             // round to 2 decimal digits - about 0.5-1km accuracy - for privacy reasons
-            msg.latitude = round(Modes.fUserLat * 100) / 100;
-            msg.longitude = round(Modes.fUserLon * 100) / 100;
-        } else {
-            // exact location
-            msg.latitude = Modes.fUserLat;
-            msg.longitude = Modes.fUserLon;
+            Modes.receiver.latitude = round(Modes.receiver.latitude * 100) / 100;
+            Modes.receiver.longitude = round(Modes.receiver.longitude * 100) / 100;
         }
     }
 
     // Pack and serialize entire aicraft collection.
-    ssize_t len = receiver__get_packed_size(&msg);
+    ssize_t len = receiver__get_packed_size(&Modes.receiver);
     void *buf = malloc(len);
-    receiver__pack(&msg, buf);
+    receiver__pack(&Modes.receiver, buf);
     // Write aircraft collection to file.
     mask = umask(0);
     umask(mask);
@@ -2323,6 +2386,12 @@ void generateReceiverProtoBuf() {
     }
     // Free up all allocated memory.
     free(buf);
+
+    // Restore precise position.
+    if (Modes.rx_location_accuracy == 1) {
+        Modes.receiver.latitude = preclat;
+        Modes.receiver.longitude = preclon;
+    }
 }
 
 static void periodicReadFromClient(struct client *c) {
@@ -2453,6 +2522,10 @@ static void modesReadFromClient(struct client *c) {
                         eom = p + MODES_LONG_MSG_BYTES + 8;
                     } else if (*p == '5') {
                         eom = p + MODES_LONG_MSG_BYTES + 8;
+                    } else if (*p == 'H') {
+                        // GNS HULC protocol message
+                        int len = *(p + 2);
+                        eom = p + len + 3;
                     } else {
                         // Not a valid beast message, skip 0x1a and try again
                         ++som;

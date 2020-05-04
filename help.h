@@ -101,9 +101,9 @@ static struct argp_option options[] = {
     {0, 0, 0, 0, "BladeRF options:", 4},
     {0, 0, 0, OPTION_DOC, "use with --device-type bladerf", 4},
     {"device", OptDevice, "<ident>", 0, "Select device by bladeRF 'device identifier'", 4},
-    {"bladerf-fpga", 1001, "<path>", 0, "Use alternative FPGA bitstream ('' to disable FPGA load)", 4},
-    {"bladerf-decimation", 1002, "<N>", 0, "Assume FPGA decimates by a factor of N", 4},
-    {"bladerf-bandwidth", 1003, "<hz>", 0, "Set LPF bandwidth ('bypass' to bypass the LPF)", 4},
+    {"bladerf-fpga", OptBladeFpgaDir, "<path>", 0, "Use alternative FPGA bitstream ('' to disable FPGA load)", 4},
+    {"bladerf-decimation", OptBladeDecim, "<N>", 0, "Assume FPGA decimates by a factor of N", 4},
+    {"bladerf-bandwidth", OptBladeBw, "<hz>", 0, "Set LPF bandwidth ('bypass' to bypass the LPF)", 4},
 #endif
     {0, 0, 0, 0, "Modes-S Beast options:", 5},
     {0, 0, 0, OPTION_DOC, "use with --device-type modesbeast", 5},
@@ -116,10 +116,10 @@ static struct argp_option options[] = {
     {"beast-fec-off", OptBeastFecOff, 0, 0, "Turn OFF forward error correction", 5},
     {"beast-modeac", OptBeastModeAc, 0, 0, "Turn ON mode A/C", 5},
 
-    {0, 0, 0, 0, "GNS5894 options:", 6},
-    {0, 0, 0, OPTION_DOC, "use with --device-type gns5894", 6},
-    {0, 0, 0, OPTION_DOC, "Expects ASCII HEX protocal input.", 6},
-    {"beast-serial", OptBeastSerial, "<path>", 0, "Path to GNS5894 serial device (default /dev/ttyAMA0)", 6},
+    {0, 0, 0, 0, "GNS HULC options:", 6},
+    {0, 0, 0, OPTION_DOC, "use with --device-type gnshulc", 6},
+    {0, 0, 0, OPTION_DOC, "Beast binary and HULC protocol input with hardware handshake enabled.", 6},
+    {"beast-serial", OptBeastSerial, "<path>", 0, "Path to GNS HULC serial device (default /dev/ttyUSB0)", 6},
 
     {0, 0, 0, 0, "ifile-specific options:", 7},
     {0, 0, 0, OPTION_DOC, "use with --ifile", 7},
