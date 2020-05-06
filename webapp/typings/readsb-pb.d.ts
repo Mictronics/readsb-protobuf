@@ -132,6 +132,12 @@ declare namespace READSB {
         refresh?: number;
         latitude?: number;
         longitude?: number;
+        altitude?: number;
+        antenna_serial?: number;
+        antenna_flags?: number;
+        antenna_gps_sats?: number;
+        antenna_gps_hdop?: number;
+        antenna_reserved?: number;
         history?: number;
     }
 

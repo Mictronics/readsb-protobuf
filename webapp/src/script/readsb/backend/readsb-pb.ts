@@ -381,6 +381,12 @@ namespace READSB {
                     refresh: null,
                     latitude: null,
                     longitude: null,
+                    altitude: null,
+                    antenna_serial: null,
+                    antenna_flags: null,
+                    antenna_gps_sats: null,
+                    antenna_gps_hdop: null,
+                    antenna_reserved: null,
                     history: null,
                 }, end);
         },
@@ -389,6 +395,12 @@ namespace READSB {
             else if (tag === 2) { obj.refresh = pbf.readFloat(); }
             else if (tag === 3) { obj.latitude = pbf.readDouble(); }
             else if (tag === 4) { obj.longitude = pbf.readDouble(); }
+            else if (tag === 5) { obj.altitude = pbf.readVarint(); }
+            else if (tag === 6) { obj.antenna_serial = pbf.readVarint(); }
+            else if (tag === 7) { obj.antenna_flags = pbf.readVarint(); }
+            else if (tag === 8) { obj.antenna_gps_sats = pbf.readVarint(); }
+            else if (tag === 9) { obj.antenna_gps_hdop = pbf.readVarint(); }
+            else if (tag === 14) { obj.antenna_reserved = pbf.readVarint(); }
             else if (tag === 15) { obj.history = pbf.readVarint(); }
         },
         write(obj: IReceiver, pbf: Pbf) {
@@ -396,6 +408,12 @@ namespace READSB {
             if (obj.refresh) { pbf.writeFloatField(2, obj.refresh); }
             if (obj.latitude) { pbf.writeDoubleField(3, obj.latitude); }
             if (obj.longitude) { pbf.writeDoubleField(4, obj.longitude); }
+            if (obj.altitude) { pbf.writeVarintField(5, obj.altitude); }
+            if (obj.antenna_serial) { pbf.writeVarintField(6, obj.antenna_flags); }
+            if (obj.antenna_flags) { pbf.writeVarintField(7, obj.antenna_flags); }
+            if (obj.antenna_gps_sats) { pbf.writeVarintField(8, obj.antenna_gps_sats); }
+            if (obj.antenna_gps_hdop) { pbf.writeVarintField(9, obj.antenna_gps_hdop); }
+            if (obj.antenna_reserved) { pbf.writeVarintField(14, obj.antenna_reserved); }
             if (obj.history) { pbf.writeVarintField(15, obj.history); }
         },
     };
