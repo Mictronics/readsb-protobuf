@@ -27,6 +27,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Add polyfill for nested dedicated workers as WebKit does not support them.
   * Fully support GNS HULC antenna, including its GPS.
   * Fix bug in handling bladeRF command line options.
+  * Interrupt driven serial device handling removed.
   * Contribution wiedehopf:
     * Connection timed out: remove misleading explanation
     * keepalive: set and check for error in net_io.c instead of blindly doing it in anet.c

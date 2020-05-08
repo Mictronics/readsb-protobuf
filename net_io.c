@@ -505,7 +505,6 @@ void modesInitNet(void) {
 
     /* Beast input from local Modes-S Beast via USB */
     if (Modes.sdr_type == SDR_MODESBEAST || Modes.sdr_type == SDR_GNS) {
-        beast_in->serial_service = 1;
         createGenericClient(beast_in, Modes.beast_fd);
     }
 
@@ -608,7 +607,7 @@ static void modesCloseClient(struct client *c) {
 
     if (Modes.exit == 0 && (Modes.sdr_type == SDR_MODESBEAST || Modes.sdr_type == SDR_GNS)) {
         fprintf(stderr, "Closing client: USB handle failed?\n");
-        Modes.exit = 1;
+        Modes.exit = 3;
     }
 
     anetCloseSocket(c->fd);
@@ -3177,31 +3176,6 @@ void modesNetPeriodicWork(void) {
     }
 
     serviceReconnectCallback(now);
-}
-
-/**
- * Reads data from serial client (GNS5894) via SignalIO trigger and
- * writes output. Speed up data handling since we have no influence on
- * flow control in that case.
- * Other periodic work is still done in function above and triggered from
- * backgroundTasks().
- */
-void modesReadSerialClient(void) {
-    struct net_service *s;
-    struct client *c;
-
-    // Search and read from marked serial client only
-    for (s = Modes.services; s; s = s->next) {
-        if (s->read_handler && s->serial_service) {
-            for (c = s->clients; c; c = c->next) {
-                if (!c->service)
-                    continue;
-                modesReadFromClient(c);
-            }
-        }
-    }
-    // Generate FATSV output
-    writeFATSV();
 }
 
 void writeJsonToNet(struct net_writer *writer, struct char_buffer cb) {

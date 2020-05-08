@@ -55,7 +55,6 @@ struct net_service {
     int listener_count; // number of listeners
     int pusher_count; // Number of push servers connected to
     int connections; // number of active clients
-    int serial_service; // 1 if this is a service for serial devices
     read_mode_t read_mode;
     read_fn read_handler;
     struct net_writer *writer; // shared writer state
