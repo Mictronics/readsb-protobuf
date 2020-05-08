@@ -161,7 +161,6 @@ void modesInitNet(void);
 void modesQueueOutput(struct modesMessage *mm, struct aircraft *a);
 void modesNetSecondWork(void);
 void modesNetPeriodicWork(void);
-void modesReadSerialClient(void);
 void cleanupNetwork(void);
 
 struct char_buffer generateVRS(int part, int n_parts);
