@@ -334,7 +334,7 @@ namespace READSB {
 
                 let lat2 = Math.asin(Math.sin(lat1) * Math.cos(angularDistance) +
                     Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing));
-                let lon2 = lon1 + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
+                let lon2 = lon1 - Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
                     Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2));
 
                 lat2 = lat2 * 180.0 / Math.PI;

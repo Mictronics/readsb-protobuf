@@ -269,7 +269,7 @@ var READSB;
                 const bearing = i * 2 * Math.PI / ranges.length;
                 let lat2 = Math.asin(Math.sin(lat1) * Math.cos(angularDistance) +
                     Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing));
-                let lon2 = lon1 + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1), Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2));
+                let lon2 = lon1 - Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1), Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2));
                 lat2 = lat2 * 180.0 / Math.PI;
                 lon2 = lon2 * 180.0 / Math.PI;
                 locGeom.push([lat2, lon2]);
