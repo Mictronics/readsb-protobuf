@@ -38,6 +38,8 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
     * Move network cleanup to net_io.c and use closeClient.
     * Perform some network task less often.
     * Improved accept handling.
+    * Improve altitude filter.
+    * Show zero timestamps using viewadsb.
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
