@@ -34,6 +34,9 @@
   --checkbox-icon: url('../images/icons/check-box.svg');
   --x-square-icon: url('../images/icons/x-square.svg');
   --map-icon: url('../images/icons/map.svg');
+  --no-gps-icon: url('../images/icons/no-gps.svg');
+  --gps-no-position-icon: url('../images/icons/gps-no-position.svg');
+  --gps-position-icon: url('../images/icons/gps-position.svg');
   --map-dim: brightness(1);
   --overlay-dim: brightness(1);
 }
@@ -74,6 +77,9 @@
   --checkbox-icon: url('../images/icons-dark/check-box.svg');
   --x-square-icon: url('../images/icons-dark/x-square.svg');
   --map-icon: url('../images/icons-dark/map.svg');
+  --no-gps-icon: url('../images/icons-dark/no-gps.svg');
+  --gps-no-position-icon: url('../images/icons-dark/gps-no-position.svg');
+  --gps-position-icon: url('../images/icons-dark/gps-position.svg');
   --map-dim: brightness(0.35);
   --overlay-dim: brightness(0.75);
 }
@@ -358,6 +364,25 @@ span#selectedWindDirection {
   background-repeat: no-repeat;
   width: 25px;
   height: 25px;
+}
+
+.gps-icon {
+  background-repeat: no-repeat;
+  background-position: left;
+  margin-left: 15px;
+}
+
+.no-gps-icon {
+  background-image: var(--no-gps-icon);
+  display: none;
+}
+
+.gps-no-position-icon {
+  background-image: var(--gps-no-position-icon);
+}
+
+.gps-position-icon {
+  background-image: var(--gps-position-icon);
 }
 
 /* Basic style of custom leaflet control buttons */
