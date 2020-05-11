@@ -546,7 +546,7 @@ namespace READSB {
             }
 
             if (AppSettings.ShowFlags) {
-                r.cells[1].className = "showFlags";
+                r.cells[1].className = "showFlags prio-2";
             } else {
                 r.cells[1].className = "hideFlags";
             }
