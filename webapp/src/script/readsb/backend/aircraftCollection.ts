@@ -75,7 +75,16 @@ namespace READSB {
                     const msg = Receiver.read(pbf);
                     pbf.destroy();
                     if (msg.latitude && msg.longitude) {
-                        this.worker.postMessage({ type: "ReceiverPosition", data: [msg.latitude, msg.longitude] });
+                        this.worker.postMessage({
+                            type: "ReceiverPosition", data:
+                                [
+                                    msg.latitude,
+                                    msg.longitude,
+                                    msg.antenna_flags,
+                                    msg.antenna_gps_sats,
+                                    msg.antenna_gps_hdop,
+                                ],
+                        });
                         this.sitePosition = { lat: msg.latitude, lng: msg.longitude };
                         this.SortBy(eSortBy.Distance);
                     } else {
@@ -90,6 +99,12 @@ namespace READSB {
                     self.setInterval(this.FetchData.bind(this), msg.refresh);
                     // Setup timer to clean this aircraft collection frequently.
                     self.setInterval(this.Clean.bind(this), 60000);
+
+                    // Fetch receiver data periodically when a GPS is detected
+                    // tslint:disable-next-line: no-bitwise
+                    if ((msg.antenna_flags & 0x8000) === 0x8000) {
+                        self.setInterval(this.FetchReceiverStatus.bind(this), 30000);
+                    }
 
                     // And kick off one refresh immediately and clean up history.
                     this.FetchData();
@@ -268,6 +283,47 @@ namespace READSB {
                     this.receiverErrorCount++;
                     this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
                     console.error(error);
+                });
+        }
+
+        private static FetchReceiverStatus() {
+            // Get receiver metadata, then continue with initialization
+            fetch("../../../data/receiver.pb", {
+                cache: "no-cache",
+                method: "GET",
+                mode: "cors",
+            })
+                .then((res: Response) => {
+                    if (res.status >= 200 && res.status < 300) {
+                        return Promise.resolve(res);
+                    } else {
+                        return Promise.reject(new Error(res.statusText));
+                    }
+                })
+                .then((res: Response) => {
+                    return res.arrayBuffer();
+                })
+                .then((pb: ArrayBuffer) => {
+                    const pbf = new Pbf(new Uint8Array(pb));
+                    const msg = Receiver.read(pbf);
+                    pbf.destroy();
+                    if (msg.latitude && msg.longitude) {
+                        this.worker.postMessage({
+                            type: "ReceiverPosition", data:
+                                [
+                                    msg.latitude,
+                                    msg.longitude,
+                                    msg.antenna_flags,
+                                    msg.antenna_gps_sats,
+                                    msg.antenna_gps_hdop,
+                                ],
+                        });
+                        this.sitePosition = { lat: msg.latitude, lng: msg.longitude };
+                    }
+                })
+                .catch((error) => {
+                    this.receiverErrorCount++;
+                    this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
                 });
         }
 

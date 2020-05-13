@@ -48,7 +48,15 @@ var READSB;
                 const msg = READSB.Receiver.read(pbf);
                 pbf.destroy();
                 if (msg.latitude && msg.longitude) {
-                    this.worker.postMessage({ type: "ReceiverPosition", data: [msg.latitude, msg.longitude] });
+                    this.worker.postMessage({
+                        type: "ReceiverPosition", data: [
+                            msg.latitude,
+                            msg.longitude,
+                            msg.antenna_flags,
+                            msg.antenna_gps_sats,
+                            msg.antenna_gps_hdop,
+                        ],
+                    });
                     this.sitePosition = { lat: msg.latitude, lng: msg.longitude };
                     this.SortBy(READSB.eSortBy.Distance);
                 }
@@ -60,6 +68,9 @@ var READSB;
                 this.aircraftHistoryLoader.postMessage({ type: "HistorySize", data: msg.history });
                 self.setInterval(this.FetchData.bind(this), msg.refresh);
                 self.setInterval(this.Clean.bind(this), 60000);
+                if ((msg.antenna_flags & 0x8000) === 0x8000) {
+                    self.setInterval(this.FetchReceiverStatus.bind(this), 30000);
+                }
                 this.FetchData();
                 this.Clean();
             })
@@ -177,6 +188,45 @@ var READSB;
                 this.receiverErrorCount++;
                 this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
                 console.error(error);
+            });
+        }
+        static FetchReceiverStatus() {
+            fetch("../../../data/receiver.pb", {
+                cache: "no-cache",
+                method: "GET",
+                mode: "cors",
+            })
+                .then((res) => {
+                if (res.status >= 200 && res.status < 300) {
+                    return Promise.resolve(res);
+                }
+                else {
+                    return Promise.reject(new Error(res.statusText));
+                }
+            })
+                .then((res) => {
+                return res.arrayBuffer();
+            })
+                .then((pb) => {
+                const pbf = new Pbf(new Uint8Array(pb));
+                const msg = READSB.Receiver.read(pbf);
+                pbf.destroy();
+                if (msg.latitude && msg.longitude) {
+                    this.worker.postMessage({
+                        type: "ReceiverPosition", data: [
+                            msg.latitude,
+                            msg.longitude,
+                            msg.antenna_flags,
+                            msg.antenna_gps_sats,
+                            msg.antenna_gps_hdop,
+                        ],
+                    });
+                    this.sitePosition = { lat: msg.latitude, lng: msg.longitude };
+                }
+            })
+                .catch((error) => {
+                this.receiverErrorCount++;
+                this.worker.postMessage({ type: "Error", data: "error.fetchingData", error });
             });
         }
         static GetMessageRate() {
