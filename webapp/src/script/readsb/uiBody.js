@@ -207,6 +207,24 @@ var READSB;
                     READSB.AppSettings.SiteLat = msg.data[0];
                     READSB.AppSettings.SiteLon = msg.data[1];
                     READSB.Input.SetSiteCoordinates();
+                    if ((msg.data[2] & 0x8000) === 0x8000) {
+                        document.getElementById("infoblockGpsStatus").classList.remove("no-gps-icon");
+                        document.getElementById("infoblockGpsStatus").classList.remove("gps-position-icon");
+                        document.getElementById("infoblockGpsStatus").classList.add("gps-no-position-icon");
+                    }
+                    else {
+                        document.getElementById("infoblockGpsStatus").classList.remove("gps-no-position-icon");
+                        document.getElementById("infoblockGpsStatus").classList.remove("gps-position-icon");
+                        document.getElementById("infoblockGpsStatus").classList.add("no-gps-icon");
+                        document.getElementById("infoblockGpsStatus").innerHTML = "";
+                    }
+                    if ((msg.data[2] & 0xE000) === 0xE000) {
+                        document.getElementById("infoblockGpsStatus").classList.replace("gps-no-position-icon", "gps-position-icon");
+                        document.getElementById("infoblockGpsStatus").innerHTML = `&nbsp;${msg.data[3]}/${msg.data[4] / 10}`;
+                    }
+                    else if ((msg.data[2] & 0xC000) === 0xC000) {
+                        document.getElementById("infoblockGpsStatus").classList.replace("gps-position-icon", "gps-no-position-icon");
+                    }
                     break;
                 case "Error":
                     if (msg.data === false) {

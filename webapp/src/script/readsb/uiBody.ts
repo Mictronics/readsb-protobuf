@@ -335,6 +335,27 @@ namespace READSB {
                     AppSettings.SiteLat = msg.data[0];
                     AppSettings.SiteLon = msg.data[1];
                     Input.SetSiteCoordinates();
+                    // Update GPS status in UI.
+                    // tslint:disable-next-line: no-bitwise
+                    if ((msg.data[2] & 0x8000) === 0x8000) {
+                        document.getElementById("infoblockGpsStatus").classList.remove("no-gps-icon");
+                        document.getElementById("infoblockGpsStatus").classList.remove("gps-position-icon");
+                        document.getElementById("infoblockGpsStatus").classList.add("gps-no-position-icon");
+                    } else {
+                        document.getElementById("infoblockGpsStatus").classList.remove("gps-no-position-icon");
+                        document.getElementById("infoblockGpsStatus").classList.remove("gps-position-icon");
+                        document.getElementById("infoblockGpsStatus").classList.add("no-gps-icon");
+                        document.getElementById("infoblockGpsStatus").innerHTML = "";
+                    }
+                    // tslint:disable-next-line: no-bitwise
+                    if ((msg.data[2] & 0xE000) === 0xE000) {
+                        // Show GPS position icon, satellite numbers and HDOP.
+                        document.getElementById("infoblockGpsStatus").classList.replace("gps-no-position-icon", "gps-position-icon");
+                        document.getElementById("infoblockGpsStatus").innerHTML = `&nbsp;${msg.data[3]}/${msg.data[4] / 10}`;
+                        // tslint:disable-next-line: no-bitwise
+                    } else if ((msg.data[2] & 0xC000) === 0xC000) {
+                        document.getElementById("infoblockGpsStatus").classList.replace("gps-position-icon", "gps-no-position-icon");
+                    }
                     break;
                 case "Error":
                     if (msg.data === false) {
