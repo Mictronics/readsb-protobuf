@@ -68,8 +68,8 @@ typedef enum {
     AIRCRAFT_TISB,
     AIRCRAFT_GPS,
     MEM_TOTAL,
-    MEM_USED,
     MEM_FREE,
+    MEM_USED,
     MEM_CACHED,
     MEM_BUFFERED
 } rrd_file_type_t;
