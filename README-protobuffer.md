@@ -8,7 +8,7 @@ about readsb operation to collectd for performance graphing.
 
 There are two ways to obtain the files:
 
- * By HTTP from the external webserver that readsb is feeding. The files are served from the data/ path, e.g. http://somehost/readsb/data/aircraft.pb
+ * By HTTP from the external webserver that readsb is feeding. The files are served from the data/ path, e.g. http://somehost/radar/data/aircraft.pb
  * As a file in the directory specified by --write-output on readsb command line. Default location in /run/readsb
 
 The HTTP versions are always up to date.
