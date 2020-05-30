@@ -67,7 +67,7 @@ if [[ $all_large == "yes" ]]; then
 	small="$options --width $lwidth --height $lheight"
 fi
 
-pre="sleep 0.01"
+pre="sleep 0.03"
 if ! [ -z "$2" ]; then
 	pre="sleep $2"
 fi
@@ -108,7 +108,7 @@ aircraft_graph() {
 		"DEF:tisb=$(check $2/aircraft_tisb.rrd):value:AVERAGE" \
 		"DEF:rgps=$(check $2/aircraft_gps.rrd):value:AVERAGE" \
 		"CDEF:tisb0=tisb,UN,0,tisb,IF" \
-		"CDEF:noloc=all,pos,-" \
+		"CDEF:noloc=all,pos,-,ABS" \
 		"CDEF:cgps=pos,tisb0,-,mlat,-" \
 		"VDEF:avgac=all,AVERAGE" \
 		"VDEF:maxac=all_max,MAXIMUM" \
@@ -893,7 +893,7 @@ system_graphs() {
 	disk_io_octets_graph ${DOCUMENTROOT}/system-disk_io_octets-$4.png /var/lib/collectd/rrd/$1/$disk "$3" "$4" "$5"
 	memory_graph ${DOCUMENTROOT}/system-memory-$4.png /var/lib/collectd/rrd/$1/readsb "$3" "$4" "$5"
 	network_graph ${DOCUMENTROOT}/system-network_bandwidth-$4.png /var/lib/collectd/rrd/$1 "$3" "$4" "$5"
-    temp_graph_fahrenheit ${DOCUMENTROOT}/system-temperature-fahrenheit-$4.png /var/lib/collectd/rrd/$1/table-$2 "$3" "$4" "$5"
+	temp_graph_fahrenheit ${DOCUMENTROOT}/system-temperature-fahrenheit-$4.png /var/lib/collectd/rrd/$1/table-$2 "$3" "$4" "$5"
 	temp_graph_celcius ${DOCUMENTROOT}/system-temperature-celsius-$4.png /var/lib/collectd/rrd/$1/table-$2 "$3" "$4" "$5"
 	#eth0_graph ${DOCUMENTROOT}/system-eth0_bandwidth-$4.png /var/lib/collectd/rrd/$1/$ether "$3" "$4" "$5"
 	#wlan0_graph ${DOCUMENTROOT}/system-wlan0_bandwidth-$4.png /var/lib/collectd/rrd/$1/$wifi "$3" "$4" "$5"
