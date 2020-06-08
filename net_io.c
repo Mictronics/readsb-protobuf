@@ -1410,7 +1410,7 @@ static int handleBeastCommand(struct client *c, char *p, int remote) {
  * @return Angular degree.
  */
 static double bam32ToDouble(uint32_t bam) {
-    return (double) (__bswap_32(bam) * 8.38190317153931E-08);
+    return (double) ((int32_t)__bswap_32(bam) * 8.38190317153931E-08);
 }
 
 //
