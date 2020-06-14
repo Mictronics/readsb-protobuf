@@ -28,6 +28,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
   * Fully support GNS HULC antenna, including its GPS.
   * Fix bug in handling bladeRF command line options.
   * Interrupt driven serial device handling removed.
+  * Clean up linkage of struct Modes. (via dump1090-fa)
   * Contribution wiedehopf:
     * Connection timed out: remove misleading explanation
     * keepalive: set and check for error in net_io.c instead of blindly doing it in anet.c
