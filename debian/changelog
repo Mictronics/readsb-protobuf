@@ -42,6 +42,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
     * Improved accept handling.
     * Improve altitude filter.
     * Show zero timestamps using viewadsb.
+    * Fix sleep sometimes lasting longer than intended.
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
 
