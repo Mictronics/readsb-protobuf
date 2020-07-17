@@ -163,7 +163,7 @@ static void modesInitConfig(void) {
     Modes.net_connector_delay = 30 * 1000;
     Modes.interactive_display_ttl = MODES_INTERACTIVE_DISPLAY_TTL;
     Modes.output_interval = 1000;
-    Modes.rx_location_accuracy = 1;
+    Modes.rx_location_accuracy = 2;
     Modes.maxRange = 1852 * 300; // 300NM default max range
     Modes.mode_ac_auto = 0;
     Modes.nfix_crc = 1;
