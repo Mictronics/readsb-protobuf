@@ -16,9 +16,9 @@ This is a personal, hobbyist project with no commercial background.
 
 ### Warning
 
-:exclamation: ** This version of readsb is not compatible with any prior version. **
+:exclamation: **This version of readsb is not compatible with any prior version.**
 
-:exclamation: ** This version of readsb is not compatible with any third party software or script that requires JSON output for statistical or aircraft data. **
+:exclamation: **This version of readsb is not compatible with any third party software or script that requires JSON output for statistical or aircraft data.**
 
 ### Push server support
 
