@@ -4,6 +4,9 @@ readsb generates several protocol buffer files with informaton about the receive
 and general statistics. These are used by the webapp, but could also be used by other things feeds stats
 about readsb operation to collectd for performance graphing.
 
+readsb with protocol buffer output is not compatible with any prior version. It is not compatible with any third party software
+or script that requires JSON output for statistical or aircraft data.
+
 ## Reading the protocol buffer files
 
 There are two ways to obtain the files:

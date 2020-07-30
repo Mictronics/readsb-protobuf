@@ -14,70 +14,17 @@ Saves up to 70% in storage space and bandwidth.
 ###### Disclaimer
 This is a personal, hobbyist project with no commercial background.
 
-## Modifications:
+### Warning
 
-* Full support [GNS HULC](https://www.gns-electronics.de/flight-information-for-avionics/) antenna, including GPS on M version.
-* Protocol buffer binaries output only.
-* Add receiver and system performance graphs.
-* Add statistics collector service with Round Robin Database .
-* Range polar plot available as map layer. Generated as server side statistics.
-* Storing and exchanging aircraft meta data using Protocol Buffer.
-* Light and dark theme.
-* Add max distance to stats.json.
-* Add VRS JSON network writer.
-* Implementation of non-blocking TCP connection.
-* BeastReduce output - Reduced message rate for non-physical aircraft data.
-* Aynchronous name resolution based on pthread.
-* Multi language in web application, supported so far: English, Deutsch, Pусский.
-* Uses I18next for internationalization.
-* Web application reworked and ported to Typescript. Moved to Leaflet map library.
-* Accept profiles to build package with individual or no receiver library dependencies.
-* Added bladeRF v2.0 Micro support (credits @kazazes)
-* Added bias tee option for supporting interfaces.
-* Calculate and show wind speed and direction for selected aircraft.
-* Show more mode-S parameters.
-* Added support for Analog Devices PlutoSDR (ADALM-PLUTO)
-* German DWD RADOLAN layer similar to NEXRAD.
-* Update source for aircraft metadata can be configured. Default is local readsb webserver but online
-  sources are possible, for example this Github repo. See config.js for details.
-* Backup and restore of browsers indexed database to/from local ZIP file.
-* Additional SkyVector layers. (requires API key)
-* Aircraft metadata stored in browsers indexed database can be modified through web form.
-* Added new map controls to maximise space for plane list and better handling on mobile devices.
-* Use GNU Argp for program help.
-* Added support for local connected Mode-S Beast via USB.
-* Added application manifest, HD icon and favicon. That allows to install readsb on home screen of a mobile
-  device and run as a standalone web application.
-  Icon source https://pixabay.com/en/airplane-aircraft-plane-sky-flying-34786/ Released under Creative Commons CC0.
-* Hover label over aircrafts on map. Mod by Al Kissack. See https://github.com/alkissack/Dump1090-OpenLayers3-html
-* Additional map layers. Mod by Al Kissack.
-* Allow highlighting of filtered aircrafts instead of removing them from list.
-* Added advanced filter option using VRS style menu.
-* Use already included jQuery-UI to make space saving sidebar for maximum aircraft list.
-* Link columns removed in aircraft table.
-* Additional column to indicate civil or military aircraft (requires special database).
-* Additional row color alert in case of interesting aircraft (requires special database).
-* Detailed aircraft model in selected block (requires special database).
-* Additional special squawks used in Germany. (Rettungshubschrauber, Bundespolizei etc.)
-* Additional aircraft operator database. Aircraft operator will be shown in selected block
-  and as flight ident tooltip in table.
-* Added basic support for feeding a single push server like VRS
-* Fixed memory leaks on exit
-* Optimized structure memory layout for minimum padding.
+:exclamation: ** This version of readsb is not compatible with any prior version. **
 
-:exclamation: **This project is using browsers indexed database for aircraft meta data storage. The database
-is loaded from server on version change, when empty or doesn't exists.**
-
-**Your browser may not support indexed database if it's disabled or you are browsing in private mode.
-To enable support in Firefox: Open URL 'about:config' search 'dom.indexedDB.enabled' set to 'true'.**
-
-*Note: In Android pre-loading the database takes a minute or two, so be patient. Don't stop the script.*
+:exclamation: ** This version of readsb is not compatible with any third party software or script that requires JSON output for statistical or aircraft data. **
 
 ### Push server support
 
-readsb tries to connect to a listening server, like a VRS push server.
+readsb tries to connect to a listening server, like a push server.
 
-For example feeding VRS at adsbexchange.com use the new parameters:
+For example feeding adsbexchange.com use the parameters:
 ```
 --net-connector feed.adsbexchange.com,30005,beast_out
 ```
