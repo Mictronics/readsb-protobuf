@@ -1,6 +1,5 @@
-readsb (4.0.0~dev) UNRELEASED; urgency=medium
+readsb (4.0.0) stable; urgency=medium
 
-  * In development
   * Version bump: v4.0.0 and later will use protocol buffer instead of JSON.
   * Add switch to activate trace details while mouse hovering along trace segments.
   * Add quick filter switch that shows only selected aircraft.
@@ -45,7 +44,7 @@ readsb (4.0.0~dev) UNRELEASED; urgency=medium
     * Show zero timestamps using viewadsb.
     * Fix sleep sometimes lasting longer than intended.
 
- -- Michael Wolf <michael@mictronics.de>  Fri, 14 Feb 2020 16:11:13 +0200
+ -- Michael Wolf <michael@mictronics.de>  Thu, 01 Aug 2020 09:30:00 +0200
 
 readsb (3.8.1) stable; urgency=medium
 
