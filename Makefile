@@ -1,5 +1,5 @@
 PROGNAME=readsb
-READSB_VERSION='v4.0.0'
+READSB_VERSION='v4.0.1'
 
 RTLSDR ?= no
 BLADERF ?= no

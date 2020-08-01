@@ -1,3 +1,9 @@
+readsb (4.0.1~dev) UNRELEASED; urgency=medium
+
+  * In development
+
+ -- Michael Wolf <michael@mictronics.de>  Sat, 01 Aug 2020 09:38:01 +0200
+
 readsb (4.0.0) stable; urgency=medium
 
   * Version bump: v4.0.0 and later will use protocol buffer instead of JSON.
