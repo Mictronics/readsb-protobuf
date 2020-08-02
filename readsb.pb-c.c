@@ -10,19 +10,19 @@
 void   aircraft_meta__nav_modes__init
                      (AircraftMeta__NavModes         *message)
 {
-  static AircraftMeta__NavModes init_value = AIRCRAFT_META__NAV_MODES__INIT;
+  static const AircraftMeta__NavModes init_value = AIRCRAFT_META__NAV_MODES__INIT;
   *message = init_value;
 }
 void   aircraft_meta__valid_source__init
                      (AircraftMeta__ValidSource         *message)
 {
-  static AircraftMeta__ValidSource init_value = AIRCRAFT_META__VALID_SOURCE__INIT;
+  static const AircraftMeta__ValidSource init_value = AIRCRAFT_META__VALID_SOURCE__INIT;
   *message = init_value;
 }
 void   aircraft_meta__init
                      (AircraftMeta         *message)
 {
-  static AircraftMeta init_value = AIRCRAFT_META__INIT;
+  static const AircraftMeta init_value = AIRCRAFT_META__INIT;
   *message = init_value;
 }
 size_t aircraft_meta__get_packed_size
@@ -59,13 +59,15 @@ void   aircraft_meta__free_unpacked
                      (AircraftMeta *message,
                       ProtobufCAllocator *allocator)
 {
+  if(!message)
+    return;
   assert(message->base.descriptor == &aircraft_meta__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   aircraft_history__init
                      (AircraftHistory         *message)
 {
-  static AircraftHistory init_value = AIRCRAFT_HISTORY__INIT;
+  static const AircraftHistory init_value = AIRCRAFT_HISTORY__INIT;
   *message = init_value;
 }
 size_t aircraft_history__get_packed_size
@@ -102,13 +104,15 @@ void   aircraft_history__free_unpacked
                      (AircraftHistory *message,
                       ProtobufCAllocator *allocator)
 {
+  if(!message)
+    return;
   assert(message->base.descriptor == &aircraft_history__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   aircrafts_update__init
                      (AircraftsUpdate         *message)
 {
-  static AircraftsUpdate init_value = AIRCRAFTS_UPDATE__INIT;
+  static const AircraftsUpdate init_value = AIRCRAFTS_UPDATE__INIT;
   *message = init_value;
 }
 size_t aircrafts_update__get_packed_size
@@ -145,13 +149,15 @@ void   aircrafts_update__free_unpacked
                      (AircraftsUpdate *message,
                       ProtobufCAllocator *allocator)
 {
+  if(!message)
+    return;
   assert(message->base.descriptor == &aircrafts_update__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   receiver__init
                      (Receiver         *message)
 {
-  static Receiver init_value = RECEIVER__INIT;
+  static const Receiver init_value = RECEIVER__INIT;
   *message = init_value;
 }
 size_t receiver__get_packed_size
@@ -188,13 +194,15 @@ void   receiver__free_unpacked
                      (Receiver *message,
                       ProtobufCAllocator *allocator)
 {
+  if(!message)
+    return;
   assert(message->base.descriptor == &receiver__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   statistic_entry__init
                      (StatisticEntry         *message)
 {
-  static StatisticEntry init_value = STATISTIC_ENTRY__INIT;
+  static const StatisticEntry init_value = STATISTIC_ENTRY__INIT;
   *message = init_value;
 }
 size_t statistic_entry__get_packed_size
@@ -231,19 +239,21 @@ void   statistic_entry__free_unpacked
                      (StatisticEntry *message,
                       ProtobufCAllocator *allocator)
 {
+  if(!message)
+    return;
   assert(message->base.descriptor == &statistic_entry__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
 void   statistics__polar_range_entry__init
                      (Statistics__PolarRangeEntry         *message)
 {
-  static Statistics__PolarRangeEntry init_value = STATISTICS__POLAR_RANGE_ENTRY__INIT;
+  static const Statistics__PolarRangeEntry init_value = STATISTICS__POLAR_RANGE_ENTRY__INIT;
   *message = init_value;
 }
 void   statistics__init
                      (Statistics         *message)
 {
-  static Statistics init_value = STATISTICS__INIT;
+  static const Statistics init_value = STATISTICS__INIT;
   *message = init_value;
 }
 size_t statistics__get_packed_size
@@ -280,6 +290,8 @@ void   statistics__free_unpacked
                      (Statistics *message,
                       ProtobufCAllocator *allocator)
 {
+  if(!message)
+    return;
   assert(message->base.descriptor == &statistics__descriptor);
   protobuf_c_message_free_unpacked ((ProtobufCMessage*)message, allocator);
 }
@@ -288,9 +300,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__nav_modes__field_descriptor
   {
     "autopilot",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta__NavModes, has_autopilot),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__NavModes, autopilot),
     NULL,
     NULL,
@@ -300,9 +312,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__nav_modes__field_descriptor
   {
     "vnav",
     2,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta__NavModes, has_vnav),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__NavModes, vnav),
     NULL,
     NULL,
@@ -312,9 +324,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__nav_modes__field_descriptor
   {
     "althold",
     3,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta__NavModes, has_althold),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__NavModes, althold),
     NULL,
     NULL,
@@ -324,9 +336,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__nav_modes__field_descriptor
   {
     "approach",
     4,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta__NavModes, has_approach),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__NavModes, approach),
     NULL,
     NULL,
@@ -336,9 +348,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__nav_modes__field_descriptor
   {
     "lnav",
     5,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta__NavModes, has_lnav),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__NavModes, lnav),
     NULL,
     NULL,
@@ -348,9 +360,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__nav_modes__field_descriptor
   {
     "tcas",
     6,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta__NavModes, has_tcas),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__NavModes, tcas),
     NULL,
     NULL,
@@ -391,9 +403,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "callsign",
     100,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_callsign),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, callsign),
     NULL,
     NULL,
@@ -403,9 +415,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "altitude",
     101,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_altitude),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, altitude),
     NULL,
     NULL,
@@ -415,9 +427,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "alt_geom",
     102,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_alt_geom),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, alt_geom),
     NULL,
     NULL,
@@ -427,9 +439,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "gs",
     103,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_gs),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, gs),
     NULL,
     NULL,
@@ -439,9 +451,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "ias",
     104,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_ias),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, ias),
     NULL,
     NULL,
@@ -451,9 +463,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "tas",
     105,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_tas),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, tas),
     NULL,
     NULL,
@@ -463,9 +475,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "mach",
     106,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_mach),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, mach),
     NULL,
     NULL,
@@ -475,9 +487,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "track",
     107,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_track),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, track),
     NULL,
     NULL,
@@ -487,9 +499,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "track_rate",
     108,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_track_rate),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, track_rate),
     NULL,
     NULL,
@@ -499,9 +511,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "roll",
     109,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_roll),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, roll),
     NULL,
     NULL,
@@ -511,9 +523,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "mag_heading",
     110,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_mag_heading),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, mag_heading),
     NULL,
     NULL,
@@ -523,9 +535,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "true_heading",
     111,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_true_heading),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, true_heading),
     NULL,
     NULL,
@@ -535,9 +547,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "baro_rate",
     112,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_baro_rate),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, baro_rate),
     NULL,
     NULL,
@@ -547,9 +559,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "geom_rate",
     113,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_geom_rate),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, geom_rate),
     NULL,
     NULL,
@@ -559,9 +571,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "squawk",
     114,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_squawk),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, squawk),
     NULL,
     NULL,
@@ -571,9 +583,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "emergency",
     115,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_emergency),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, emergency),
     NULL,
     NULL,
@@ -583,9 +595,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nav_qnh",
     116,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nav_qnh),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nav_qnh),
     NULL,
     NULL,
@@ -595,9 +607,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nav_altitude_mcp",
     117,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nav_altitude_mcp),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nav_altitude_mcp),
     NULL,
     NULL,
@@ -607,9 +619,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nav_altitude_fms",
     118,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nav_altitude_fms),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nav_altitude_fms),
     NULL,
     NULL,
@@ -619,9 +631,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nav_heading",
     119,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nav_heading),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nav_heading),
     NULL,
     NULL,
@@ -631,9 +643,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nav_modes",
     120,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nav_modes),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nav_modes),
     NULL,
     NULL,
@@ -643,9 +655,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "lat",
     121,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_lat),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, lat),
     NULL,
     NULL,
@@ -655,9 +667,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "lon",
     122,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_lon),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, lon),
     NULL,
     NULL,
@@ -667,9 +679,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nic",
     123,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nic),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nic),
     NULL,
     NULL,
@@ -679,9 +691,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "rc",
     124,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_rc),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, rc),
     NULL,
     NULL,
@@ -691,9 +703,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nic_baro",
     125,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nic_baro),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nic_baro),
     NULL,
     NULL,
@@ -703,9 +715,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nac_p",
     126,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nac_p),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nac_p),
     NULL,
     NULL,
@@ -715,9 +727,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "nac_v",
     127,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_nac_v),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, nac_v),
     NULL,
     NULL,
@@ -727,9 +739,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "sil",
     128,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_sil),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, sil),
     NULL,
     NULL,
@@ -739,9 +751,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "sil_type",
     129,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_sil_type),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, sil_type),
     NULL,
     NULL,
@@ -751,9 +763,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "gva",
     130,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_gva),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, gva),
     NULL,
     NULL,
@@ -763,9 +775,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "sda",
     131,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_sda),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, sda),
     NULL,
     NULL,
@@ -775,9 +787,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__valid_source__field_descrip
   {
     "wind",
     132,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta__ValidSource, has_wind),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta__ValidSource, wind),
     NULL,
     NULL,
@@ -993,9 +1005,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "addr",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_addr),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, addr),
     NULL,
     NULL,
@@ -1005,21 +1017,21 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "flight",
     2,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
     offsetof(AircraftMeta, flight),
     NULL,
-    NULL,
+    &protobuf_c_empty_string,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
     "squawk",
     3,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_squawk),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, squawk),
     NULL,
     NULL,
@@ -1029,9 +1041,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "category",
     4,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_category),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, category),
     NULL,
     NULL,
@@ -1041,9 +1053,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "alt_baro",
     5,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_alt_baro),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, alt_baro),
     NULL,
     NULL,
@@ -1053,9 +1065,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "mag_heading",
     6,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_mag_heading),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, mag_heading),
     NULL,
     NULL,
@@ -1065,9 +1077,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "ias",
     7,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_ias),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, ias),
     NULL,
     NULL,
@@ -1077,9 +1089,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "lat",
     8,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_DOUBLE,
-    offsetof(AircraftMeta, has_lat),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, lat),
     NULL,
     NULL,
@@ -1089,9 +1101,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "lon",
     9,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_DOUBLE,
-    offsetof(AircraftMeta, has_lon),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, lon),
     NULL,
     NULL,
@@ -1101,9 +1113,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "messages",
     10,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(AircraftMeta, has_messages),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, messages),
     NULL,
     NULL,
@@ -1113,9 +1125,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "seen",
     11,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(AircraftMeta, has_seen),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, seen),
     NULL,
     NULL,
@@ -1125,9 +1137,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "rssi",
     12,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(AircraftMeta, has_rssi),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, rssi),
     NULL,
     NULL,
@@ -1137,9 +1149,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "distance",
     13,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_distance),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, distance),
     NULL,
     NULL,
@@ -1149,9 +1161,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "air_ground",
     15,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_ENUM,
-    offsetof(AircraftMeta, has_air_ground),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, air_ground),
     &aircraft_meta__air_ground__descriptor,
     NULL,
@@ -1161,9 +1173,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "alt_geom",
     20,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_alt_geom),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, alt_geom),
     NULL,
     NULL,
@@ -1173,9 +1185,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "baro_rate",
     21,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_baro_rate),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, baro_rate),
     NULL,
     NULL,
@@ -1185,9 +1197,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "geom_rate",
     22,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_geom_rate),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, geom_rate),
     NULL,
     NULL,
@@ -1197,9 +1209,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "gs",
     23,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_gs),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, gs),
     NULL,
     NULL,
@@ -1209,9 +1221,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "tas",
     24,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_tas),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, tas),
     NULL,
     NULL,
@@ -1221,9 +1233,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "mach",
     25,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(AircraftMeta, has_mach),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, mach),
     NULL,
     NULL,
@@ -1233,9 +1245,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "true_heading",
     26,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_true_heading),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, true_heading),
     NULL,
     NULL,
@@ -1245,9 +1257,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "track",
     27,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_track),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, track),
     NULL,
     NULL,
@@ -1257,9 +1269,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "track_rate",
     28,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(AircraftMeta, has_track_rate),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, track_rate),
     NULL,
     NULL,
@@ -1269,9 +1281,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "roll",
     29,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(AircraftMeta, has_roll),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, roll),
     NULL,
     NULL,
@@ -1281,9 +1293,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nav_qnh",
     30,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(AircraftMeta, has_nav_qnh),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nav_qnh),
     NULL,
     NULL,
@@ -1293,9 +1305,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nav_altitude_mcp",
     31,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_nav_altitude_mcp),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nav_altitude_mcp),
     NULL,
     NULL,
@@ -1305,9 +1317,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nav_altitude_fms",
     32,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_nav_altitude_fms),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nav_altitude_fms),
     NULL,
     NULL,
@@ -1317,9 +1329,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nav_heading",
     33,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_nav_heading),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nav_heading),
     NULL,
     NULL,
@@ -1329,9 +1341,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nic",
     34,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_nic),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nic),
     NULL,
     NULL,
@@ -1341,9 +1353,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "rc",
     35,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_rc),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, rc),
     NULL,
     NULL,
@@ -1353,9 +1365,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "version",
     36,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftMeta, has_version),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, version),
     NULL,
     NULL,
@@ -1365,9 +1377,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nic_baro",
     37,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_nic_baro),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nic_baro),
     NULL,
     NULL,
@@ -1377,9 +1389,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nac_p",
     38,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_nac_p),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nac_p),
     NULL,
     NULL,
@@ -1389,9 +1401,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nac_v",
     39,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_nac_v),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, nac_v),
     NULL,
     NULL,
@@ -1401,9 +1413,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "sil",
     40,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_sil),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, sil),
     NULL,
     NULL,
@@ -1413,9 +1425,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "seen_pos",
     41,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_seen_pos),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, seen_pos),
     NULL,
     NULL,
@@ -1425,9 +1437,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "alert",
     42,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta, has_alert),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, alert),
     NULL,
     NULL,
@@ -1437,9 +1449,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "spi",
     43,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_BOOL,
-    offsetof(AircraftMeta, has_spi),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, spi),
     NULL,
     NULL,
@@ -1449,9 +1461,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "gva",
     44,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_gva),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, gva),
     NULL,
     NULL,
@@ -1461,9 +1473,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "sda",
     45,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_sda),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, sda),
     NULL,
     NULL,
@@ -1473,9 +1485,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "declination",
     46,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_DOUBLE,
-    offsetof(AircraftMeta, has_declination),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, declination),
     NULL,
     NULL,
@@ -1485,9 +1497,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "wind_speed",
     47,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_wind_speed),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, wind_speed),
     NULL,
     NULL,
@@ -1497,9 +1509,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "wind_direction",
     48,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftMeta, has_wind_direction),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, wind_direction),
     NULL,
     NULL,
@@ -1509,9 +1521,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "addr_type",
     100,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_ENUM,
-    offsetof(AircraftMeta, has_addr_type),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, addr_type),
     &aircraft_meta__addr_type__descriptor,
     NULL,
@@ -1521,9 +1533,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "emergency",
     101,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_ENUM,
-    offsetof(AircraftMeta, has_emergency),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, emergency),
     &aircraft_meta__emergency__descriptor,
     NULL,
@@ -1533,9 +1545,9 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "sil_type",
     102,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_ENUM,
-    offsetof(AircraftMeta, has_sil_type),
+    0,   /* quantifier_offset */
     offsetof(AircraftMeta, sil_type),
     &aircraft_meta__sil_type__descriptor,
     NULL,
@@ -1545,7 +1557,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "nav_modes",
     150,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(AircraftMeta, nav_modes),
@@ -1557,7 +1569,7 @@ static const ProtobufCFieldDescriptor aircraft_meta__field_descriptors[48] =
   {
     "valid_source",
     151,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(AircraftMeta, valid_source),
@@ -1646,9 +1658,9 @@ static const ProtobufCFieldDescriptor aircraft_history__field_descriptors[4] =
   {
     "addr",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(AircraftHistory, has_addr),
+    0,   /* quantifier_offset */
     offsetof(AircraftHistory, addr),
     NULL,
     NULL,
@@ -1658,9 +1670,9 @@ static const ProtobufCFieldDescriptor aircraft_history__field_descriptors[4] =
   {
     "alt_baro",
     5,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_INT32,
-    offsetof(AircraftHistory, has_alt_baro),
+    0,   /* quantifier_offset */
     offsetof(AircraftHistory, alt_baro),
     NULL,
     NULL,
@@ -1670,9 +1682,9 @@ static const ProtobufCFieldDescriptor aircraft_history__field_descriptors[4] =
   {
     "lat",
     8,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_DOUBLE,
-    offsetof(AircraftHistory, has_lat),
+    0,   /* quantifier_offset */
     offsetof(AircraftHistory, lat),
     NULL,
     NULL,
@@ -1682,9 +1694,9 @@ static const ProtobufCFieldDescriptor aircraft_history__field_descriptors[4] =
   {
     "lon",
     9,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_DOUBLE,
-    offsetof(AircraftHistory, has_lon),
+    0,   /* quantifier_offset */
     offsetof(AircraftHistory, lon),
     NULL,
     NULL,
@@ -1725,9 +1737,9 @@ static const ProtobufCFieldDescriptor aircrafts_update__field_descriptors[4] =
   {
     "now",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(AircraftsUpdate, has_now),
+    0,   /* quantifier_offset */
     offsetof(AircraftsUpdate, now),
     NULL,
     NULL,
@@ -1737,9 +1749,9 @@ static const ProtobufCFieldDescriptor aircrafts_update__field_descriptors[4] =
   {
     "messages",
     2,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(AircraftsUpdate, has_messages),
+    0,   /* quantifier_offset */
     offsetof(AircraftsUpdate, messages),
     NULL,
     NULL,
@@ -1803,21 +1815,21 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "version",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_STRING,
     0,   /* quantifier_offset */
     offsetof(Receiver, version),
     NULL,
-    NULL,
+    &protobuf_c_empty_string,
     0,             /* flags */
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
     "refresh",
     2,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(Receiver, has_refresh),
+    0,   /* quantifier_offset */
     offsetof(Receiver, refresh),
     NULL,
     NULL,
@@ -1827,9 +1839,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "latitude",
     3,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_DOUBLE,
-    offsetof(Receiver, has_latitude),
+    0,   /* quantifier_offset */
     offsetof(Receiver, latitude),
     NULL,
     NULL,
@@ -1839,9 +1851,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "longitude",
     4,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_DOUBLE,
-    offsetof(Receiver, has_longitude),
+    0,   /* quantifier_offset */
     offsetof(Receiver, longitude),
     NULL,
     NULL,
@@ -1851,9 +1863,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "altitude",
     5,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Receiver, has_altitude),
+    0,   /* quantifier_offset */
     offsetof(Receiver, altitude),
     NULL,
     NULL,
@@ -1863,9 +1875,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "antenna_serial",
     6,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Receiver, has_antenna_serial),
+    0,   /* quantifier_offset */
     offsetof(Receiver, antenna_serial),
     NULL,
     NULL,
@@ -1875,9 +1887,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "antenna_flags",
     7,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Receiver, has_antenna_flags),
+    0,   /* quantifier_offset */
     offsetof(Receiver, antenna_flags),
     NULL,
     NULL,
@@ -1887,9 +1899,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "antenna_gps_sats",
     8,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Receiver, has_antenna_gps_sats),
+    0,   /* quantifier_offset */
     offsetof(Receiver, antenna_gps_sats),
     NULL,
     NULL,
@@ -1899,9 +1911,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "antenna_gps_hdop",
     9,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Receiver, has_antenna_gps_hdop),
+    0,   /* quantifier_offset */
     offsetof(Receiver, antenna_gps_hdop),
     NULL,
     NULL,
@@ -1911,9 +1923,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "antenna_reserved",
     14,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Receiver, has_antenna_reserved),
+    0,   /* quantifier_offset */
     offsetof(Receiver, antenna_reserved),
     NULL,
     NULL,
@@ -1923,9 +1935,9 @@ static const ProtobufCFieldDescriptor receiver__field_descriptors[11] =
   {
     "history",
     15,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Receiver, has_history),
+    0,   /* quantifier_offset */
     offsetof(Receiver, history),
     NULL,
     NULL,
@@ -1972,9 +1984,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "start",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_start),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, start),
     NULL,
     NULL,
@@ -1984,9 +1996,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "stop",
     2,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_stop),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, stop),
     NULL,
     NULL,
@@ -1996,9 +2008,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "messages",
     3,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_messages),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, messages),
     NULL,
     NULL,
@@ -2008,9 +2020,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "max_distance_in_metres",
     4,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(StatisticEntry, has_max_distance_in_metres),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, max_distance_in_metres),
     NULL,
     NULL,
@@ -2020,9 +2032,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "max_distance_in_nautical_miles",
     5,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(StatisticEntry, has_max_distance_in_nautical_miles),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, max_distance_in_nautical_miles),
     NULL,
     NULL,
@@ -2032,9 +2044,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "altitude_suppressed",
     6,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_altitude_suppressed),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, altitude_suppressed),
     NULL,
     NULL,
@@ -2044,9 +2056,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "tracks_new",
     7,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_tracks_new),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, tracks_new),
     NULL,
     NULL,
@@ -2056,9 +2068,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "tracks_single_message",
     8,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_tracks_single_message),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, tracks_single_message),
     NULL,
     NULL,
@@ -2068,9 +2080,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "tracks_with_position",
     9,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_tracks_with_position),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, tracks_with_position),
     NULL,
     NULL,
@@ -2080,9 +2092,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "tracks_mlat_position",
     10,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_tracks_mlat_position),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, tracks_mlat_position),
     NULL,
     NULL,
@@ -2092,9 +2104,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "tracks_tisb_position",
     11,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_tracks_tisb_position),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, tracks_tisb_position),
     NULL,
     NULL,
@@ -2104,9 +2116,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpu_demod",
     20,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpu_demod),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpu_demod),
     NULL,
     NULL,
@@ -2116,9 +2128,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpu_reader",
     21,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpu_reader),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpu_reader),
     NULL,
     NULL,
@@ -2128,9 +2140,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpu_background",
     22,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpu_background),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpu_background),
     NULL,
     NULL,
@@ -2140,9 +2152,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_surface",
     40,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_surface),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_surface),
     NULL,
     NULL,
@@ -2152,9 +2164,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_airborne",
     41,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_airborne),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_airborne),
     NULL,
     NULL,
@@ -2164,9 +2176,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_global_ok",
     42,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_global_ok),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_global_ok),
     NULL,
     NULL,
@@ -2176,9 +2188,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_global_bad",
     43,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_global_bad),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_global_bad),
     NULL,
     NULL,
@@ -2188,9 +2200,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_global_range",
     44,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_global_range),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_global_range),
     NULL,
     NULL,
@@ -2200,9 +2212,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_global_speed",
     45,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_global_speed),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_global_speed),
     NULL,
     NULL,
@@ -2212,9 +2224,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_global_skipped",
     46,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_global_skipped),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_global_skipped),
     NULL,
     NULL,
@@ -2224,9 +2236,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_local_ok",
     47,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_local_ok),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_local_ok),
     NULL,
     NULL,
@@ -2236,9 +2248,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_local_aircraft_relative",
     48,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_local_aircraft_relative),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_local_aircraft_relative),
     NULL,
     NULL,
@@ -2248,9 +2260,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_local_receiver_relative",
     49,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_local_receiver_relative),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_local_receiver_relative),
     NULL,
     NULL,
@@ -2260,9 +2272,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_local_skipped",
     50,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_local_skipped),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_local_skipped),
     NULL,
     NULL,
@@ -2272,9 +2284,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_local_range",
     51,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_local_range),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_local_range),
     NULL,
     NULL,
@@ -2284,9 +2296,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_local_speed",
     52,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_local_speed),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_local_speed),
     NULL,
     NULL,
@@ -2296,9 +2308,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "cpr_filtered",
     53,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_cpr_filtered),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, cpr_filtered),
     NULL,
     NULL,
@@ -2308,9 +2320,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "remote_modeac",
     70,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_remote_modeac),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, remote_modeac),
     NULL,
     NULL,
@@ -2320,9 +2332,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "remote_modes",
     71,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_remote_modes),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, remote_modes),
     NULL,
     NULL,
@@ -2332,9 +2344,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "remote_bad",
     72,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_remote_bad),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, remote_bad),
     NULL,
     NULL,
@@ -2344,9 +2356,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "remote_unknown_icao",
     73,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_remote_unknown_icao),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, remote_unknown_icao),
     NULL,
     NULL,
@@ -2356,9 +2368,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "remote_accepted",
     74,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_remote_accepted),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, remote_accepted),
     NULL,
     NULL,
@@ -2368,9 +2380,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_samples_processed",
     90,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_samples_processed),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_samples_processed),
     NULL,
     NULL,
@@ -2380,9 +2392,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_samples_dropped",
     91,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_samples_dropped),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_samples_dropped),
     NULL,
     NULL,
@@ -2392,9 +2404,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_modeac",
     92,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_modeac),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_modeac),
     NULL,
     NULL,
@@ -2404,9 +2416,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_modes",
     93,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_modes),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_modes),
     NULL,
     NULL,
@@ -2416,9 +2428,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_bad",
     94,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_bad),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_bad),
     NULL,
     NULL,
@@ -2428,9 +2440,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_unknown_icao",
     95,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_unknown_icao),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_unknown_icao),
     NULL,
     NULL,
@@ -2440,9 +2452,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_strong_signals",
     96,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_strong_signals),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_strong_signals),
     NULL,
     NULL,
@@ -2452,9 +2464,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_signal",
     97,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(StatisticEntry, has_local_signal),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_signal),
     NULL,
     NULL,
@@ -2464,9 +2476,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_noise",
     98,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(StatisticEntry, has_local_noise),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_noise),
     NULL,
     NULL,
@@ -2476,9 +2488,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_peak_signal",
     99,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_FLOAT,
-    offsetof(StatisticEntry, has_local_peak_signal),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_peak_signal),
     NULL,
     NULL,
@@ -2488,9 +2500,9 @@ static const ProtobufCFieldDescriptor statistic_entry__field_descriptors[44] =
   {
     "local_accepted",
     100,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT64,
-    offsetof(StatisticEntry, has_local_accepted),
+    0,   /* quantifier_offset */
     offsetof(StatisticEntry, local_accepted),
     NULL,
     NULL,
@@ -2573,9 +2585,9 @@ static const ProtobufCFieldDescriptor statistics__polar_range_entry__field_descr
   {
     "key",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Statistics__PolarRangeEntry, has_key),
+    0,   /* quantifier_offset */
     offsetof(Statistics__PolarRangeEntry, key),
     NULL,
     NULL,
@@ -2585,9 +2597,9 @@ static const ProtobufCFieldDescriptor statistics__polar_range_entry__field_descr
   {
     "value",
     2,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_UINT32,
-    offsetof(Statistics__PolarRangeEntry, has_value),
+    0,   /* quantifier_offset */
     offsetof(Statistics__PolarRangeEntry, value),
     NULL,
     NULL,
@@ -2624,7 +2636,7 @@ static const ProtobufCFieldDescriptor statistics__field_descriptors[6] =
   {
     "latest",
     1,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(Statistics, latest),
@@ -2636,7 +2648,7 @@ static const ProtobufCFieldDescriptor statistics__field_descriptors[6] =
   {
     "last_1min",
     2,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(Statistics, last_1min),
@@ -2648,7 +2660,7 @@ static const ProtobufCFieldDescriptor statistics__field_descriptors[6] =
   {
     "last_5min",
     3,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(Statistics, last_5min),
@@ -2660,7 +2672,7 @@ static const ProtobufCFieldDescriptor statistics__field_descriptors[6] =
   {
     "last_15min",
     4,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(Statistics, last_15min),
@@ -2672,7 +2684,7 @@ static const ProtobufCFieldDescriptor statistics__field_descriptors[6] =
   {
     "total",
     5,
-    PROTOBUF_C_LABEL_OPTIONAL,
+    PROTOBUF_C_LABEL_NONE,
     PROTOBUF_C_TYPE_MESSAGE,
     0,   /* quantifier_offset */
     offsetof(Statistics, total),
