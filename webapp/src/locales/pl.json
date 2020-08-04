@@ -140,7 +140,7 @@
     "siteLat": "Szer. geograf. stacji",
     "siteLon": "Dług. geograf. stacji",
     "siteLatHelp": "DD.MMMMM",
-    "siteCirclesDist": "Site Circles Distances",
+    "siteCirclesDist": "Odległość okręgów od punktu",
     "siteCirclesDistHelp": "Wartości oddzielone przecinkami",
     "databaseLegend": "Baza Danych samolotów",
     "darkTheme": "Ciemny Wygląd",
