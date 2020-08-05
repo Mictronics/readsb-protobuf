@@ -263,7 +263,7 @@ struct _Modes { // Internal state
     unsigned first_filled_buffer; // Entry in mag_buffers that has valid data and will be demodulated next. If equal to next_free_buffer, there is no unprocessed data.
     unsigned trailing_samples; // extra trailing samples in magnitude buffers
     int exit; // Exit from the main loop when true
-    int dc_filter; // should we apply a DC filter?
+    int8_t dc_filter; // should we apply a DC filter?
     uint32_t show_only; // Only show messages from this ICAO
     int fd; // --ifile option file descriptor
     input_format_t input_format; // --iformat option
@@ -288,24 +288,24 @@ struct _Modes { // Internal state
 
     // Configuration
     Receiver receiver; // Receiver configuration
-    int nfix_crc; // Number of crc bit error(s) to correct
-    int check_crc; // Only display messages with good CRC
-    int raw; // Raw output format
-    int mode_ac; // Enable decoding of SSR Modes A & C
-    int mode_ac_auto; // allow toggling of A/C by Beast commands
-    int debug; // Debugging mode
-    int net; // Enable networking
-    int net_only; // Enable just networking
+    int8_t nfix_crc; // Number of crc bit error(s) to correct
+    int8_t check_crc; // Only display messages with good CRC
+    int8_t raw; // Raw output format
+    int8_t mode_ac; // Enable decoding of SSR Modes A & C
+    int8_t mode_ac_auto; // allow toggling of A/C by Beast commands
+    int8_t debug; // Debugging mode
+    int8_t net; // Enable networking
+    int8_t net_only; // Enable just networking
     int net_output_flush_size; // Minimum Size of output data
-    uint64_t net_connector_delay;
+    uint32_t net_connector_delay;
     int filter_persistence; // Maximum number of consecutive implausible positions from global CPR to invalidate a known position.
-    uint64_t net_heartbeat_interval; // TCP heartbeat interval (milliseconds)
-    uint64_t net_output_flush_interval; // Maximum interval (in milliseconds) between outputwrites
+    uint32_t net_heartbeat_interval; // TCP heartbeat interval (milliseconds)
+    uint32_t net_output_flush_interval; // Maximum interval (in milliseconds) between outputwrites
     double maxRange; // Absolute maximum decoding range, in *metres*
     double sample_rate; // actual sample rate in use (in hz)
-    uint64_t interactive_display_ttl; // Interactive mode: TTL display
+    uint32_t interactive_display_ttl; // Interactive mode: TTL display
     uint64_t stats; // Interval (millis) between stats dumps,
-    uint64_t output_interval; // Interval between rewriting the aircraft file, in milliseconds; also the advertised map refresh interval
+    uint32_t output_interval; // Interval between rewriting the aircraft file, in milliseconds; also the advertised map refresh interval
     char *net_output_raw_ports; // List of raw output TCP ports
     char *net_input_raw_ports; // List of raw input TCP ports
     char *net_output_sbs_ports; // List of SBS output TCP ports
@@ -313,9 +313,9 @@ struct _Modes { // Internal state
     char *net_input_beast_ports; // List of Beast input TCP ports
     char *net_output_beast_ports; // List of Beast output TCP ports
     char *net_output_beast_reduce_ports; // List of Beast output TCP ports
-    uint64_t net_output_beast_reduce_interval; // Position update interval for data reduction
+    uint32_t net_output_beast_reduce_interval; // Position update interval for data reduction
     char *net_output_vrs_ports; // List of VRS output TCP ports
-    int basestation_is_mlat; // Basestation input is from MLAT
+    int8_t basestation_is_mlat; // Basestation input is from MLAT
     struct net_connector **net_connectors; // client connectors
     int net_connectors_count;
     int net_connectors_size;
@@ -323,25 +323,22 @@ struct _Modes { // Internal state
     char *net_bind_address; // Bind address
     char *output_dir; // Path to output base directory, or NULL not to write any output.
     char *beast_serial; // Modes-S Beast device path
-#if defined(__arm__)
-    uint32_t padding;
-#endif
     int net_sndbuf_size; // TCP output buffer size (64Kb * 2^n)
-    int net_verbatim; // if true, send the original message, not the CRC-corrected one
-    int forward_mlat; // allow forwarding of mlat messages to output ports
-    int quiet; // Suppress stdout
-    int interactive; // Interactive mode
-    int stats_polar_range; // Collect/show a range histogram?
-    int onlyaddr; // Print only ICAO addresses
-    int metric; // Use metric units
-    int use_gnss; // Use GNSS altitudes with H suffix ("HAE", though it isn't always) when available
-    int mlat; // Use Beast ascii format for raw data output, i.e. @...; iso *...;
-    int rx_location_accuracy; // Accuracy of location metadata: 0=none, 1=approx, 2=exact
+    int8_t net_verbatim; // if true, send the original message, not the CRC-corrected one
+    int8_t forward_mlat; // allow forwarding of mlat messages to output ports
+    int8_t quiet; // Suppress stdout
+    int8_t interactive; // Interactive mode
+    int8_t stats_polar_range; // Collect/show a range histogram?
+    int8_t onlyaddr; // Print only ICAO addresses
+    int8_t metric; // Use metric units
+    int8_t use_gnss; // Use GNSS altitudes with H suffix ("HAE", though it isn't always) when available
+    int8_t mlat; // Use Beast ascii format for raw data output, i.e. @...; iso *...;
+    int8_t rx_location_accuracy; // Accuracy of location metadata: 0=none, 1=approx, 2=exact
     int aircraft_history_next;
     int aircraft_history_full;
     int stats_latest_1min;
     int bUserFlags; // Flags relating to the user details
-    int biastee;
+    int8_t biastee;
     struct stats stats_current;
     struct stats stats_alltime;
     struct stats stats_periodic;
