@@ -70,6 +70,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <stdint.h>
+#include <stdatomic.h>
 #include <errno.h>
 #include <unistd.h>
 #include <math.h>
@@ -254,7 +255,7 @@ struct _Modes { // Internal state
     unsigned first_free_buffer; // Entry in mag_buffers that will next be filled with input.
     unsigned first_filled_buffer; // Entry in mag_buffers that has valid data and will be demodulated next. If equal to next_free_buffer, there is no unprocessed data.
     unsigned trailing_samples; // extra trailing samples in magnitude buffers
-    int exit; // Exit from the main loop when true
+    atomic_int exit; // Exit from the main loop when true
     int8_t dc_filter; // should we apply a DC filter?
     uint32_t show_only; // Only show messages from this ICAO
     int fd; // --ifile option file descriptor
