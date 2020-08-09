@@ -42,7 +42,7 @@ void plutosdrInitConfig() {
     PLUTOSDR.converter = NULL;
     PLUTOSDR.converter_state = NULL;
     PLUTOSDR.uri = NULL;
-    PLUTOSDR.network = strdup("pluto.local");
+    PLUTOSDR.network = NULL;
 }
 
 bool plutosdrHandleOption(int argc, char *argv) {
@@ -58,6 +58,7 @@ bool plutosdrHandleOption(int argc, char *argv) {
 }
 
 bool plutosdrOpen() {
+    PLUTOSDR.network = strdup("pluto.local");
     PLUTOSDR.ctx = iio_create_default_context();
     if (PLUTOSDR.ctx == NULL && PLUTOSDR.uri != NULL) {
         PLUTOSDR.ctx = iio_create_context_from_uri(PLUTOSDR.uri);
