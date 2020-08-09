@@ -1,6 +1,7 @@
 readsb (4.0.1~dev) UNRELEASED; urgency=medium
 
   * In development
+  * Fix timeout and multiple event RRD update in readsbrrd.
   * Update bootstrap v4.5.0.
 
  -- Michael Wolf <michael@mictronics.de>  Sat, 01 Aug 2020 09:38:01 +0200
