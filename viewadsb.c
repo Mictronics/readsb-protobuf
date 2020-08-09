@@ -110,8 +110,6 @@ static void view1090InitConfig(void) {
 
 static void view1090Init(void) {
 
-    pthread_mutex_init(&Modes.data_mutex, NULL);
-    pthread_cond_init(&Modes.data_cond, NULL);
     // Validate the users Lat/Lon home location inputs
     if ((Modes.receiver.latitude > 90.0) // Latitude must be -90 to +90
             || (Modes.receiver.latitude < -90.0) // and

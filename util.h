@@ -51,6 +51,9 @@ int64_t receiveclock_ms_elapsed(uint64_t t1, uint64_t t2);
 struct timespec;
 void normalize_timespec(struct timespec *ts);
 
+/* Find the absolute system time that is `timeout_ms` milliseconds in the future, and store that in *ts */
+void get_deadline(uint32_t timeout_ms, struct timespec *ts);
+
 /* record current CPU time in start_time */
 void start_cpu_timing(struct timespec *start_time);
 

@@ -287,7 +287,6 @@ static void *handle_bladerf_samples(struct bladerf *dev,
         size_t num_samples,
         void *user_data) {
     static uint64_t nextTimestamp = 0;
-    static bool dropping = false;
 
     MODES_NOTUSED(dev);
     MODES_NOTUSED(stream);
@@ -298,37 +297,19 @@ static void *handle_bladerf_samples(struct bladerf *dev,
     // record initial time for later sys timestamp calculation
     uint64_t entryTimestamp = mstime();
 
-    pthread_mutex_lock(&Modes.data_mutex);
     if (Modes.exit) {
-        pthread_mutex_unlock(&Modes.data_mutex);
         return BLADERF_STREAM_SHUTDOWN;
     }
 
-    unsigned next_free_buffer = (Modes.first_free_buffer + 1) % MODES_MAG_BUFFERS;
-    struct mag_buf *outbuf = &Modes.mag_buffers[Modes.first_free_buffer];
-    struct mag_buf *lastbuf = &Modes.mag_buffers[(Modes.first_free_buffer + MODES_MAG_BUFFERS - 1) % MODES_MAG_BUFFERS];
-    unsigned free_bufs = (Modes.first_filled_buffer - next_free_buffer + MODES_MAG_BUFFERS) % MODES_MAG_BUFFERS;
-
-    if (free_bufs == 0 || (dropping && free_bufs < MODES_MAG_BUFFERS / 2)) {
+    struct mag_buf *outbuf = fifo_acquire(/* don't wait */ 0);
+    if (!outbuf) {
         // FIFO is full. Drop this block.
-        dropping = true;
-        pthread_mutex_unlock(&Modes.data_mutex);
         return samples;
-    }
-
-    dropping = false;
-    pthread_mutex_unlock(&Modes.data_mutex);
-
-    // Copy trailing data from last block (or reset if not valid)
-    if (outbuf->dropped == 0) {
-        memcpy(outbuf->data, lastbuf->data + lastbuf->length, Modes.trailing_samples * sizeof (uint16_t));
-    } else {
-        memset(outbuf->data, 0, Modes.trailing_samples * sizeof (uint16_t));
     }
 
     // start handling metadata blocks
     outbuf->dropped = 0;
-    outbuf->length = 0;
+    outbuf->validLength = outbuf->overlap;
     outbuf->mean_level = outbuf->mean_power = 0;
 
     unsigned blocks_processed = 0;
@@ -367,8 +348,9 @@ static void *handle_bladerf_samples(struct bladerf *dev,
             // dropped data or lost sync. start again.
             if (metadata_timestamp > nextTimestamp)
                 outbuf->dropped += (metadata_timestamp - nextTimestamp);
-            outbuf->dropped += outbuf->length;
-            outbuf->length = 0;
+            outbuf->dropped += outbuf->validLength - outbuf->overlap;
+            outbuf->validLength = outbuf->overlap;
+            outbuf->flags |= MAGBUF_DISCONTINUOUS;
             blocks_processed = 0;
             outbuf->mean_level = outbuf->mean_power = 0;
             nextTimestamp = metadata_timestamp;
@@ -384,8 +366,8 @@ static void *handle_bladerf_samples(struct bladerf *dev,
 
         // Convert a block of data
         double mean_level, mean_power;
-        BladeRF.converter(sample_data, &outbuf->data[Modes.trailing_samples + outbuf->length], samples_per_block, BladeRF.converter_state, &mean_level, &mean_power);
-        outbuf->length += samples_per_block;
+        BladeRF.converter(sample_data, &outbuf->data[outbuf->validLength], samples_per_block, BladeRF.converter_state, &mean_level, &mean_power);
+        outbuf->validLength += samples_per_block;
         outbuf->mean_level += mean_level;
         outbuf->mean_power += mean_power;
         nextTimestamp += samples_per_block * BladeRF.decimation;
@@ -397,25 +379,17 @@ static void *handle_bladerf_samples(struct bladerf *dev,
 
     if (blocks_processed) {
         // Get the approx system time for the start of this block
-        unsigned block_duration = 1e3 * outbuf->length / Modes.sample_rate;
+        unsigned block_duration = 1e3 * (outbuf->validLength - outbuf->overlap) / Modes.sample_rate;
         outbuf->sysTimestamp = entryTimestamp - block_duration;
 
         outbuf->mean_level /= blocks_processed;
         outbuf->mean_power /= blocks_processed;
 
-        // Push the new data to the demodulation thread
-        pthread_mutex_lock(&Modes.data_mutex);
-
         // accumulate CPU while holding the mutex, and restart measurement
         end_cpu_timing(&thread_cpu, &Modes.reader_cpu_accumulator);
         start_cpu_timing(&thread_cpu);
-
-        Modes.mag_buffers[next_free_buffer].dropped = 0;
-        Modes.mag_buffers[next_free_buffer].length = 0; // just in case
-        Modes.first_free_buffer = next_free_buffer;
-
-        pthread_cond_signal(&Modes.data_cond);
-        pthread_mutex_unlock(&Modes.data_mutex);
+        // Push the new data to the demodulation thread
+        fifo_enqueue(outbuf);
     }
 
     return samples;

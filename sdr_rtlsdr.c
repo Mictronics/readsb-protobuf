@@ -248,90 +248,63 @@ bool rtlsdrOpen(void) {
 static struct timespec rtlsdr_thread_cpu;
 
 static void rtlsdrCallback(unsigned char *buf, uint32_t len, void *ctx) {
-    struct mag_buf *outbuf;
-    struct mag_buf *lastbuf;
-    uint32_t slen;
-    unsigned next_free_buffer;
-    unsigned free_bufs;
-    unsigned block_duration;
-
-    static int dropping = 0;
+    static unsigned dropped = 0;
     static uint64_t sampleCounter = 0;
 
     MODES_NOTUSED(ctx);
 
-    // Lock the data buffer variables before accessing them
-    pthread_mutex_lock(&Modes.data_mutex);
     if (Modes.exit) {
         rtlsdr_cancel_async(RTLSDR.dev); // ask our caller to exit
-    }
-
-    next_free_buffer = (Modes.first_free_buffer + 1) % MODES_MAG_BUFFERS;
-    outbuf = &Modes.mag_buffers[Modes.first_free_buffer];
-    lastbuf = &Modes.mag_buffers[(Modes.first_free_buffer + MODES_MAG_BUFFERS - 1) % MODES_MAG_BUFFERS];
-    free_bufs = (Modes.first_filled_buffer - next_free_buffer + MODES_MAG_BUFFERS) % MODES_MAG_BUFFERS;
-
-    // Paranoia! Unlikely, but let's go for belt and suspenders here
-
-    if (len != MODES_RTL_BUF_SIZE) {
-        fprintf(stderr, "weirdness: rtlsdr gave us a block with an unusual size (got %u bytes, expected %u bytes)\n",
-                (unsigned) len, (unsigned) MODES_RTL_BUF_SIZE);
-
-        if (len > MODES_RTL_BUF_SIZE) {
-            // wat?! Discard the start.
-            unsigned discard = (len - MODES_RTL_BUF_SIZE + 1) / 2;
-            outbuf->dropped += discard;
-            buf += discard * 2;
-            len -= discard * 2;
-        }
-    }
-
-    slen = len / 2; // Drops any trailing odd sample, that's OK
-
-    if (free_bufs == 0 || (dropping && free_bufs < MODES_MAG_BUFFERS / 2)) {
-        // FIFO is full. Drop this block.
-        dropping = 1;
-        outbuf->dropped += slen;
-        sampleCounter += slen;
-        pthread_mutex_unlock(&Modes.data_mutex);
         return;
     }
 
-    dropping = 0;
-    pthread_mutex_unlock(&Modes.data_mutex);
+    unsigned samples_read = len / 2; // Drops any trailing odd sample, not much else we can do there
+    if (!samples_read) {
+        return; // that wasn't useful
+    }
+
+    struct mag_buf *outbuf = fifo_acquire(0 /* don't wait */);
+    if (!outbuf) {
+        // FIFO is full. Drop this block.
+        dropped += samples_read;
+        sampleCounter += samples_read;
+        return;
+    }
+
+    outbuf->flags = 0;
+
+    if (dropped) {
+        // We previously dropped some samples due to no buffers being available
+        outbuf->flags |= MAGBUF_DISCONTINUOUS;
+        outbuf->dropped = dropped;
+    }
 
     // Compute the sample timestamp and system timestamp for the start of the block
     outbuf->sampleTimestamp = sampleCounter * 12e6 / Modes.sample_rate;
-    sampleCounter += slen;
+    sampleCounter += samples_read;
 
     // Get the approx system time for the start of this block
-    block_duration = 1e3 * slen / Modes.sample_rate;
+    uint64_t block_duration = 1e3 * samples_read / Modes.sample_rate;
     outbuf->sysTimestamp = mstime() - block_duration;
 
-    // Copy trailing data from last block (or reset if not valid)
-    if (outbuf->dropped == 0) {
-        memcpy(outbuf->data, lastbuf->data + lastbuf->length, Modes.trailing_samples * sizeof (uint16_t));
-    } else {
-        memset(outbuf->data, 0, Modes.trailing_samples * sizeof (uint16_t));
+    // Convert the new data
+    unsigned to_convert = samples_read;
+    if (to_convert + outbuf->overlap > outbuf->totalLength) {
+        // how did that happen?
+        to_convert = outbuf->totalLength - outbuf->overlap;
+        dropped = samples_read - to_convert;
     }
 
-    // Convert the new data
-    outbuf->length = slen;
-    RTLSDR.converter(buf, &outbuf->data[Modes.trailing_samples], slen, RTLSDR.converter_state, &outbuf->mean_level, &outbuf->mean_power);
+    RTLSDR.converter(buf, &outbuf->data[outbuf->overlap], to_convert, RTLSDR.converter_state, &outbuf->mean_level, &outbuf->mean_power);
 
-    // Push the new data to the demodulation thread
-    pthread_mutex_lock(&Modes.data_mutex);
-
-    Modes.mag_buffers[next_free_buffer].dropped = 0;
-    Modes.mag_buffers[next_free_buffer].length = 0; // just in case
-    Modes.first_free_buffer = next_free_buffer;
+    outbuf->validLength = outbuf->overlap + to_convert;
 
     // accumulate CPU while holding the mutex, and restart measurement
     end_cpu_timing(&rtlsdr_thread_cpu, &Modes.reader_cpu_accumulator);
     start_cpu_timing(&rtlsdr_thread_cpu);
 
-    pthread_cond_signal(&Modes.data_cond);
-    pthread_mutex_unlock(&Modes.data_mutex);
+    // Push to the demodulation thread
+    fifo_enqueue(outbuf);
 }
 
 void rtlsdrRun() {
