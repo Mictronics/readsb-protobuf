@@ -449,6 +449,8 @@ static void cleanup_and_exit(int code) {
         }
     }
 
+    fifo_destroy();
+    
     crcCleanupTables();
 
     cleanupNetwork();
