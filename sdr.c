@@ -150,9 +150,35 @@ bool sdrOpen() {
 
 void sdrRun() {
     set_thread_name("readsb-sdr");
+
+    pthread_mutex_lock(&Modes.reader_cpu_mutex);
+    Modes.reader_cpu_accumulator.tv_sec = 0;
+    Modes.reader_cpu_accumulator.tv_nsec = 0;
+    start_cpu_timing(&Modes.reader_cpu_start);
+    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
+
     current_handler()->run();
+
+    pthread_mutex_lock(&Modes.reader_cpu_mutex);
+    end_cpu_timing(&Modes.reader_cpu_start, &Modes.reader_cpu_accumulator);
+    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
 }
 
 void sdrClose() {
+    pthread_mutex_destroy(&Modes.reader_cpu_mutex);
     current_handler()->close();
+}
+
+void sdrMonitor() {
+    pthread_mutex_lock(&Modes.reader_cpu_mutex);
+    update_cpu_timing(&Modes.reader_cpu_start, &Modes.reader_cpu_accumulator);
+    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
+}
+
+void sdrUpdateCPUTime(struct timespec *addTo) {
+    pthread_mutex_lock(&Modes.reader_cpu_mutex);
+    add_timespecs(&Modes.reader_cpu_accumulator, addTo, addTo);
+    Modes.reader_cpu_accumulator.tv_sec = 0;
+    Modes.reader_cpu_accumulator.tv_nsec = 0;
+    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
 }

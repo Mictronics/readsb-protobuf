@@ -319,7 +319,9 @@ struct _Modes { // Internal state
     struct stats stats_5min;
     struct stats stats_15min;
     struct range_stats stats_range;
-    struct timespec reader_cpu_accumulator; // CPU time used by the reader thread, copied out and reset by the main thread under the mutex
+    struct timespec reader_cpu_accumulator; // accumulated CPU time used by the reader thread
+    struct timespec reader_cpu_start; // start time for the last reader thread CPU measurement
+    pthread_mutex_t reader_cpu_mutex; // mutex protecting reader_cpu_accumulator
 };
 
 extern struct _Modes Modes;

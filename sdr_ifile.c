@@ -170,9 +170,6 @@ void ifileRun() {
 
     bool eof = false;
 
-    struct timespec thread_cpu;
-    start_cpu_timing(&thread_cpu);
-
     uint64_t sampleCounter = 0;
 
     while (!Modes.exit && !eof) {
@@ -184,6 +181,8 @@ void ifileRun() {
             continue;
         }
 
+        sdrMonitor();
+        
         // Get the system time for the start of this block
         outbuf->sysTimestamp = mstime();
 
@@ -223,10 +222,6 @@ void ifileRun() {
             normalize_timespec(&next_buffer_delivery);
         }
 
-        // Push the new data to the main thread
-        // accumulate CPU while holding the mutex, and restart measurement
-        end_cpu_timing(&thread_cpu, &Modes.reader_cpu_accumulator);
-        start_cpu_timing(&thread_cpu);
         // Push the new data to the FIFO
         fifo_enqueue(outbuf);
         sampleCounter += samples_read;

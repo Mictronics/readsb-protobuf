@@ -318,7 +318,6 @@ error:
     return false;
 }
 
-static struct timespec thread_cpu;
 static unsigned timeouts = 0;
 
 static void *handle_bladerf_samples(struct bladerf *dev,
@@ -338,6 +337,8 @@ static void *handle_bladerf_samples(struct bladerf *dev,
     // record initial time for later sys timestamp calculation
     uint64_t entryTimestamp = mstime();
 
+    sdrMonitor();
+    
     if (Modes.exit) {
         return BLADERF_STREAM_SHUTDOWN;
     }
@@ -427,10 +428,6 @@ static void *handle_bladerf_samples(struct bladerf *dev,
         outbuf->mean_level /= blocks_processed;
         outbuf->mean_power /= blocks_processed;
 
-        // accumulate CPU while holding the mutex, and restart measurement
-        end_cpu_timing(&thread_cpu, &Modes.reader_cpu_accumulator);
-        start_cpu_timing(&thread_cpu);
-
         fifo_enqueue(outbuf);
     }
 
@@ -471,8 +468,6 @@ void ubladeRFRun() {
         fprintf(stderr, "bladerf_enable_module(RX, true) failed: %s\n", bladerf_strerror(status));
         goto out;
     }
-
-    start_cpu_timing(&thread_cpu);
 
     timeouts = 0; // reset to zero when we get a callback with some data
 retry:

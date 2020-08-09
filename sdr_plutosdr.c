@@ -37,8 +37,6 @@ static struct {
     char *network;
 } PLUTOSDR;
 
-static struct timespec thread_cpu;
-
 void plutosdrInitConfig() {
     PLUTOSDR.readbuf = NULL;
     PLUTOSDR.converter = NULL;
@@ -164,6 +162,8 @@ static void plutosdrCallback(int16_t *buf, uint32_t len) {
     static unsigned dropped = 0;
     static uint64_t sampleCounter = 0;
 
+    sdrMonitor();
+    
     unsigned samples_read = len / 2; // Drops any trailing odd sample, not much else we can do there
     if (!samples_read)
         return; // that wasn't useful
@@ -202,8 +202,6 @@ static void plutosdrCallback(int16_t *buf, uint32_t len) {
     PLUTOSDR.converter(buf, &outbuf->data[outbuf->overlap], to_convert, PLUTOSDR.converter_state, &outbuf->mean_level, &outbuf->mean_power);
     outbuf->validLength = outbuf->overlap + to_convert;
 
-    end_cpu_timing(&thread_cpu, &Modes.reader_cpu_accumulator);
-    start_cpu_timing(&thread_cpu);
     // Push to the demodulation thread
     fifo_enqueue(outbuf);
 }
@@ -215,7 +213,6 @@ void plutosdrRun() {
     if (!PLUTOSDR.dev) {
         return;
     }
-    start_cpu_timing(&thread_cpu);
 
     while (!Modes.exit) {
         int16_t *p = PLUTOSDR.readbuf;

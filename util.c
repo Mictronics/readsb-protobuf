@@ -109,6 +109,16 @@ int64_t end_cpu_timing(const struct timespec *start_time, struct timespec *add_t
             - ((int64_t) start_time->tv_sec * 1000UL + start_time->tv_nsec / 1000000UL);
 }
 
+/* add difference between start_time and the current CPU time to add_to; then store the current CPU time in start_time */
+void update_cpu_timing(struct timespec *start_time, struct timespec *add_to) {
+    struct timespec end_time;
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &end_time);
+    add_to->tv_sec += end_time.tv_sec - start_time->tv_sec;
+    add_to->tv_nsec += end_time.tv_nsec - start_time->tv_nsec;
+    normalize_timespec(add_to);
+    *start_time = end_time;
+}
+
 /* Set trhead name if supported. */
 void set_thread_name(const char *name) {
 #if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 12)

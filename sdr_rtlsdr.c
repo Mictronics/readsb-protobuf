@@ -258,14 +258,14 @@ bool rtlsdrOpen(void) {
     return true;
 }
 
-static struct timespec rtlsdr_thread_cpu;
-
 static void rtlsdrCallback(unsigned char *buf, uint32_t len, void *ctx) {
     static unsigned dropped = 0;
     static uint64_t sampleCounter = 0;
 
     MODES_NOTUSED(ctx);
 
+    sdrMonitor();
+    
     if (Modes.exit) {
         rtlsdr_cancel_async(RTLSDR.dev); // ask our caller to exit
         return;
@@ -317,10 +317,6 @@ static void rtlsdrCallback(unsigned char *buf, uint32_t len, void *ctx) {
     RTLSDR.converter(buf, &outbuf->data[outbuf->overlap], to_convert, RTLSDR.converter_state, &outbuf->mean_level, &outbuf->mean_power);
     outbuf->validLength = outbuf->overlap + to_convert;
 
-    // accumulate CPU while holding the mutex, and restart measurement
-    end_cpu_timing(&rtlsdr_thread_cpu, &Modes.reader_cpu_accumulator);
-    start_cpu_timing(&rtlsdr_thread_cpu);
-
     // Push to the demodulation thread
     fifo_enqueue(outbuf);
 }
@@ -329,8 +325,6 @@ void rtlsdrRun() {
     if (!RTLSDR.dev) {
         return;
     }
-
-    start_cpu_timing(&rtlsdr_thread_cpu);
 
     rtlsdr_read_async(RTLSDR.dev, rtlsdrCallback, NULL, MODES_RTL_BUFFERS, MODES_RTL_BUF_SIZE);
     if (!Modes.exit) {

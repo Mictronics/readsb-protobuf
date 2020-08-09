@@ -333,6 +333,9 @@ static void backgroundTasks(void) {
         interactiveShowData();
     }
 
+    // copy out reader CPU time and reset it
+    sdrUpdateCPUTime(&Modes.stats_current.reader_cpu);
+
     // always update end time so it is current when requests arrive
     Modes.stats_current.end = mstime();
 
