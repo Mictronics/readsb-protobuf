@@ -574,7 +574,7 @@ int main(int argc, char** argv) {
     // Run this until we get a termination signal.
     while (!readsbrrd_exit) {
         clock_gettime(CLOCK_REALTIME, &ts);
-        ts.tv_sec += rrd.step;
+        ts.tv_sec += (__time_t)(rrd.step * 1.5);
         update_from_system();
         update_from_stats(stats_file_path);
         update_from_aircrafts(aircrafts_file_path);
