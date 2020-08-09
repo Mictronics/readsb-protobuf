@@ -369,10 +369,6 @@ struct client *serviceConnect(struct net_connector *con) {
         con->next_reconnect = mstime() + 100;
     }
 
-    if (Modes.debug & MODES_DEBUG_NET) {
-        fprintf(stderr, "%s: Attempting connection to %s port %s ...\n", con->service->descr, con->address, con->port);
-    }
-
     fd = anetTcpNonBlockConnectAddr(Modes.aneterr, con->try_addr);
     if (fd == ANET_ERR) {
         fprintf(stderr, "%s: Connection to %s%s port %s failed: %s\n",
@@ -566,9 +562,6 @@ static uint64_t modesAcceptClients(uint64_t now) {
                             c->port, sizeof (c->port),
                             NI_NUMERICHOST | NI_NUMERICSERV);
 
-                    if (Modes.debug & MODES_DEBUG_NET) {
-                        fprintf(stderr, "%s: New connection from %s port %s (fd %d)\n", c->service->descr, c->host, c->port, fd);
-                    }
                     if (anetTcpKeepAlive(Modes.aneterr, fd) != ANET_OK) {
                         fprintf(stderr, "%s: Unable to set keepalive on connection from %s port %s (fd %d)\n", c->service->descr, c->host, c->port, fd);
                     }
@@ -2456,9 +2449,6 @@ static void modesReadFromClient(struct client *c) {
             if (c->con) {
                 fprintf(stderr, "%s: Remote server disconnected: %s port %s (fd %d, SendQ %d, RecvQ %d)\n",
                         c->service->descr, c->con->address, c->con->port, c->fd, c->sendq_len, c->buflen);
-            } else if (Modes.debug & MODES_DEBUG_NET) {
-                fprintf(stderr, "%s: Listen client disconnected: %s port %s (fd %d, SendQ %d, RecvQ %d)\n",
-                        c->service->descr, c->host, c->port, c->fd, c->sendq_len, c->buflen);
             }
             modesCloseClient(c);
             return;

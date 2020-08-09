@@ -59,7 +59,6 @@ static struct argp_option options[] = {
     {"onlyaddr", OptOnlyAddr, 0, 0, "Show only ICAO addresses", 1},
     {"gnss", OptGnss, 0, 0, "Show altitudes as GNSS when available", 1},
     {"snip", OptSnip, "<level>", 0, "Strip IQ file removing samples < level", 1},
-    {"debug", OptDebug, "<flags>", 0, "Debug mode (verbose), see flags below", 1},
     {"quiet", OptQuiet, 0, 0, "Disable output. Use for daemon applications", 1},
     {"dcfilter", OptDcFilter, 0, 0, "Apply a 1Hz DC filter to input data (requires more CPU)", 1},
     {"enable-biastee", OptBiasTee, 0, 0, "Enable bias tee on supporting interfaces (default: disabled)", 1},

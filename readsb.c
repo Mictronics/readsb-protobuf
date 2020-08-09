@@ -84,14 +84,7 @@ const char doc[] = "readsb Mode-S/ADSB/TIS Receiver   "
         "SC16Q11_TABLE_BITS=" stringize(SC16Q11_TABLE_BITS)
 #undef stringize
 #endif
-"\v"
-"Debug mode flags: d = Log frames decoded with errors\n"
-"                  D = Log frames decoded with zero errors\n"
-"                  c = Log frames with bad CRC\n"
-"                  C = Log frames with good CRC\n"
-"                  p = Log frames with bad preamble\n"
-"                  n = Log network debugging info\n"
-"                  j = Log frames to frames.js, loadable by debug.html\n";
+"\v";
 
 #undef _stringize
 #undef verstring
@@ -687,31 +680,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case OptNetConnectorDelay:
             Modes.net_connector_delay = (uint64_t) 1000 * atof(arg);
-            break;
-        case OptDebug:
-            while (*arg) {
-                switch (*arg) {
-                    case 'D': Modes.debug |= MODES_DEBUG_DEMOD;
-                        break;
-                    case 'd': Modes.debug |= MODES_DEBUG_DEMODERR;
-                        break;
-                    case 'C': Modes.debug |= MODES_DEBUG_GOODCRC;
-                        break;
-                    case 'c': Modes.debug |= MODES_DEBUG_BADCRC;
-                        break;
-                    case 'p': Modes.debug |= MODES_DEBUG_NOPREAMBLE;
-                        break;
-                    case 'n': Modes.debug |= MODES_DEBUG_NET;
-                        break;
-                    case 'j': Modes.debug |= MODES_DEBUG_JS;
-                        break;
-                    default:
-                        fprintf(stderr, "Unknown debugging flag: %c\n", *arg);
-                        return 1;
-                        break;
-                }
-                arg++;
-            }
             break;
 #ifdef ENABLE_RTLSDR
         case OptRtlSdrEnableAgc:

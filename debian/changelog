@@ -1,6 +1,7 @@
 readsb (4.0.1~dev) UNRELEASED; urgency=medium
 
   * In development
+  * Removed obsolete debug options.
   * Fix timeout and multiple event RRD update in readsbrrd.
   * Update bootstrap v4.5.0.
 

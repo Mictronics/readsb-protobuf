@@ -190,14 +190,6 @@ typedef enum {
 
 #define MODES_NON_ICAO_ADDRESS       (1<<24) // Set on addresses to indicate they are not ICAO addresses
 
-#define MODES_DEBUG_DEMOD (1<<0)
-#define MODES_DEBUG_DEMODERR (1<<1)
-#define MODES_DEBUG_BADCRC (1<<2)
-#define MODES_DEBUG_GOODCRC (1<<3)
-#define MODES_DEBUG_NOPREAMBLE (1<<4)
-#define MODES_DEBUG_NET (1<<5)
-#define MODES_DEBUG_JS (1<<6)
-
 #define MODES_INTERACTIVE_REFRESH_TIME 250      // Milliseconds
 #define MODES_INTERACTIVE_DISPLAY_TTL 60000     // Delete from display after 60 seconds
 
@@ -293,7 +285,6 @@ struct _Modes { // Internal state
     int8_t raw; // Raw output format
     int8_t mode_ac; // Enable decoding of SSR Modes A & C
     int8_t mode_ac_auto; // allow toggling of A/C by Beast commands
-    int8_t debug; // Debugging mode
     int8_t net; // Enable networking
     int8_t net_only; // Enable just networking
     int net_output_flush_size; // Minimum Size of output data
@@ -591,7 +582,6 @@ enum {
     OptMetric,
     OptGnss,
     OptSnip,
-    OptDebug,
     OptQuiet,
     OptShowOnly,
     OptOutputDir,
