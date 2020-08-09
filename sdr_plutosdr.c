@@ -161,7 +161,6 @@ bool plutosdrOpen() {
 }
 
 static void plutosdrCallback(int16_t *buf, uint32_t len) {
-    static int was_odd = 0;
     static unsigned dropped = 0;
     static uint64_t sampleCounter = 0;
 
@@ -177,13 +176,6 @@ static void plutosdrCallback(int16_t *buf, uint32_t len) {
         return;
     }
 
-    if (was_odd) {
-        ++buf;
-        --len;
-        ++outbuf->dropped;
-    }
-
-    was_odd = (len & 1);
     outbuf->flags = 0;
 
     if (dropped) {
