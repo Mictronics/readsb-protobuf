@@ -247,7 +247,7 @@ bool rtlsdrOpen(void) {
 
 static struct timespec rtlsdr_thread_cpu;
 
-void rtlsdrCallback(unsigned char *buf, uint32_t len, void *ctx) {
+static void rtlsdrCallback(unsigned char *buf, uint32_t len, void *ctx) {
     struct mag_buf *outbuf;
     struct mag_buf *lastbuf;
     uint32_t slen;
