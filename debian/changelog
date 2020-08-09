@@ -1,6 +1,7 @@
 readsb (4.0.1~dev) UNRELEASED; urgency=medium
 
   * In development
+  * Fix missing declarations.
   * Set SDR thread name if supported.
   * Removed obsolete debug options.
   * Fix timeout and multiple event RRD update in readsbrrd.

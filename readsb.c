@@ -267,7 +267,7 @@ static int thread_to_core(int core_id) {
 // without caring about data acquisition
 //
 
-void *readerThreadEntryPoint(void *arg) {
+static void *readerThreadEntryPoint(void *arg) {
     MODES_NOTUSED(arg);
 
     // Try sticking this thread to core 3

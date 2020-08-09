@@ -1285,7 +1285,7 @@ void modesQueueOutput(struct modesMessage *mm, struct aircraft *a) {
 
 // Decode a little-endian IEEE754 float (binary32)
 
-float ieee754_binary32_le_to_float(uint8_t *data) {
+static float ieee754_binary32_le_to_float(uint8_t *data) {
     double sign = (data[3] & 0x80) ? -1.0 : 1.0;
     int16_t raw_exponent = ((data[3] & 0x7f) << 1) | ((data[2] & 0x80) >> 7);
     uint32_t raw_significand = ((data[2] & 0x7f) << 16) | (data[1] << 8) | data[0];

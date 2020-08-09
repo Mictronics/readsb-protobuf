@@ -74,6 +74,7 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include "geomag.h"
 
 #define NaN log(-1.0)
 

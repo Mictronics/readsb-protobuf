@@ -76,7 +76,7 @@ char *bo_connect_port = "30005";
 // ============================= Utility functions ==========================
 //
 
-void sigintHandler(int dummy) {
+static void sigintHandler(int dummy) {
     MODES_NOTUSED(dummy);
     signal(SIGINT, SIG_DFL); // reset signal handler - bit extra safety
     Modes.exit = 1; // Signal to threads that we are done
