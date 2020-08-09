@@ -149,7 +149,8 @@ bool sdrOpen() {
 }
 
 void sdrRun() {
-    return current_handler()->run();
+    set_thread_name("readsb-sdr");
+    current_handler()->run();
 }
 
 void sdrClose() {

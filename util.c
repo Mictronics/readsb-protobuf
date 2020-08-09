@@ -100,5 +100,14 @@ int64_t end_cpu_timing(const struct timespec *start_time, struct timespec *add_t
     add_to->tv_nsec += end_time.tv_nsec - start_time->tv_nsec;
     normalize_timespec(add_to);
     return ((int64_t) end_time.tv_sec * 1000UL + end_time.tv_nsec / 1000000UL)
-        - ((int64_t) start_time->tv_sec * 1000UL + start_time->tv_nsec / 1000000UL);
+            - ((int64_t) start_time->tv_sec * 1000UL + start_time->tv_nsec / 1000000UL);
+}
+
+/* Set trhead name if supported. */
+void set_thread_name(const char *name) {
+#if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 12)
+    pthread_setname_np(pthread_self(), name);
+#else
+    MODES_NOTUSED(name);
+#endif
 }
