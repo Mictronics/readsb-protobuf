@@ -543,6 +543,7 @@ static void update_from_aircrafts(const char* file_name) {
  */
 int main(int argc, char** argv) {
     struct timespec ts;
+    int semcnt, r;
     char stats_file_path[PATH_MAX];
     char aircrafts_file_path[PATH_MAX];
     snprintf(stats_file_path, PATH_MAX, "%s/stats.pb", DEFAULT_READSB_RUN_PATH);
@@ -570,16 +571,24 @@ int main(int argc, char** argv) {
         fprintf(stderr, "error creating stats semaphore: %s\n", strerror(errno));
         cleanup_and_exit(4);
     }
-    
+
     // Run this until we get a termination signal.
     while (!readsbrrd_exit) {
         clock_gettime(CLOCK_REALTIME, &ts);
-        ts.tv_sec += (__time_t)(rrd.step * 1.5);
-        update_from_system();
-        update_from_stats(stats_file_path);
-        update_from_aircrafts(aircrafts_file_path);
+        ts.tv_sec += (__time_t) (rrd.step * 1.5);
+        r = sem_getvalue(stats_semptr, &semcnt);
+        // Avoid frequent updates when more than one event is queued in semaphore.
+        // Update only one very last event.
+        if (r == 0 && semcnt == 0) {
+            update_from_system();
+            update_from_stats(stats_file_path);
+            update_from_aircrafts(aircrafts_file_path);
+        }
         // Wait for new statistic from readsb process, or read anyway on timeout.
-        sem_timedwait(stats_semptr, &ts);
+        r = sem_timedwait(stats_semptr, &ts);
+        if (r != 0) {
+            fprintf(stderr, "error sem_timedwait: %s, semcnt: %d\n", strerror(errno), semcnt);
+        }
     }
 
     cleanup_and_exit(EXIT_SUCCESS);
