@@ -186,7 +186,7 @@ cpu_graph_readsb() {
 		$airspy_graph1 \
 		$airspy_graph2 \
 		$airspy_graph3 \
-		"AREA:readerp#008000:USB" \
+		"AREA:readerp#008000:SDR Reader" \
 		"AREA:backgroundp#00C000:Other:STACK" \
 		"AREA:demodp#$GREEN:Demodulator\c:STACK" \
 		"COMMENT: \n" \
