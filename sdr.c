@@ -145,6 +145,7 @@ static sdr_handler *current_handler() {
 }
 
 bool sdrOpen() {
+    pthread_mutex_init(&Modes.reader_cpu_mutex, NULL);
     return current_handler()->open();
 }
 
