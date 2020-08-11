@@ -102,7 +102,7 @@ typedef struct {
     char *path;
 } rrd_struct;
 
-const char *argp_program_bug_address = "https://github.com/Mictronics/readsbgraphs";
+const char *argp_program_bug_address = "https://github.com/Mictronics/readsb-protobuf";
 static error_t parse_opt(int key, char *arg, struct argp_state *state);
 
 static struct argp_option options[] = {
