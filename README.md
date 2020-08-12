@@ -121,7 +121,7 @@ libad9361 and libiio.
 After installation, either by manual building or from package, you need to configure readsb service and web application.
 
 Edit `/etc/default/readsb` to set the service options, device type, network ports etc. 
-The option DELAY_OPTION delays the startup by the given time in seconds. This is necessary for systems without a RTC with backup battery (e.g. Raspberry Pi) to start the service after the current time is synchronized by ntpd or similar.
+The option `DELAY_OPTION` delays the startup by the given time in seconds. This is necessary for systems without a RTC with backup battery (e.g. Raspberry Pi) to start the service after the current time is synchronized by ntpd or similar.
 
 The web application is configured by editing `/usr/share/readsb/html/script/readsb/defaults.js` or `src/script/readsb/default.ts`
 prior to compilation. Several settings can be modified through web browser. These settings are stored inside browser indexedDB
