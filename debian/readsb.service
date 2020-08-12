@@ -15,7 +15,7 @@ ExecStartPre=/bin/sleep $DELAY_OPTION
 ExecStart=/usr/bin/readsb \
  $RECEIVER_OPTIONS $DECODER_OPTIONS $NET_OPTIONS $OUTPUT_OPTIONS \
  --write-output /run/readsb --quiet
-Type=simple
+Type=oneshot
 Restart=on-failure
 RestartSec=30
 Nice=-5
