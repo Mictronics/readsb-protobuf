@@ -240,6 +240,13 @@ static void rrd_update_file(rrd_file_type_t type, float value) {
     snprintf(rrd.argv[2], 256, "%" PRIu64 ":%.0f", rrd.time_update, value);
     rrd.argc += 1;
     rrd.argv[3] = NULL;
+    
+    // System time must be at least one second in future than last RRD timestamp.
+    if ((uint64_t)rrd_last_r(rrd.argv[1]) >= rrd.time_update) {
+        fprintf(stderr, "error system time in past compared to last entry in %s.\n", rrd_files[type].name);
+        return;
+    }
+    
     rrd.status = rrd_update(rrd.argc, rrd.argv);
     if (rrd_test_error()) {
         fprintf(stderr, "%s\n", rrd_get_error());
@@ -251,9 +258,6 @@ static void rrd_update_file(rrd_file_type_t type, float value) {
  * Update rrd files with system informations.
  */
 static void update_from_system() {
-    // Get update time as unix epoch
-    rrd.time_update = (uint64_t) time(NULL);
-
     // Read system memory info
     float mem_total = 0;
     float mem_cached = 0;
@@ -580,6 +584,8 @@ int main(int argc, char** argv) {
         // Avoid frequent updates when more than one event is queued in semaphore.
         // Update only one very last event.
         if (r == 0 && semcnt == 0) {
+            // Get update time as unix epoch
+            rrd.time_update = (uint64_t)time(NULL);
             update_from_system();
             update_from_stats(stats_file_path);
             update_from_aircrafts(aircrafts_file_path);

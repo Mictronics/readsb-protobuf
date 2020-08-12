@@ -37,14 +37,12 @@ static struct {
     char *network;
 } PLUTOSDR;
 
-static struct timespec thread_cpu;
-
 void plutosdrInitConfig() {
     PLUTOSDR.readbuf = NULL;
     PLUTOSDR.converter = NULL;
     PLUTOSDR.converter_state = NULL;
     PLUTOSDR.uri = NULL;
-    PLUTOSDR.network = strdup("pluto.local");
+    PLUTOSDR.network = NULL;
 }
 
 bool plutosdrHandleOption(int argc, char *argv) {
@@ -60,6 +58,7 @@ bool plutosdrHandleOption(int argc, char *argv) {
 }
 
 bool plutosdrOpen() {
+    PLUTOSDR.network = strdup("pluto.local");
     PLUTOSDR.ctx = iio_create_default_context();
     if (PLUTOSDR.ctx == NULL && PLUTOSDR.uri != NULL) {
         PLUTOSDR.ctx = iio_create_context_from_uri(PLUTOSDR.uri);
@@ -161,81 +160,51 @@ bool plutosdrOpen() {
 }
 
 static void plutosdrCallback(int16_t *buf, uint32_t len) {
-    struct mag_buf *outbuf;
-    struct mag_buf *lastbuf;
-    uint32_t slen;
-    unsigned next_free_buffer;
-    unsigned free_bufs;
-    unsigned block_duration;
-
-    static int was_odd = 0;
-    static int dropping = 0;
+    static unsigned dropped = 0;
     static uint64_t sampleCounter = 0;
 
-    pthread_mutex_lock(&Modes.data_mutex);
+    sdrMonitor();
+    
+    unsigned samples_read = len / 2; // Drops any trailing odd sample, not much else we can do there
+    if (!samples_read)
+        return; // that wasn't useful
 
-    next_free_buffer = (Modes.first_free_buffer + 1) % MODES_MAG_BUFFERS;
-    outbuf = &Modes.mag_buffers[Modes.first_free_buffer];
-    lastbuf = &Modes.mag_buffers[(Modes.first_free_buffer + MODES_MAG_BUFFERS - 1) % MODES_MAG_BUFFERS];
-    free_bufs = (Modes.first_filled_buffer - next_free_buffer + MODES_MAG_BUFFERS) % MODES_MAG_BUFFERS;
-
-    if (len != MODES_RTL_BUF_SIZE) {
-        fprintf(stderr, "weirdness: plutosdr gave us a block with an unusual size (got %u bytes, expected %u bytes)\n",
-                (unsigned) len, (unsigned) MODES_RTL_BUF_SIZE);
-
-        if (len > MODES_RTL_BUF_SIZE) {
-            unsigned discard = (len - MODES_RTL_BUF_SIZE + 1) / 2;
-            outbuf->dropped += discard;
-            buf += discard * 2;
-            len -= discard * 2;
-        }
-    }
-
-    if (was_odd) {
-        ++buf;
-        --len;
-        ++outbuf->dropped;
-    }
-
-    was_odd = (len & 1);
-    slen = len / 2;
-
-    if (free_bufs == 0 || (dropping && free_bufs < MODES_MAG_BUFFERS / 2)) {
-        dropping = 1;
-        outbuf->dropped += slen;
-        sampleCounter += slen;
-        pthread_mutex_unlock(&Modes.data_mutex);
+    struct mag_buf *outbuf = fifo_acquire(0 /* don't wait */);
+    if (!outbuf) {
+        // FIFO is full. Drop this block.
+        dropped += samples_read;
+        sampleCounter += samples_read;
         return;
     }
 
-    dropping = 0;
-    pthread_mutex_unlock(&Modes.data_mutex);
+    outbuf->flags = 0;
 
-    outbuf->sampleTimestamp = sampleCounter * 12e6 / Modes.sample_rate;
-    sampleCounter += slen;
-    block_duration = 1e3 * slen / Modes.sample_rate;
-    outbuf->sysTimestamp = mstime() - block_duration;
-
-    if (outbuf->dropped == 0) {
-        memcpy(outbuf->data, lastbuf->data + lastbuf->length, Modes.trailing_samples * sizeof (uint16_t));
-    } else {
-        memset(outbuf->data, 0, Modes.trailing_samples * sizeof (uint16_t));
+    if (dropped) {
+        // We previously dropped some samples due to no buffers being available
+        outbuf->flags |= MAGBUF_DISCONTINUOUS;
+        outbuf->dropped = dropped;
     }
 
-    outbuf->length = slen;
-    PLUTOSDR.converter(buf, &outbuf->data[Modes.trailing_samples], slen, PLUTOSDR.converter_state, &outbuf->mean_level, &outbuf->mean_power);
+    dropped = 0;
 
-    pthread_mutex_lock(&Modes.data_mutex);
+    outbuf->sampleTimestamp = sampleCounter * 12e6 / Modes.sample_rate;
+    sampleCounter += samples_read;
+    uint64_t block_duration = 1e3 * samples_read / Modes.sample_rate;
+    outbuf->sysTimestamp = mstime() - block_duration;
 
-    Modes.mag_buffers[next_free_buffer].dropped = 0;
-    Modes.mag_buffers[next_free_buffer].length = 0;
-    Modes.first_free_buffer = next_free_buffer;
+     // Convert the new data
+    unsigned to_convert = samples_read;
+    if (to_convert + outbuf->overlap > outbuf->totalLength) {
+        // how did that happen?
+        to_convert = outbuf->totalLength - outbuf->overlap;
+        dropped = samples_read - to_convert;
+    }
 
-    end_cpu_timing(&thread_cpu, &Modes.reader_cpu_accumulator);
-    start_cpu_timing(&thread_cpu);
+    PLUTOSDR.converter(buf, &outbuf->data[outbuf->overlap], to_convert, PLUTOSDR.converter_state, &outbuf->mean_level, &outbuf->mean_power);
+    outbuf->validLength = outbuf->overlap + to_convert;
 
-    pthread_cond_signal(&Modes.data_cond);
-    pthread_mutex_unlock(&Modes.data_mutex);
+    // Push to the demodulation thread
+    fifo_enqueue(outbuf);
 }
 
 void plutosdrRun() {
@@ -245,7 +214,6 @@ void plutosdrRun() {
     if (!PLUTOSDR.dev) {
         return;
     }
-    start_cpu_timing(&thread_cpu);
 
     while (!Modes.exit) {
         int16_t *p = PLUTOSDR.readbuf;

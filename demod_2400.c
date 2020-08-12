@@ -79,8 +79,11 @@ void demodulate2400(struct mag_buf *mag) {
     unsigned char *bestmsg;
     int bestscore, bestphase;
 
+    // maximum lookahead we use
+    assert(mag->overlap >= 19 + 1 + 269);
+
     uint16_t *m = mag->data;
-    uint32_t mlen = mag->length;
+    uint32_t mlen = mag->validLength - mag->overlap;
 
     uint64_t sum_scaled_signal_power = 0;
 
@@ -378,8 +381,8 @@ void demodulate2400(struct mag_buf *mag) {
     /* update noise power */
     {
         double sum_signal_power = sum_scaled_signal_power / 65535.0 / 65535.0;
-        Modes.stats_current.noise_power_sum += (mag->mean_power * mag->length - sum_signal_power);
-        Modes.stats_current.noise_power_count += mag->length;
+        Modes.stats_current.noise_power_sum += (mag->mean_power * mlen - sum_signal_power);
+        Modes.stats_current.noise_power_count += mlen;
     }
 }
 
@@ -478,7 +481,7 @@ static void draw_modeac(uint16_t *m, unsigned modeac, unsigned f1_clock, unsigne
 void demodulate2400AC(struct mag_buf *mag) {
     struct modesMessage mm;
     uint16_t *m = mag->data;
-    uint32_t mlen = mag->length;
+    uint32_t mlen = mag->validLength - mag->overlap;
     unsigned f1_sample;
 
     memset(&mm, 0, sizeof (mm));
@@ -559,7 +562,7 @@ void demodulate2400AC(struct mag_buf *mag) {
         // F2 is 20.3us / 14 bit periods after F1
         unsigned f2_clock = f1_clock + (87 * 14);
         unsigned f2_sample = f2_clock / 25;
-        assert(f2_sample < mlen + Modes.trailing_samples);
+        assert(f2_sample < mlen + mag->overlap);
 
         if (!(m[f2_sample - 1] < m[f2_sample + 0]))
             continue;

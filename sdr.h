@@ -32,5 +32,9 @@ bool sdrHandleOption(int argc, char *argv);
 bool sdrOpen();
 void sdrRun();
 void sdrClose();
+// Call periodically from the SDR read thread to update reader thread CPU stats:
+void sdrMonitor();
+// Retrieve CPU stats and add new CPU time to *addTo
+void sdrUpdateCPUTime(struct timespec *addTo);
 
 #endif

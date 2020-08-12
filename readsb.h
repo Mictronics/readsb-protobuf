@@ -223,6 +223,7 @@ typedef enum {
 #include "sdr.h"
 #include "readsb.pb-c.h"
 #include "geomag.h"
+#include "fifo.h"
 
 //======================== structure declarations =========================
 
@@ -230,30 +231,10 @@ typedef enum {
     SDR_NONE = 0, SDR_IFILE, SDR_RTLSDR, SDR_BLADERF, SDR_MICROBLADERF, SDR_MODESBEAST, SDR_PLUTOSDR, SDR_GNS
 } sdr_type_t;
 
-// Structure representing one magnitude buffer
-
-struct mag_buf {
-    uint64_t sampleTimestamp; // Clock timestamp of the start of this block, 12MHz clock
-    double mean_level; // Mean of normalized (0..1) signal level
-    double mean_power; // Mean of normalized (0..1) power level
-    uint32_t dropped; // Number of dropped samples preceding this buffer
-    unsigned length; // Number of valid samples _after_ overlap. Total buffer length is buf->length + Modes.trailing_samples.
-    uint64_t sysTimestamp; // Estimated system time at start of block
-    uint16_t *data; // Magnitude data. Starts with Modes.trailing_samples worth of overlap from the previous block
-#if defined(__arm__)
-    /*padding 4 bytes*/
-    uint32_t padding;
-#endif
-};
-
 // Program global state
 
 struct _Modes { // Internal state
-    pthread_cond_t data_cond; // Conditional variable associated
     pthread_t reader_thread;
-    pthread_mutex_t data_mutex; // Mutex to synchronize buffer access
-    unsigned first_free_buffer; // Entry in mag_buffers that will next be filled with input.
-    unsigned first_filled_buffer; // Entry in mag_buffers that has valid data and will be demodulated next. If equal to next_free_buffer, there is no unprocessed data.
     unsigned trailing_samples; // extra trailing samples in magnitude buffers
     atomic_int exit; // Exit from the main loop when true
     int8_t dc_filter; // should we apply a DC filter?
@@ -338,8 +319,9 @@ struct _Modes { // Internal state
     struct stats stats_5min;
     struct stats stats_15min;
     struct range_stats stats_range;
-    struct timespec reader_cpu_accumulator; // CPU time used by the reader thread, copied out and reset by the main thread under the mutex
-    struct mag_buf mag_buffers[MODES_MAG_BUFFERS]; // Converted magnitude buffers from RTL or file input
+    struct timespec reader_cpu_accumulator; // accumulated CPU time used by the reader thread
+    struct timespec reader_cpu_start; // start time for the last reader thread CPU measurement
+    pthread_mutex_t reader_cpu_mutex; // mutex protecting reader_cpu_accumulator
 };
 
 extern struct _Modes Modes;
