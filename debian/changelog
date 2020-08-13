@@ -1,6 +1,7 @@
 readsb (4.0.1~dev) UNRELEASED; urgency=medium
 
   * In development
+  * Fix unescaping in Hulc status message.
   * readsbrrd: Improve detection of system time in past with corresponding error message.
   * Fix missing declarations.
   * Set SDR thread name if supported.
