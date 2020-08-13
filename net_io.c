@@ -1421,7 +1421,6 @@ static void decodeHulcMessage(char *p) {
 
     if (id == 0x01 && len == 0x18) {
         // HULC Status message
-        // HULC Status message
         for (int j = 0; j < len; j++) {
             hsm.buf[j] = *p++;
             // unescape
