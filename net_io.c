@@ -1421,7 +1421,14 @@ static void decodeHulcMessage(char *p) {
 
     if (id == 0x01 && len == 0x18) {
         // HULC Status message
-        memcpy(&hsm, p, len);
+        // HULC Status message
+        for (int j = 0; j < len; j++) {
+            hsm.buf[j] = *p++;
+            // unescape
+            if (*p == 0x1A) {
+                p++;
+            }
+        }
         // Antenna serial
         Modes.receiver.antenna_serial = __bswap_32(hsm.status.serial);
         // Antenna status flags
