@@ -294,7 +294,12 @@ static uint32_t update_polar_range(double lat, double lon) {
     if (Modes.stats_polar_range) {
         // Round bearing to polarplot resolution.
         int bucket = round(getBearing(Modes.receiver.latitude, Modes.receiver.longitude, lat, lon) / POLAR_RANGE_RESOLUTION);
-        if (Modes.stats_range.polar_range[bucket] < range) {
+        // Catch and avoid out of bounds writes
+        if (bucket >= POLAR_RANGE_BUCKETS) {
+            bucket = 0;
+        }
+        
+        if (bucket < POLAR_RANGE_BUCKETS && Modes.stats_range.polar_range[bucket] < range) {
             Modes.stats_range.polar_range[bucket] = (uint32_t) range;
         }
     }
