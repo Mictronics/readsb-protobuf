@@ -153,7 +153,7 @@ namespace READSB {
             input.classList.remove("is-invalid", "is-valid");
             if (input.value !== "") {
                 lon = Number.parseFloat(input.value);
-                if (lon !== Number.NaN && lon >= -90.0 && lon <= 90.0) {
+                if (lon !== Number.NaN && lon >= -180.0 && lon <= 180.0) {
                     AppSettings.SiteLon = lon;
                     backendSetSitePosition = true;
                     input.classList.add("is-valid");
