@@ -64,22 +64,13 @@
 #endif
 
 // ============================= Include files ==========================
-#include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <pthread.h>
 #include <stdint.h>
 #include <stdatomic.h>
 #include <errno.h>
-#include <unistd.h>
-#include <math.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <ctype.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#include <time.h>
 #include <semaphore.h>
 
 #include "compat/compat.h"

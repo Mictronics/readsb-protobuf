@@ -3,6 +3,13 @@
 #include "readsb.h"
 #include "help.h"
 #include <stdarg.h>
+#include <pthread.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <string.h>
+#include <unistd.h>
+
 
 struct _Modes Modes;
 

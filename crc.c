@@ -23,6 +23,8 @@
 
 #include "readsb.h"
 #include <assert.h>
+#include <stdio.h>
+#include <string.h>
 
 // Errorinfo for "no errors"
 static struct errorinfo NO_ERRORS;

@@ -65,6 +65,12 @@
 #include <poll.h>
 #include <limits.h>
 #include <pthread.h>
+#include <math.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <string.h>
+#include <signal.h>
 
 //
 // ============================= Networking =============================

@@ -53,6 +53,8 @@
 
 #include "readsb.h"
 #include <inttypes.h>
+#include <math.h>
+#include <string.h>
 
 /* #define DEBUG_CPR_CHECKS */
 

@@ -54,6 +54,11 @@
 
 #include "readsb.h"
 #include "sdr_ifile.h"
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
+#include <unistd.h>
 
 static struct {
     input_format_t input_format;

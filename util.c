@@ -55,6 +55,7 @@
 
 #include <stdlib.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 uint64_t _messageNow = 0;
 

@@ -56,8 +56,12 @@
 #include "mode_s.h"
 #include "ais_charset.h"
 
+#include <math.h>
+#include <string.h>
+
 /* for PRIX64 */
 #include <inttypes.h>
+
 
 //
 // ===================== Mode S detection and decoding  ===================

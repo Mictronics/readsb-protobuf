@@ -53,6 +53,7 @@
 
 #include "readsb.h"
 #include <curses.h>
+#include <math.h>
 
 //
 //========================= Interactive mode ===============================

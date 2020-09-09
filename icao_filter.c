@@ -22,6 +22,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "readsb.h"
+#include <stdio.h>
+#include <string.h>
 
 // hash table size, must be a power of two:
 #define ICAO_FILTER_SIZE 4096

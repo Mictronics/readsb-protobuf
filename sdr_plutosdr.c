@@ -21,6 +21,7 @@
 #include <ad9361.h>
 #include "readsb.h"
 #include "sdr_plutosdr.h"
+#include <fcntl.h>
 
 static struct {
     input_format_t input_format;

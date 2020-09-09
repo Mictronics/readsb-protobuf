@@ -23,6 +23,8 @@
 
 #include "readsb.h"
 #include <assert.h>
+#include <math.h>
+#include <string.h>
 
 #ifdef MODEAC_DEBUG
 #include <gd.h>

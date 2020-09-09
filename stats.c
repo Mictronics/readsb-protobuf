@@ -51,6 +51,10 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 #include "readsb.h"
 
 void add_timespecs(const struct timespec *x, const struct timespec *y, struct timespec *z) {
