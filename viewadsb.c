@@ -52,6 +52,13 @@
 
 #define VIEWADSB
 #include "readsb.h"
+#include "mode_ac.h"
+#include "interactive.h"
+#include "receiver.h"
+#include <string.h>
+#include <signal.h>
+#include <pthread.h>
+#include <unistd.h>
 #include "help.h"
 
 struct _Modes Modes;
