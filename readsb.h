@@ -523,15 +523,5 @@ enum {
 #include "mode_s.h"
 #include "comm_b.h"
 
-// ======================== function declarations =========================
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif // _READSB_H
 

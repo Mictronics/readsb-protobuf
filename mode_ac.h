@@ -27,9 +27,17 @@
 
 #include <assert.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void decodeModeAMessage(struct modesMessage *mm, int ModeA);
 unsigned modeCToModeA (int modeC);
 int modeAToModeC (unsigned int modeA);
 void modeACInit ();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
