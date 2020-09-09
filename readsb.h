@@ -645,7 +645,6 @@ extern "C" {
     //
     // Functions exported from mode_ac.c
     //
-    int detectModeA(uint16_t *m, struct modesMessage *mm);
     void decodeModeAMessage(struct modesMessage *mm, int ModeA);
     void modeACInit();
     int modeAToModeC(unsigned int modeA);
