@@ -642,24 +642,6 @@ enum {
 extern "C" {
 #endif
 
-    //
-    // Functions exported from mode_ac.c
-    //
-    void decodeModeAMessage(struct modesMessage *mm, int ModeA);
-    void modeACInit();
-    int modeAToModeC(unsigned int modeA);
-    unsigned modeCToModeA(int modeC);
-
-    //
-    // Functions exported from interactive.c
-    //
-    void interactiveInit(void);
-    void interactiveShowData(void);
-    void interactiveCleanup(void);
-
-    // Provided by readsb.c & viewadsb.c
-    void receiverPositionChanged(float lat, float lon, float alt);
-
 #ifdef __cplusplus
 }
 #endif

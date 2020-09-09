@@ -1,6 +1,8 @@
 #define READSB
 
 #include "readsb.h"
+#include "mode_ac.h"
+#include "interactive.h"
 #include "help.h"
 #include <stdarg.h>
 #include <pthread.h>

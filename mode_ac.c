@@ -49,6 +49,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "readsb.h"
+#include "mode_ac.h"
 #include <assert.h>
 //
 //=========================================================================

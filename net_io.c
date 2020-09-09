@@ -52,6 +52,8 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "readsb.h"
+#include "mode_ac.h"
+#include "receiver.h"
 
 /* for PRIX64 */
 #include <inttypes.h>
