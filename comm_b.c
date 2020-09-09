@@ -25,6 +25,8 @@
 #include <math.h>
 #include <string.h>
 #include "readsb.h"
+#include "comm_b.h"
+#include "mode_s.h"
 #include <stdlib.h>
 #include "ais_charset.h"
 

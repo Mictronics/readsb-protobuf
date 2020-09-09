@@ -56,6 +56,9 @@
 #include "station.h"
 #include <curses.h>
 #include <math.h>
+#include "util.h"
+#include "track.h"
+
 
 //
 //========================= Interactive mode ===============================

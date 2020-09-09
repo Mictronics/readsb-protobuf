@@ -18,7 +18,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <semaphore.h>
-
+#include "track.h"
 
 struct _Modes Modes;
 

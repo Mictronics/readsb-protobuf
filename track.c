@@ -55,6 +55,7 @@
 #include "mode_ac.h"
 #include "geomag.h"
 #include "station.h"
+#include "track.h"
 #include <inttypes.h>
 #include <math.h>
 #include <string.h>

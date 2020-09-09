@@ -53,13 +53,16 @@
 
 #include "readsb.h"
 #include "mode_ac.h"
+#include "mode_s.h"
 #include "station.h"
+#include "track.h"
 
 /* for PRIX64 */
 #include <inttypes.h>
 
 #include <assert.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <stdarg.h>
 #include <sys/socket.h>
 #include <netinet/in.h>

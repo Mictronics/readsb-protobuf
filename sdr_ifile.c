@@ -55,6 +55,8 @@
 #include "readsb.h"
 #include "fifo.h"
 #include "sdr_ifile.h"
+#include "util.h"
+
 #include "station.h"
 #include <fcntl.h>
 #include <stdio.h>

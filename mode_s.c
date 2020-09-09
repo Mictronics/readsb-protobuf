@@ -58,6 +58,7 @@
 #include "icao_filter.h"
 #include "ais_charset.h"
 #include "station.h"
+#include "comm_b.h"
 #include <math.h>
 #include <string.h>
 

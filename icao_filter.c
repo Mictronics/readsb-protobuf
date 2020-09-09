@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include "util.h"
+
 
 // hash table size, must be a power of two:
 #define ICAO_FILTER_SIZE 4096

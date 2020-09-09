@@ -23,9 +23,11 @@
 
 #include "readsb.h"
 #include "mode_ac.h"
+#include "mode_s.h"
 #include "demod_2400.h"
 #include "station.h"
 #include "fifo.h"
+#include "util.h"
 #include <assert.h>
 #include <math.h>
 #include <string.h>

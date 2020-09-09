@@ -56,6 +56,8 @@
 #include "station.h"
 #include "interactive.h"
 #include "icao_filter.h"
+#include "util.h"
+#include "track.h"
 #include "help.h"
 #include <string.h>
 #include <signal.h>
