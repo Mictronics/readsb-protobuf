@@ -3,6 +3,10 @@
 #include "readsb.h"
 #include "mode_ac.h"
 #include "interactive.h"
+#include "demod_2400.h"
+#include "icao_filter.h"
+#include "geomag.h"
+#include "fifo.h"
 #include "help.h"
 #include <stdarg.h>
 #include <pthread.h>

@@ -54,6 +54,8 @@
 #ifndef TRACK_H
 #define TRACK_H
 
+#include "util.h"
+
 /* Maximum age of tracked aircraft in milliseconds */
 #define TRACK_AIRCRAFT_TTL (10*60000)
 

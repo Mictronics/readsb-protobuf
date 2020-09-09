@@ -53,6 +53,7 @@
 
 #include "readsb.h"
 #include "mode_ac.h"
+#include "geomag.h"
 #include <inttypes.h>
 #include <math.h>
 #include <string.h>

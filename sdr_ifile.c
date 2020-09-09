@@ -53,6 +53,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "readsb.h"
+#include "fifo.h"
 #include "sdr_ifile.h"
 #include <fcntl.h>
 #include <stdio.h>

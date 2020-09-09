@@ -54,6 +54,8 @@
 #ifndef STATS_H
 #define STATS_H
 
+#include "crc.h"
+
 struct stats {
     uint64_t start;
     uint64_t end;

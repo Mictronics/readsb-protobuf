@@ -23,6 +23,8 @@
 
 #include "readsb.h"
 #include "mode_ac.h"
+#include "demod_2400.h"
+#include "fifo.h"
 #include <assert.h>
 #include <math.h>
 #include <string.h>

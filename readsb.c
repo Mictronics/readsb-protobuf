@@ -56,7 +56,6 @@
 #include <stdio.h>
 #include "readsb.h"
 
-
 static const char *df_names[33] = {
         /* 0 */ "Short Air-Air Surveillance",
         /* 1 */ NULL,

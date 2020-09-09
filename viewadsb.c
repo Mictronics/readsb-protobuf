@@ -54,6 +54,7 @@
 #include "readsb.h"
 #include "mode_ac.h"
 #include "interactive.h"
+#include "icao_filter.h"
 #include "receiver.h"
 #include <string.h>
 #include <signal.h>

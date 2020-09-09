@@ -22,7 +22,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "readsb.h"
+#include "icao_filter.h"
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 
 // hash table size, must be a power of two:

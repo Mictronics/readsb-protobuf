@@ -231,19 +231,12 @@ void print_hex_bytes(unsigned char *data, size_t len);
 
 // Include subheaders after all the #defines are in place
 
-#include "util.h"
-#include "anet.h"
 #include "net_io.h"
-#include "crc.h"
-#include "demod_2400.h"
 #include "stats.h"
 #include "cpr.h"
-#include "icao_filter.h"
 #include "convert.h"
 #include "sdr.h"
 #include "readsb.pb-c.h"
-#include "geomag.h"
-#include "fifo.h"
 
 //======================== structure declarations =========================
 

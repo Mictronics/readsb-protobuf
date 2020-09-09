@@ -55,6 +55,7 @@
 #include "readsb.h"
 #include "mode_s.h"
 #include "mode_ac.h"
+#include "icao_filter.h"
 #include "ais_charset.h"
 
 #include <math.h>
