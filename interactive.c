@@ -53,6 +53,7 @@
 #include "readsb.h"
 #include "mode_ac.h"
 #include "interactive.h"
+#include "station.h"
 #include <curses.h>
 #include <math.h>
 

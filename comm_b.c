@@ -25,6 +25,7 @@
 #include <math.h>
 #include <string.h>
 #include "readsb.h"
+#include <stdlib.h>
 #include "ais_charset.h"
 
 typedef int (*CommBDecoderFn)(struct modesMessage *, bool);

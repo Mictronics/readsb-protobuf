@@ -25,6 +25,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 // Errorinfo for "no errors"
 static struct errorinfo NO_ERRORS;

@@ -56,6 +56,7 @@
 #include <string.h>
 #include <time.h>
 #include "readsb.h"
+#include "station.h"
 
 void add_timespecs(const struct timespec *x, const struct timespec *y, struct timespec *z) {
     z->tv_sec = x->tv_sec + y->tv_sec;

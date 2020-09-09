@@ -1,6 +1,7 @@
 #define READSB
 
 #include "readsb.h"
+#include "station.h"
 #include "mode_ac.h"
 #include "interactive.h"
 #include "demod_2400.h"
@@ -8,6 +9,7 @@
 #include "geomag.h"
 #include "fifo.h"
 #include "help.h"
+#include <stdlib.h>
 #include <stdarg.h>
 #include <pthread.h>
 #include <fcntl.h>
@@ -15,6 +17,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 
 struct _Modes Modes;

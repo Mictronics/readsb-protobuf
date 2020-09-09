@@ -55,10 +55,13 @@
 #include "readsb.h"
 #include "fifo.h"
 #include "sdr_ifile.h"
+#include "station.h"
 #include <fcntl.h>
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 #include <pthread.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 static struct {

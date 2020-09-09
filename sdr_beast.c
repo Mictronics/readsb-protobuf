@@ -20,11 +20,15 @@
 #include <termios.h>
 #include "readsb.h"
 #include "sdr_beast.h"
+#include "station.h"
 #include <fcntl.h>
+#include <sys/ioctl.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 static struct {
     bool filter_df045;
