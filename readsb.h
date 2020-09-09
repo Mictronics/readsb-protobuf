@@ -74,7 +74,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include <math.h>
-#include <sys/time.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <ctype.h>
