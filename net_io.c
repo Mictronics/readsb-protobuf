@@ -63,6 +63,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <poll.h>
+#include <limits.h>
 #include <pthread.h>
 
 //
@@ -3424,4 +3425,407 @@ inline void cleanupNetwork(void) {
         free(con);
     }
     free(Modes.net_connectors);
+}
+
+
+void displayModesMessage(struct modesMessage *mm) {
+    int j;
+
+    // Handle only addresses mode first.
+    if (Modes.onlyaddr) {
+        printf("%06x\n", mm->addr);
+        return; // Enough for --onlyaddr mode
+    }
+
+    // Show the raw message.
+    if (Modes.mlat && mm->timestampMsg) {
+        printf("@%012" PRIX64, mm->timestampMsg);
+    } else
+        printf("*");
+
+    for (j = 0; j < mm->msgbits / 8; j++) printf("%02x", mm->msg[j]);
+    printf(";\n");
+
+    if (Modes.raw) {
+        fflush(stdout); // Provide data to the reader ASAP
+        return; // Enough for --raw mode
+    }
+
+    if (mm->msgtype < 32)
+        printf("CRC: %06x\n", mm->crc);
+
+    if (mm->correctedbits != 0)
+        printf("No. of bit errors fixed: %d\n", mm->correctedbits);
+
+    if (mm->signalLevel > 0)
+        printf("RSSI: %.1f dBFS\n", 10 * log10(mm->signalLevel));
+
+    if (mm->score)
+        printf("Score: %d\n", mm->score);
+
+    if (mm->timestampMsg == MAGIC_MLAT_TIMESTAMP)
+        printf("This is a synthetic MLAT message.\n");
+    else
+        printf("Time: %.2fus\n", mm->timestampMsg / 12.0);
+
+    switch (mm->msgtype) {
+        case 0:
+            printf("DF:0 addr:%06X VS:%u CC:%u SL:%u RI:%u AC:%u\n",
+                   mm->addr, mm->VS, mm->CC, mm->SL, mm->RI, mm->AC);
+            break;
+
+        case 4:
+            printf("DF:4 addr:%06X FS:%u DR:%u UM:%u AC:%u\n",
+                   mm->addr, mm->FS, mm->DR, mm->UM, mm->AC);
+            break;
+
+        case 5:
+            printf("DF:5 addr:%06X FS:%u DR:%u UM:%u ID:%u\n",
+                   mm->addr, mm->FS, mm->DR, mm->UM, mm->ID);
+            break;
+
+        case 11:
+            printf("DF:11 AA:%06X IID:%u CA:%u\n",
+                   mm->AA, mm->IID, mm->CA);
+            break;
+
+        case 16:
+            printf("DF:16 addr:%06x VS:%u SL:%u RI:%u AC:%u MV:",
+                   mm->addr, mm->VS, mm->SL, mm->RI, mm->AC);
+            print_hex_bytes(mm->MV, sizeof (mm->MV));
+            printf("\n");
+            break;
+
+        case 17:
+            printf("DF:17 AA:%06X CA:%u ME:",
+                   mm->AA, mm->CA);
+            print_hex_bytes(mm->ME, sizeof (mm->ME));
+            printf("\n");
+            break;
+
+        case 18:
+            printf("DF:18 AA:%06X CF:%u ME:",
+                   mm->AA, mm->CF);
+            print_hex_bytes(mm->ME, sizeof (mm->ME));
+            printf("\n");
+            break;
+
+        case 20:
+            printf("DF:20 addr:%06X FS:%u DR:%u UM:%u AC:%u MB:",
+                   mm->addr, mm->FS, mm->DR, mm->UM, mm->AC);
+            print_hex_bytes(mm->MB, sizeof (mm->MB));
+            printf("\n");
+            break;
+
+        case 21:
+            printf("DF:21 addr:%06x FS:%u DR:%u UM:%u ID:%u MB:",
+                   mm->addr, mm->FS, mm->DR, mm->UM, mm->ID);
+            print_hex_bytes(mm->MB, sizeof (mm->MB));
+            printf("\n");
+            break;
+
+        case 24:
+        case 25:
+        case 26:
+        case 27:
+        case 28:
+        case 29:
+        case 30:
+        case 31:
+            printf("DF:24 addr:%06x KE:%u ND:%u MD:",
+                   mm->addr, mm->KE, mm->ND);
+            print_hex_bytes(mm->MD, sizeof (mm->MD));
+            printf("\n");
+            break;
+    }
+
+    printf(" %s", df_to_string(mm->msgtype));
+    if (mm->msgtype == 17 || mm->msgtype == 18) {
+        if (esTypeHasSubtype(mm->metype)) {
+            printf(" %s (%u/%u)",
+                   esTypeName(mm->metype, mm->mesub),
+                   mm->metype,
+                   mm->mesub);
+        } else {
+            printf(" %s (%u)",
+                   esTypeName(mm->metype, mm->mesub),
+                   mm->metype);
+        }
+    }
+    printf("\n");
+
+    if (mm->msgtype == 20 || mm->msgtype == 21) {
+        printf("  Comm-B format: %s\n", commb_format_to_string(mm->commb_format));
+    }
+
+    if (mm->addr & MODES_NON_ICAO_ADDRESS) {
+        printf("  Other Address: %06X (%s)\n", mm->addr & 0xFFFFFF, addrtype_to_string(mm->addrtype));
+    } else {
+        printf("  ICAO Address:  %06X (%s)\n", mm->addr, addrtype_to_string(mm->addrtype));
+    }
+
+    if (mm->airground != AIRCRAFT_META__AIR_GROUND__AG_INVALID) {
+        printf("  Air/Ground:    %s\n",
+               airground_to_string(mm->airground));
+    }
+
+    if (mm->altitude_baro_valid) {
+        printf("  Baro altitude: %d %s\n",
+               mm->altitude_baro,
+               altitude_unit_to_string(mm->altitude_baro_unit));
+    }
+
+    if (mm->altitude_geom_valid) {
+        printf("  Geom altitude: %d %s\n",
+               mm->altitude_geom,
+               altitude_unit_to_string(mm->altitude_geom_unit));
+    }
+
+    if (mm->geom_delta_valid) {
+        printf("  Geom - baro:   %d ft\n",
+               mm->geom_delta);
+    }
+
+    if (mm->heading_valid) {
+        printf("  %-13s  %.1f\n", heading_type_to_string(mm->heading_type), mm->heading);
+    }
+
+    if (mm->track_rate_valid) {
+        printf("  Track rate:    %.2f deg/sec %s\n", mm->track_rate, mm->track_rate < 0 ? "left" : mm->track_rate > 0 ? "right" : "");
+    }
+
+    if (mm->roll_valid) {
+        printf("  Roll:          %.1f degrees %s\n", mm->roll, mm->roll < -0.05 ? "left" : mm->roll > 0.05 ? "right" : "");
+    }
+
+    if (mm->gs_valid) {
+        printf("  Groundspeed:   %.1f kt", mm->gs.selected);
+        if (mm->gs.v0 != mm->gs.selected) {
+            printf(" (v0: %.1f kt)", mm->gs.v0);
+        }
+        if (mm->gs.v2 != mm->gs.selected) {
+            printf(" (v2: %.1f kt)", mm->gs.v2);
+        }
+        printf("\n");
+    }
+
+    if (mm->ias_valid) {
+        printf("  IAS:           %u kt\n", mm->ias);
+    }
+
+    if (mm->tas_valid) {
+        printf("  TAS:           %u kt\n", mm->tas);
+    }
+
+    if (mm->mach_valid) {
+        printf("  Mach number:   %.3f\n", mm->mach);
+    }
+
+    if (mm->baro_rate_valid) {
+        printf("  Baro rate:     %d ft/min\n", mm->baro_rate);
+    }
+
+    if (mm->geom_rate_valid) {
+        printf("  Geom rate:     %d ft/min\n", mm->geom_rate);
+    }
+
+    if (mm->squawk_valid) {
+        printf("  Squawk:        %04x\n",
+               mm->squawk);
+    }
+
+    if (mm->callsign_valid) {
+        printf("  Ident:         %s\n",
+               mm->callsign);
+    }
+
+    if (mm->category_valid) {
+        printf("  Category:      %02X\n",
+               mm->category);
+    }
+
+    if (mm->cpr_valid) {
+        printf("  CPR type:      %s\n"
+               "  CPR odd flag:  %s\n",
+               cpr_type_to_string(mm->cpr_type),
+               mm->cpr_odd ? "odd" : "even");
+
+        if (mm->cpr_decoded) {
+            printf("  CPR latitude:  %.5f (%u)\n"
+                   "  CPR longitude: %.5f (%u)\n"
+                   "  CPR decoding:  %s\n"
+                   "  NIC:           %u\n"
+                   "  Rc:            %.3f km / %.1f NM\n",
+                   mm->decoded_lat,
+                   mm->cpr_lat,
+                   mm->decoded_lon,
+                   mm->cpr_lon,
+                   mm->cpr_relative ? "local" : "global",
+                   mm->decoded_nic,
+                   mm->decoded_rc / 1000.0,
+                   mm->decoded_rc / 1852.0);
+        } else {
+            printf("  CPR latitude:  (%u)\n"
+                   "  CPR longitude: (%u)\n"
+                   "  CPR decoding:  none\n",
+                   mm->cpr_lat,
+                   mm->cpr_lon);
+        }
+    }
+
+    if (mm->accuracy.nic_a_valid) {
+        printf("  NIC-A:         %d\n", mm->accuracy.nic_a);
+    }
+    if (mm->accuracy.nic_b_valid) {
+        printf("  NIC-B:         %d\n", mm->accuracy.nic_b);
+    }
+    if (mm->accuracy.nic_c_valid) {
+        printf("  NIC-C:         %d\n", mm->accuracy.nic_c);
+    }
+    if (mm->accuracy.nic_baro_valid) {
+        printf("  NIC-baro:      %d\n", mm->accuracy.nic_baro);
+    }
+    if (mm->accuracy.nac_p_valid) {
+        printf("  NACp:          %d\n", mm->accuracy.nac_p);
+    }
+    if (mm->accuracy.nac_v_valid) {
+        printf("  NACv:          %d\n", mm->accuracy.nac_v);
+    }
+    if (mm->accuracy.gva_valid) {
+        printf("  GVA:           %d\n", mm->accuracy.gva);
+    }
+    if (mm->accuracy.sil_type != AIRCRAFT_META__SIL_TYPE__SIL_INVALID) {
+        const char *sil_description;
+        switch (mm->accuracy.sil) {
+            case 1:
+                sil_description = "p <= 0.1%";
+                break;
+            case 2:
+                sil_description = "p <= 0.001%";
+                break;
+            case 3:
+                sil_description = "p <= 0.00001%";
+                break;
+            default:
+                sil_description = "p > 0.1%";
+                break;
+        }
+        printf("  SIL:           %d (%s, %s)\n",
+               mm->accuracy.sil,
+               sil_description,
+               sil_type_to_string(mm->accuracy.sil_type));
+    }
+    if (mm->accuracy.sda_valid) {
+        printf("  SDA:           %d\n", mm->accuracy.sda);
+    }
+
+    if (mm->opstatus.valid) {
+        printf("  Aircraft Operational Status:\n");
+        printf("    Version:            %d\n", mm->opstatus.version);
+
+        printf("    Capability classes: ");
+        if (mm->opstatus.cc_acas) printf("ACAS ");
+        if (mm->opstatus.cc_cdti) printf("CDTI ");
+        if (mm->opstatus.cc_1090_in) printf("1090IN ");
+        if (mm->opstatus.cc_arv) printf("ARV ");
+        if (mm->opstatus.cc_ts) printf("TS ");
+        if (mm->opstatus.cc_tc) printf("TC=%d ", mm->opstatus.cc_tc);
+        if (mm->opstatus.cc_uat_in) printf("UATIN ");
+        if (mm->opstatus.cc_poa) printf("POA ");
+        if (mm->opstatus.cc_b2_low) printf("B2-LOW ");
+        if (mm->opstatus.cc_lw_valid) printf("L/W=%d ", mm->opstatus.cc_lw);
+        if (mm->opstatus.cc_antenna_offset) printf("GPS-OFFSET=%d ", mm->opstatus.cc_antenna_offset);
+        printf("\n");
+
+        printf("    Operational modes:  ");
+        if (mm->opstatus.om_acas_ra) printf("ACASRA ");
+        if (mm->opstatus.om_ident) printf("IDENT ");
+        if (mm->opstatus.om_atc) printf("ATC ");
+        if (mm->opstatus.om_saf) printf("SAF ");
+        printf("\n");
+
+        if (mm->mesub == 1)
+            printf("    Track/heading:      %s\n", heading_type_to_string(mm->opstatus.tah));
+        printf("    Heading ref dir:    %s\n", heading_type_to_string(mm->opstatus.hrd));
+    }
+
+    if (mm->nav.heading_valid)
+        printf("  Selected heading:        %.1f\n", mm->nav.heading);
+    if (mm->nav.fms_altitude_valid)
+        printf("  FMS selected altitude:   %u ft\n", mm->nav.fms_altitude);
+    if (mm->nav.mcp_altitude_valid)
+        printf("  MCP selected altitude:   %u ft\n", mm->nav.mcp_altitude);
+    if (mm->nav.qnh_valid)
+        printf("  QNH:                     %.1f millibars\n", mm->nav.qnh);
+    if (mm->nav.altitude_source != NAV_ALT_INVALID) {
+        printf("  Target altitude source:  ");
+        switch (mm->nav.altitude_source) {
+            case NAV_ALT_AIRCRAFT:
+                printf("aircraft altitude\n");
+                break;
+            case NAV_ALT_MCP:
+                printf("MCP selected altitude\n");
+                break;
+            case NAV_ALT_FMS:
+                printf("FMS selected altitude\n");
+                break;
+            default:
+                printf("unknown\n");
+        }
+    }
+
+    if (mm->nav.modes_valid) {
+        printf("  Nav modes:               %s\n", nav_modes_to_string(mm->nav.modes));
+    }
+
+    if (mm->emergency_valid) {
+        printf("  Emergency/priority:      %s\n", emergency_to_string(mm->emergency));
+    }
+
+    printf("\n");
+    fflush(stdout);
+}
+
+//
+//=========================================================================
+//
+// When a new message is available, because it was decoded from the RTL device,
+// file, or received in the TCP input port, or any other way we can receive a
+// decoded message, we call this function in order to use the message.
+//
+// Basically this function passes a raw message to the upper layers for further
+// processing and visualization
+//
+
+void useModesMessage(struct modesMessage *mm) {
+    struct aircraft *a;
+
+    ++Modes.stats_current.messages_total;
+
+    // Track aircraft state
+    a = trackUpdateFromMessage(mm);
+
+    // In non-interactive non-quiet mode, display messages on standard output
+    if (!Modes.interactive && !Modes.quiet && (!Modes.show_only || mm->addr == Modes.show_only) && !mm->sbs_in) {
+        displayModesMessage(mm);
+    }
+
+    // Feed output clients.
+    // If in --net-verbatim mode, do this for all messages.
+    // Otherwise, apply a sanity-check filter and only
+    // forward messages when we have seen two of them.
+
+    if (Modes.net && !mm->sbs_in) {
+        if (Modes.net_verbatim || mm->msgtype == 32 || !a) {
+            // Unconditionally send
+            modesQueueOutput(mm, a);
+        } else if (a->meta.messages > 1) {
+            // Suppress the first message. When we receive a second message,
+            // emit the first two messages.
+            if (a->meta.messages == 2) {
+                modesQueueOutput(&a->first_message, a);
+            }
+            modesQueueOutput(mm, a);
+        }
+    }
 }

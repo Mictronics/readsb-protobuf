@@ -80,10 +80,10 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <time.h>
-#include <limits.h>
 #include <semaphore.h>
 
 #include "compat/compat.h"
+#include "readsb.pb-c.h"
 
 // ============================= #defines ===============================
 
@@ -122,6 +122,12 @@
 #define MODES_USER_LATLON_VALID (1<<0)
 
 #define INVALID_ALTITUDE (-9999)
+
+/* A timestamp that indicates the data is synthetic, created from a
+ * multilateration result
+ */
+#define MAGIC_MLAT_TIMESTAMP 0xFF004D4C4154ULL
+
 
 /* Where did a bit of data arrive from? In order of increasing priority */
 typedef enum {
@@ -207,6 +213,30 @@ typedef enum {
 #define MODES_NOTUSED(V) ((void) V)
 
 #define AIRCRAFTS_BUCKETS 2048
+
+
+const char *emergency_to_string(AircraftMeta__Emergency emergency);
+
+const char *df_to_string(unsigned df);
+
+const char *altitude_unit_to_string(altitude_unit_t unit);
+
+const char *airground_to_string(AircraftMeta__AirGround airground);
+
+const char *addrtype_to_string(AircraftMeta__AddrType type);
+
+const char *cpr_type_to_string(cpr_type_t type);
+
+const char *heading_type_to_string(heading_type_t type);
+
+const char *commb_format_to_string(commb_format_t format);
+
+const char *nav_modes_to_string(nav_modes_t flags);
+
+const char *sil_type_to_string(AircraftMeta__SilType type);
+
+void print_hex_bytes(unsigned char *data, size_t len);
+
 
 // Include subheaders after all the #defines are in place
 

@@ -33,9 +33,8 @@
 int modesMessageLenByType(int type);
 int scoreModesMessage(unsigned char *msg, int validbits);
 int decodeModesMessage(struct modesMessage *mm, unsigned char *msg);
-void displayModesMessage(struct modesMessage *mm);
-void useModesMessage(struct modesMessage *mm);
-
+int esTypeHasSubtype(unsigned metype);
+const char *esTypeName(unsigned metype, unsigned mesub);
 // datafield extraction helpers
 
 // The first bit (MSB of the first byte) is numbered 1, for consistency

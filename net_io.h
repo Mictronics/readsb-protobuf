@@ -35,6 +35,9 @@ struct net_service;
 typedef int (*read_fn)(struct client *, char *, int);
 typedef void (*heartbeat_fn)(struct net_service *);
 
+void displayModesMessage(struct modesMessage *mm);
+void useModesMessage(struct modesMessage *mm);
+
 typedef enum {
     READ_MODE_IGNORE,
     READ_MODE_BEAST,
