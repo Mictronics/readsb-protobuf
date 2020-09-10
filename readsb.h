@@ -221,11 +221,6 @@ const char *sil_type_to_string(AircraftMeta__SilType type);
 
 void print_hex_bytes(unsigned char *data, size_t len);
 
-
-// Include subheaders after all the #defines are in place
-
-#include "readsb.pb-c.h"
-
 //======================== structure declarations =========================
 
 // The struct we use to store information about a decoded message.
