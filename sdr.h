@@ -25,6 +25,8 @@
 #ifndef SDR_H
 #define SDR_H
 
+#include <time.h>
+
 // Common interface to different SDR inputs.
 
 void sdrInitConfig();
