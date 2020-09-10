@@ -224,7 +224,6 @@ void print_hex_bytes(unsigned char *data, size_t len);
 
 // Include subheaders after all the #defines are in place
 
-#include "sdr.h"
 #include "readsb.pb-c.h"
 
 //======================== structure declarations =========================
