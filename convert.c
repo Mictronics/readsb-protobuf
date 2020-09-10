@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "readsb.h"
+#include "convert.h"
 
 struct converter_state {
     float dc_a;
