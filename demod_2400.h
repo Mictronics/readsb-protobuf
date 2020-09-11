@@ -25,10 +25,11 @@
 #define DEMOD_2400_H
 
 #include <stdint.h>
+#include "station.h"
 
 struct mag_buf;
 
-void demodulate2400(struct mag_buf *mag);
-void demodulate2400AC(struct mag_buf *mag);
+void demodulate2400(struct _Modes *Modes, struct mag_buf *mag);
+void demodulate2400AC(struct _Modes *Modes, struct mag_buf *mag);
 
 #endif

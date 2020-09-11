@@ -770,9 +770,9 @@ int main(int argc, char **argv) {
                 // Process one buffer
                 start_cpu_timing(&start_time);
 
-                demodulate2400(buf);
+                demodulate2400(&Modes, buf);
                 if (Modes.mode_ac) {
-                    demodulate2400AC(buf);
+                    demodulate2400AC(&Modes, buf);
                 }
 
                 Modes.stats_current.samples_processed += buf->validLength;

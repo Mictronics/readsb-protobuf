@@ -78,7 +78,7 @@ static inline int slice_phase4(uint16_t *m) {
 // try to demodulate some Mode S messages.
 //
 
-void demodulate2400(struct mag_buf *mag) {
+void demodulate2400(struct _Modes *Modes, struct mag_buf *mag) {
     static struct modesMessage zeroMessage;
     struct modesMessage mm;
     unsigned char msg1[MODES_LONG_MSG_BYTES], msg2[MODES_LONG_MSG_BYTES], *msg;
@@ -184,7 +184,7 @@ void demodulate2400(struct mag_buf *mag) {
         }
 
         // try all phases
-        Modes.stats_current.demod_preambles++;
+        Modes->stats_current.demod_preambles++;
         bestmsg = NULL;
         bestscore = -2;
         bestphase = -1;
@@ -315,9 +315,9 @@ void demodulate2400(struct mag_buf *mag) {
         // Do we have a candidate?
         if (bestscore < 0) {
             if (bestscore == -1)
-                Modes.stats_current.demod_rejected_unknown_icao++;
+                Modes->stats_current.demod_rejected_unknown_icao++;
             else
-                Modes.stats_current.demod_rejected_bad++;
+                Modes->stats_current.demod_rejected_bad++;
             continue; // nope.
         }
 
@@ -341,12 +341,12 @@ void demodulate2400(struct mag_buf *mag) {
             int result = decodeModesMessage(&mm, bestmsg);
             if (result < 0) {
                 if (result == -1)
-                    Modes.stats_current.demod_rejected_unknown_icao++;
+                    Modes->stats_current.demod_rejected_unknown_icao++;
                 else
-                    Modes.stats_current.demod_rejected_bad++;
+                    Modes->stats_current.demod_rejected_bad++;
                 continue;
             } else {
-                Modes.stats_current.demod_accepted[mm.correctedbits]++;
+                Modes->stats_current.demod_accepted[mm.correctedbits]++;
             }
         }
 
@@ -364,14 +364,14 @@ void demodulate2400(struct mag_buf *mag) {
 
             signal_power = scaled_signal_power / 65535.0 / 65535.0;
             mm.signalLevel = signal_power / signal_len;
-            Modes.stats_current.signal_power_sum += signal_power;
-            Modes.stats_current.signal_power_count += signal_len;
+            Modes->stats_current.signal_power_sum += signal_power;
+            Modes->stats_current.signal_power_count += signal_len;
             sum_scaled_signal_power += scaled_signal_power;
 
-            if (mm.signalLevel > Modes.stats_current.peak_signal_power)
-                Modes.stats_current.peak_signal_power = mm.signalLevel;
+            if (mm.signalLevel > Modes->stats_current.peak_signal_power)
+                Modes->stats_current.peak_signal_power = mm.signalLevel;
             if (mm.signalLevel > 0.50119)
-                Modes.stats_current.strong_signal_count++; // signal power above -3dBFS
+                Modes->stats_current.strong_signal_count++; // signal power above -3dBFS
         }
 
         // Skip over the message:
@@ -389,8 +389,8 @@ void demodulate2400(struct mag_buf *mag) {
     /* update noise power */
     {
         double sum_signal_power = sum_scaled_signal_power / 65535.0 / 65535.0;
-        Modes.stats_current.noise_power_sum += (mag->mean_power * mlen - sum_signal_power);
-        Modes.stats_current.noise_power_count += mlen;
+        Modes->stats_current.noise_power_sum += (mag->mean_power * mlen - sum_signal_power);
+        Modes->stats_current.noise_power_count += mlen;
     }
 }
 
@@ -486,7 +486,7 @@ static void draw_modeac(uint16_t *m, unsigned modeac, unsigned f1_clock, unsigne
 //
 // one 2.4MHz sample = 25 cycles
 
-void demodulate2400AC(struct mag_buf *mag) {
+void demodulate2400AC(struct _Modes *Modes, struct mag_buf *mag) {
     struct modesMessage mm;
     uint16_t *m = mag->data;
     uint32_t mlen = mag->validLength - mag->overlap;
@@ -670,6 +670,6 @@ void demodulate2400AC(struct mag_buf *mag) {
         useModesMessage(&mm);
 
         f1_sample += (20 * 87 / 25);
-        Modes.stats_current.demod_modeac++;
+        Modes->stats_current.demod_modeac++;
     }
 }
