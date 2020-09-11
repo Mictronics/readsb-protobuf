@@ -26,6 +26,7 @@
 #define SDR_H
 
 #include <time.h>
+#include <stdbool.h>
 
 // Common interface to different SDR inputs.
 

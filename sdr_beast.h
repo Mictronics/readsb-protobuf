@@ -20,6 +20,8 @@
 #ifndef SDR_BEAST_H
 #define SDR_BEAST_H
 
+#include <stdbool.h>
+
 void beastInitConfig();
 bool beastHandleOption(int argc, char *argv);
 bool beastOpen();

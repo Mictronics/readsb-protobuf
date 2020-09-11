@@ -65,7 +65,6 @@
 
 // ============================= Include files ==========================
 
-#include <stdbool.h>
 #include "compat/compat.h"
 #include "readsb.pb-c.h"
 

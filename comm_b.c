@@ -24,10 +24,11 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdlib.h>
 #include "readsb.h"
 #include "comm_b.h"
 #include "mode_s.h"
-#include <stdlib.h>
 #include "ais_charset.h"
 
 typedef int (*CommBDecoderFn)(struct modesMessage *, bool);
