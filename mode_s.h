@@ -26,13 +26,14 @@
 #define MODE_S_H
 
 #include <assert.h>
+#include "station.h"
 
 //
 // Functions exported from mode_s.c
 //
 int modesMessageLenByType(int type);
 int scoreModesMessage(unsigned char *msg, int validbits);
-int decodeModesMessage(struct modesMessage *mm, unsigned char *msg);
+int decodeModesMessage(struct _Modes *Modes, struct modesMessage *mm, unsigned char *msg);
 int esTypeHasSubtype(unsigned metype);
 const char *esTypeName(unsigned metype, unsigned mesub);
 // datafield extraction helpers

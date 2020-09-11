@@ -419,16 +419,16 @@ int scoreModesMessage(unsigned char *msg, int validbits) {
 // and split it into fields populating a modesMessage structure.
 //
 
-static void decodeExtendedSquitter(struct modesMessage *mm);
+static void decodeExtendedSquitter(struct _Modes *Modes, struct modesMessage *mm);
 
 // return 0 if all OK
 //   -1: message might be valid, but we couldn't validate the CRC against a known ICAO
 //   -2: bad message or unrepairable CRC error
 
-int decodeModesMessage(struct modesMessage *mm, unsigned char *msg) {
+int decodeModesMessage(struct _Modes *Modes, struct modesMessage *mm, unsigned char *msg) {
     // Work on our local copy.
     memcpy(mm->msg, msg, MODES_LONG_MSG_BYTES);
-    if (Modes.net_verbatim) {
+    if (Modes == NULL || Modes->net_verbatim) {
         // Preserve the original uncorrected copy for later forwarding
         memcpy(mm->verbatim, msg, MODES_LONG_MSG_BYTES);
     }
@@ -681,7 +681,7 @@ int decodeModesMessage(struct modesMessage *mm, unsigned char *msg) {
     // ME (message, extended squitter)
     if (mm->msgtype == 17 || mm->msgtype == 18) {
         memcpy(mm->ME, &msg[4], 7);
-        decodeExtendedSquitter(mm);
+        decodeExtendedSquitter(Modes, mm);
     }
 
     // MV (message, ACAS)
@@ -940,7 +940,7 @@ static void decodeESSurfacePosition(struct modesMessage *mm, int check_imf) {
     mm->cpr_lon = getbits(me, 40, 56);
 }
 
-static void decodeESAirbornePosition(struct modesMessage *mm, int check_imf) {
+static void decodeESAirbornePosition(struct _Modes *Modes, struct modesMessage *mm, int check_imf) {
     // Airborne position and altitude
     unsigned char *me = mm->ME;
 
@@ -999,7 +999,9 @@ static void decodeESAirbornePosition(struct modesMessage *mm, int check_imf) {
             //   400648 (BAE ATP) - Atlantic Airlines
             // altitude == 0, longitude == 0, type == 15 and zeros in latitude LSB.
             // Can alternate with valid reports having type == 14
-            Modes.stats_current.cpr_filtered++;
+            if (Modes != NULL) {
+                Modes->stats_current.cpr_filtered++;
+            }
         } else {
             // Otherwise, assume it's valid.
             mm->cpr_valid = 1;
@@ -1374,7 +1376,7 @@ static void decodeESOperationalStatus(struct modesMessage *mm, int check_imf) {
     }
 }
 
-static void decodeExtendedSquitter(struct modesMessage *mm) {
+static void decodeExtendedSquitter(struct _Modes *Modes, struct modesMessage *mm) {
     unsigned char *me = mm->ME;
     unsigned metype = mm->metype = getbits(me, 1, 5);
     unsigned check_imf = 0;
@@ -1447,7 +1449,7 @@ static void decodeExtendedSquitter(struct modesMessage *mm) {
         case 0: // Airborne position, baro altitude only
         case 9: case 10: case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: // Airborne position, baro
         case 20: case 21: case 22: // Airborne position, geometric altitude (HAE or MSL)
-            decodeESAirbornePosition(mm, check_imf);
+            decodeESAirbornePosition(Modes, mm, check_imf);
             break;
 
         case 23:

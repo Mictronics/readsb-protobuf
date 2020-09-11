@@ -338,7 +338,7 @@ void demodulate2400(struct _Modes *Modes, struct mag_buf *mag) {
 
         // Decode the received message
         {
-            int result = decodeModesMessage(&mm, bestmsg);
+            int result = decodeModesMessage(Modes, &mm, bestmsg);
             if (result < 0) {
                 if (result == -1)
                     Modes->stats_current.demod_rejected_unknown_icao++;
