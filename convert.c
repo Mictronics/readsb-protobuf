@@ -24,6 +24,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "readsb.h"
 #include "convert.h"
 
