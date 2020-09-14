@@ -90,11 +90,11 @@ void ifileInitConfig(void) {
     ifile.converter_state = NULL;
 }
 
-bool ifileHandleOption(int argc, char *argv) {
+bool ifileHandleOption(struct _Modes *Modes, int argc, char *argv) {
     switch (argc) {
         case OptIfileName:
             ifile.filename = strdup(argv);
-            Modes.sdr_type = SDR_IFILE;
+            Modes->sdr_type = SDR_IFILE;
             break;
         case OptIfileFormat:
             if (!strcasecmp(argv, "uc8")) {
@@ -123,7 +123,7 @@ bool ifileHandleOption(int argc, char *argv) {
 // instead of using an RTLSDR device
 //
 
-bool ifileOpen(void) {
+bool ifileOpen(struct _Modes *Modes) {
     if (!ifile.filename) {
         fprintf(stderr, "SDR type 'ifile' requires an --ifile argument\n");
         return false;
@@ -160,8 +160,8 @@ bool ifileOpen(void) {
     }
 
     ifile.converter = init_converter(ifile.input_format,
-            Modes.sample_rate,
-            Modes.dc_filter,
+            Modes->sample_rate,
+            Modes->dc_filter,
             &ifile.converter_state);
     if (!ifile.converter) {
         fprintf(stderr, "ifile: can't initialize sample converter\n");
@@ -172,7 +172,7 @@ bool ifileOpen(void) {
     return true;
 }
 
-void ifileRun() {
+void ifileRun(struct _Modes *Modes) {
     if (ifile.fd < 0)
         return;
 
@@ -183,7 +183,7 @@ void ifileRun() {
 
     uint64_t sampleCounter = 0;
 
-    while (!Modes.exit && !eof) {
+    while (!Modes->exit && !eof) {
 
         /* wait for up to 1000ms for a buffer */
         struct mag_buf *outbuf = fifo_acquire(100 /* milliseconds */);
@@ -192,7 +192,7 @@ void ifileRun() {
             continue;
         }
 
-        sdrMonitor();
+        sdrMonitor(Modes);
         
         // Get the system time for the start of this block
         outbuf->sysTimestamp = mstime();
@@ -223,13 +223,13 @@ void ifileRun() {
         outbuf->validLength = outbuf->overlap + samples_read;
         outbuf->flags = 0;
 
-        if (ifile.throttle || Modes.interactive) {
+        if (ifile.throttle || Modes->interactive) {
             // Wait until we are allowed to release this buffer to the FIFO
             while (clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_buffer_delivery, NULL) == EINTR)
                 ;
 
             // compute the time we can deliver the next buffer.
-            next_buffer_delivery.tv_nsec += samples_read * 1e9 / Modes.sample_rate;
+            next_buffer_delivery.tv_nsec += samples_read * 1e9 / Modes->sample_rate;
             normalize_timespec(&next_buffer_delivery);
         }
 

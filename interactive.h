@@ -12,9 +12,10 @@ extern "C" {
 //
 // Functions exported from interactive.c
 //
-void interactiveInit (void);
-void interactiveShowData (void);
-void interactiveCleanup (void);
+struct _Modes;
+void interactiveInit (struct _Modes *Modes);
+void interactiveShowData (struct _Modes *Modes);
+void interactiveCleanup (struct _Modes *Modes);
 
 #ifdef __cplusplus
 }

@@ -22,8 +22,9 @@
 
 #include <stdbool.h>
 
+struct _Modes;
 void beastInitConfig();
-bool beastHandleOption(int argc, char *argv);
+bool beastHandleOption(struct _Modes *Modes, int argc, char *argv);
 bool beastOpen();
 void beastRun();
 void beastClose();

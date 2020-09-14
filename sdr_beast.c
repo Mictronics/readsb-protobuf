@@ -40,30 +40,30 @@ static struct {
     uint16_t padding;
 } BeastSettings;
 
-static void beastSetOption(char opt) {
+static void beastSetOption(struct _Modes *Modes, char opt) {
     char optionsmsg[3] = {0x1a, '1', opt};
-    if (write(Modes.beast_fd, optionsmsg, 3) < 3) {
+    if (write(Modes->beast_fd, optionsmsg, 3) < 3) {
         fprintf(stderr, "Beast failed to set option: %s\n", strerror(errno));
     }
 }
 
-void beastInitConfig(void) {
-    free(Modes.beast_serial);
-    Modes.beast_serial = strdup("/dev/ttyUSB0");
+void beastInitConfig(struct _Modes *Modes) {
+    free(Modes->beast_serial);
+    Modes->beast_serial = strdup("/dev/ttyUSB0");
     BeastSettings.filter_df045 = false;
     BeastSettings.filter_df1117 = false;
     BeastSettings.mode_ac = false;
-    Modes.mode_ac = 0;
+    Modes->mode_ac = 0;
     BeastSettings.mlat_timestamp = true;
     BeastSettings.fec = true;
     BeastSettings.crc = true;
 }
 
-bool beastHandleOption(int argc, char *argv) {
+bool beastHandleOption(struct _Modes *Modes, int argc, char *argv) {
     switch (argc) {
         case OptBeastSerial:
-            free(Modes.beast_serial);
-            Modes.beast_serial = strdup(argv);
+            free(Modes->beast_serial);
+            Modes->beast_serial = strdup(argv);
             break;
         case OptBeastDF1117:
             BeastSettings.filter_df1117 = true;
@@ -82,27 +82,27 @@ bool beastHandleOption(int argc, char *argv) {
             break;
         case OptBeastModeAc:
             BeastSettings.mode_ac = true;
-            Modes.mode_ac = 1;
-            Modes.mode_ac_auto = 0;
+            Modes->mode_ac = 1;
+            Modes->mode_ac_auto = 0;
             break;
     }
     return true;
 }
 
-bool beastOpen(void) {
+bool beastOpen(struct _Modes *Modes) {
     struct termios tios;
     speed_t baud = B3000000;
 
-    Modes.beast_fd = open(Modes.beast_serial, O_RDWR | O_NOCTTY);
-    if (Modes.beast_fd < 0) {
+    Modes->beast_fd = open(Modes->beast_serial, O_RDWR | O_NOCTTY);
+    if (Modes->beast_fd < 0) {
         fprintf(stderr, "Failed to open serial device %s: %s\n",
-                Modes.beast_serial, strerror(errno));
-        fprintf(stderr, "In case of permission denied try: sudo chmod a+rw %s\nor permanent permission: sudo adduser readsb dialout\n", Modes.beast_serial);
+                Modes->beast_serial, strerror(errno));
+        fprintf(stderr, "In case of permission denied try: sudo chmod a+rw %s\nor permanent permission: sudo adduser readsb dialout\n", Modes->beast_serial);
         return false;
     }
 
-    if (tcgetattr(Modes.beast_fd, &tios) < 0) {
-        fprintf(stderr, "tcgetattr(%s): %s\n", Modes.beast_serial, strerror(errno));
+    if (tcgetattr(Modes->beast_fd, &tios) < 0) {
+        fprintf(stderr, "tcgetattr(%s): %s\n", Modes->beast_serial, strerror(errno));
         return false;
     }
 
@@ -113,79 +113,79 @@ bool beastOpen(void) {
     tios.c_cc[VMIN] = 11;
     tios.c_cc[VTIME] = 0;
 
-    if (Modes.sdr_type == SDR_GNS) {
+    if (Modes->sdr_type == SDR_GNS) {
         baud = B921600;
     }
 
     if (cfsetispeed(&tios, baud) < 0) {
         fprintf(stderr, "Beast cfsetispeed(%s, %d): %s\n",
-                Modes.beast_serial, baud, strerror(errno));
+                Modes->beast_serial, baud, strerror(errno));
         return false;
     }
 
     if (cfsetospeed(&tios, baud) < 0) {
         fprintf(stderr, "Beast cfsetospeed(%s, %d): %s\n",
-                Modes.beast_serial, baud, strerror(errno));
+                Modes->beast_serial, baud, strerror(errno));
         return false;
     }
 
-    tcflush(Modes.beast_fd, TCIFLUSH);
+    tcflush(Modes->beast_fd, TCIFLUSH);
 
-    if (tcsetattr(Modes.beast_fd, TCSANOW, &tios) < 0) {
+    if (tcsetattr(Modes->beast_fd, TCSANOW, &tios) < 0) {
         fprintf(stderr, "Beast tcsetattr(%s): %s\n",
-                Modes.beast_serial, strerror(errno));
+                Modes->beast_serial, strerror(errno));
         return false;
     }
 
-    if (Modes.sdr_type == SDR_MODESBEAST) {
+    if (Modes->sdr_type == SDR_MODESBEAST) {
         /* set options */
-        beastSetOption('C'); /* use binary format */
-        beastSetOption('H'); /* RTS enabled */
+        beastSetOption(Modes, 'C'); /* use binary format */
+        beastSetOption(Modes, 'H'); /* RTS enabled */
 
         if (BeastSettings.filter_df1117)
-            beastSetOption('D'); /* enable DF11/17-only filter*/
+            beastSetOption(Modes, 'D'); /* enable DF11/17-only filter*/
         else
-            beastSetOption('d'); /* disable DF11/17-only filter, deliver all messages */
+            beastSetOption(Modes, 'd'); /* disable DF11/17-only filter, deliver all messages */
 
         if (BeastSettings.mlat_timestamp)
-            beastSetOption('E'); /* enable mlat timestamps */
+            beastSetOption(Modes, 'E'); /* enable mlat timestamps */
         else
-            beastSetOption('e'); /* disable mlat timestamps */
+            beastSetOption(Modes, 'e'); /* disable mlat timestamps */
 
         if (BeastSettings.crc)
-            beastSetOption('f'); /* enable CRC checks */
+            beastSetOption(Modes, 'f'); /* enable CRC checks */
         else
-            beastSetOption('F'); /* disable CRC checks */
+            beastSetOption(Modes, 'F'); /* disable CRC checks */
 
         if (BeastSettings.filter_df045)
-            beastSetOption('G'); /* enable DF0/4/5 filter */
+            beastSetOption(Modes, 'G'); /* enable DF0/4/5 filter */
         else
-            beastSetOption('g'); /* disable DF0/4/5 filter, deliver all messages */
+            beastSetOption(Modes, 'g'); /* disable DF0/4/5 filter, deliver all messages */
 
-        if (Modes.nfix_crc || BeastSettings.fec)
-            beastSetOption('i'); /* FEC enabled */
+        if (Modes->nfix_crc || BeastSettings.fec)
+            beastSetOption(Modes, 'i'); /* FEC enabled */
         else
-            beastSetOption('I'); /* FEC disbled */
+            beastSetOption(Modes, 'I'); /* FEC disbled */
 
-        if (Modes.mode_ac || BeastSettings.mode_ac)
-            beastSetOption('J'); /* Mode A/C enabled */
+        if (Modes->mode_ac || BeastSettings.mode_ac)
+            beastSetOption(Modes, 'J'); /* Mode A/C enabled */
         else
-            beastSetOption('j'); /* Mode A/C disabled */
+            beastSetOption(Modes, 'j'); /* Mode A/C disabled */
     }
 
     // Request firmware message from GNS HULC
-    if (Modes.sdr_type == SDR_GNS) {
+    if (Modes->sdr_type == SDR_GNS) {
         char optionsmsg[4] = {'#', '0', '0', '\r'};
-        if (write(Modes.beast_fd, optionsmsg, 4) < 4) {
+        if (write(Modes->beast_fd, optionsmsg, 4) < 4) {
             fprintf(stderr, "GNS HULC request firmware failed: %s\n", strerror(errno));
         }
     }
 
     /* Kick on handshake and start reception */
     int RTSDTR_flag = TIOCM_RTS | TIOCM_DTR;
-    ioctl(Modes.beast_fd, TIOCMBIS, &RTSDTR_flag); //Set RTS&DTR pin
+    ioctl(Modes->beast_fd, TIOCMBIS, &RTSDTR_flag); //Set RTS&DTR pin
 
-    if (Modes.sdr_type == SDR_MODESBEAST) {
+    if (Modes->sdr_type == SDR_MODESBEAST) {
         fprintf(stderr, "Running Mode-S Beast via USB.\n");
     } else {
         fprintf(stderr, "Running GNS HULC via USB.\n");

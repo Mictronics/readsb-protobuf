@@ -144,7 +144,7 @@ static void view1090Init(void) {
     modesChecksumInit(Modes.nfix_crc);
     icaoFilterInit();
     modeACInit();
-    interactiveInit();
+    interactiveInit(&Modes);
 }
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
     Modes.services = NULL;
 
     // Try to connect to the selected ip address and port. We only support *ONE* input connection which we initiate.here.
-    s = makeBeastInputService();
+    s = makeBeastInputService(&Modes);
     con->address = bo_connect_ipaddr;
     con->port = bo_connect_port;
     con->service = s;
@@ -238,7 +238,7 @@ int main(int argc, char **argv) {
     }
     pthread_mutex_lock(con->mutex);
 
-    serviceConnect(con);
+    serviceConnect(&Modes, con);
     uint64_t timeout = mstime() + 10 * 1000;
     int counter = 0;
     while (!con->connected && timeout > mstime() && counter < 8) {
@@ -247,11 +247,11 @@ int main(int argc, char **argv) {
         nanosleep(&slp, NULL);
         if (con->connecting) {
             // Check to see...
-            checkServiceConnected(con);
+            checkServiceConnected(&Modes, con);
         } else {
             if (con->next_reconnect <= mstime()) {
                 counter++;
-                serviceConnect(con);
+                serviceConnect(&Modes, con);
             }
         }
     }
@@ -272,16 +272,16 @@ int main(int argc, char **argv) {
     while (!Modes.exit) {
         struct timespec r = {0, 100 * 1000 * 1000};
         icaoFilterExpire();
-        trackPeriodicUpdate();
-        modesNetPeriodicWork();
+        trackPeriodicUpdate(&Modes);
+        modesNetPeriodicWork(&Modes);
 
         if (Modes.interactive)
-            interactiveShowData();
+            interactiveShowData(&Modes);
 
         if (s->connections == 0) {
             // lost input connection, try to reconnect
             sleep(1);
-            serviceConnect(con);
+            serviceConnect(&Modes, con);
             continue;
         }
 
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
     free(con);
 
 exit:
-    interactiveCleanup();
+    interactiveCleanup(&Modes);
     return (0);
 }
 //

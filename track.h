@@ -240,10 +240,11 @@ trackDataAge(const data_validity *v) {
  * Return the tracked aircraft.
  */
 struct modesMessage;
-struct aircraft *trackUpdateFromMessage(struct modesMessage *mm);
+struct _Modes;
+struct aircraft *trackUpdateFromMessage(struct _Modes *Modes, struct modesMessage *mm);
 
 /* Call periodically */
-void trackPeriodicUpdate();
+void trackPeriodicUpdate(struct _Modes *Modes);
 
 static inline int
 min(int a, int b) {

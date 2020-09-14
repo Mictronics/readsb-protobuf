@@ -65,7 +65,7 @@ void add_timespecs(const struct timespec *x, const struct timespec *y, struct ti
     z->tv_nsec = z->tv_nsec % 1000000000L;
 }
 
-void display_stats(struct stats *st) {
+void display_stats(struct _Modes *Modes, struct stats *st) {
     int j;
     time_t tt_start, tt_end;
     struct tm tm_start, tm_end;
@@ -82,7 +82,7 @@ void display_stats(struct stats *st) {
 
     printf("Statistics: %s - %s\n", tb_start, tb_end);
 
-    if (!Modes.net_only) {
+    if (!Modes->net_only) {
         printf("Local receiver:\n");
         printf("  %llu samples processed\n", (unsigned long long) st->samples_processed);
         printf("  %llu samples dropped\n", (unsigned long long) st->samples_dropped);
@@ -92,7 +92,7 @@ void display_stats(struct stats *st) {
         printf("    %u with bad message format or invalid CRC\n", st->demod_rejected_bad);
         printf("    %u with unrecognized ICAO address\n", st->demod_rejected_unknown_icao);
         printf("    %u accepted with correct CRC\n", st->demod_accepted[0]);
-        for (j = 1; j <= Modes.nfix_crc; ++j)
+        for (j = 1; j <= Modes->nfix_crc; ++j)
             printf("    %u accepted with %d-bit error repaired\n", st->demod_accepted[j], j);
 
         if (st->noise_power_sum > 0 && st->noise_power_count > 0) {
@@ -114,14 +114,14 @@ void display_stats(struct stats *st) {
                 st->strong_signal_count);
     }
 
-    if (Modes.net) {
+    if (Modes->net) {
         printf("Messages from network clients:\n");
         printf("  %u Mode A/C messages received\n", st->remote_received_modeac);
         printf("  %u Mode S messages received\n", st->remote_received_modes);
         printf("    %u with bad message format or invalid CRC\n", st->remote_rejected_bad);
         printf("    %u with unrecognized ICAO address\n", st->remote_rejected_unknown_icao);
         printf("    %u accepted with correct CRC\n", st->remote_accepted[0]);
-        for (j = 1; j <= Modes.nfix_crc; ++j)
+        for (j = 1; j <= Modes->nfix_crc; ++j)
             printf("    %u accepted with %d-bit error repaired\n", st->remote_accepted[j], j);
     }
 

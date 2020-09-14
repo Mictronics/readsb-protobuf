@@ -93,22 +93,22 @@
 //    handled via non-blocking I/O and manually polling clients to see if
 //    they have something new to share with us when reading is needed.
 
-static int handleBeastCommand(struct client *c, char *p, int remote);
-static int decodeBinMessage(struct client *c, char *p, int remote);
-static int decodeHexMessage(struct client *c, char *hex, int remote);
-static int decodeSbsLine(struct client *c, char *line, int remote);
+static int handleBeastCommand(struct _Modes *Modes, struct client *c, char *p, int remote);
+static int decodeBinMessage(struct _Modes *Modes, struct client *c, char *p, int remote);
+static int decodeHexMessage(struct _Modes *Modes, struct client *c, char *hex, int remote);
+static int decodeSbsLine(struct _Modes *Modes, struct client *c, char *line, int remote);
 
-static void send_raw_heartbeat(struct net_service *service);
-static void send_beast_heartbeat(struct net_service *service);
-static void send_sbs_heartbeat(struct net_service *service);
+static void send_raw_heartbeat(struct _Modes *Modes, struct net_service *service);
+static void send_beast_heartbeat(struct _Modes *Modes, struct net_service *service);
+static void send_sbs_heartbeat(struct _Modes *Modes, struct net_service *service);
 
-static void writeFATSVEvent(struct modesMessage *mm, struct aircraft *a);
-static void writeFATSVPositionUpdate(float lat, float lon, float alt);
+static void writeFATSVEvent(struct _Modes *Modes, struct modesMessage *mm, struct aircraft *a);
+static void writeFATSVPositionUpdate(struct _Modes *Modes, float lat, float lon, float alt);
 
-static void autoset_modeac();
+static void autoset_modeac(struct _Modes *Modes);
 static int hexDigitVal(int c);
 static void *pthreadGetaddrinfo(void *param);
-static void flushClient(struct client *c, uint64_t now);
+static void flushClient(struct _Modes *Modes, struct client *c, uint64_t now);
 
 //
 //=========================================================================
@@ -119,7 +119,7 @@ static void flushClient(struct client *c, uint64_t now);
 // Init a service with the given read/write characteristics, return the new service.
 // Doesn't arrange for the service to listen or connect
 
-struct net_service *serviceInit(const char *descr, struct net_writer *writer, heartbeat_fn hb, read_mode_t mode, const char *sep, read_fn handler) {
+struct net_service *serviceInit(struct _Modes *Modes, const char *descr, struct net_writer *writer, heartbeat_fn hb, read_mode_t mode, const char *sep, read_fn handler) {
     struct net_service *service;
     if (!descr) {
         fprintf(stderr, "Fatal: no service description\n");
@@ -131,8 +131,8 @@ struct net_service *serviceInit(const char *descr, struct net_writer *writer, he
         exit(1);
     }
 
-    service->next = Modes.services;
-    Modes.services = service;
+    service->next = Modes->services;
+    Modes->services = service;
 
     service->descr = descr;
     service->listener_count = 0;
@@ -164,18 +164,18 @@ struct net_service *serviceInit(const char *descr, struct net_writer *writer, he
 
 // Create a client attached to the given service using the provided socket FD
 
-struct client *createSocketClient(struct net_service *service, int fd) {
-    anetSetSendBuffer(Modes.aneterr, fd, (MODES_NET_SNDBUF_SIZE << Modes.net_sndbuf_size));
-    return createGenericClient(service, fd);
+struct client *createSocketClient(struct _Modes *Modes, struct net_service *service, int fd) {
+    anetSetSendBuffer(Modes->aneterr, fd, (MODES_NET_SNDBUF_SIZE << Modes->net_sndbuf_size));
+    return createGenericClient(Modes, service, fd);
 }
 
 // Create a client attached to the given service using the provided FD (might not be a socket!)
 
-struct client *createGenericClient(struct net_service *service, int fd) {
+struct client *createGenericClient(struct _Modes *Modes, struct net_service *service, int fd) {
     struct client *c;
     uint64_t now = mstime();
 
-    anetNonBlock(Modes.aneterr, fd);
+    anetNonBlock(Modes->aneterr, fd);
 
     if (!service || fd == -1) {
         fprintf(stderr, "Fatal: createGenericClient called with invalid parameters!\n");
@@ -200,12 +200,12 @@ struct client *createGenericClient(struct net_service *service, int fd) {
     c->con = NULL;
 
     if (service->writer) {
-        if (!(c->sendq = malloc(MODES_NET_SNDBUF_SIZE << Modes.net_sndbuf_size))) {
+        if (!(c->sendq = malloc(MODES_NET_SNDBUF_SIZE << Modes->net_sndbuf_size))) {
             fprintf(stderr, "Out of memory allocating client SendQ\n");
             exit(1);
         }
         // Have to keep track of this manually
-        c->sendq_max = MODES_NET_SNDBUF_SIZE << Modes.net_sndbuf_size;
+        c->sendq_max = MODES_NET_SNDBUF_SIZE << Modes->net_sndbuf_size;
     }
     service->clients = c;
 
@@ -220,28 +220,28 @@ struct client *createGenericClient(struct net_service *service, int fd) {
 // Timer callback checking periodically whether the push service lost its server
 // connection and requires a re-connect.
 
-void serviceReconnectCallback(uint64_t now) {
+void serviceReconnectCallback(struct _Modes *Modes, uint64_t now) {
     // Loop through the connectors, and
     //  - If it's not connected:
     //    - If it's "connecting", check to see if the fd is ready
     //    - Otherwise, if enough time has passed, try reconnecting
 
-    for (int i = 0; i < Modes.net_connectors_count; i++) {
-        struct net_connector *con = Modes.net_connectors[i];
+    for (int i = 0; i < Modes->net_connectors_count; i++) {
+        struct net_connector *con = Modes->net_connectors[i];
         if (!con->connected) {
             if (con->connecting) {
                 // Check to see...
-                checkServiceConnected(con);
+                checkServiceConnected(Modes, con);
             } else {
                 if (con->next_reconnect <= now) {
-                    serviceConnect(con);
+                    serviceConnect(Modes, con);
                 }
             }
         }
     }
 }
 
-struct client *checkServiceConnected(struct net_connector *con) {
+struct client *checkServiceConnected(struct _Modes *Modes, struct net_connector *con) {
     int rv;
 
     struct pollfd pfd = {con->fd, (POLLIN | POLLOUT), 0};
@@ -288,7 +288,7 @@ struct client *checkServiceConnected(struct net_connector *con) {
     // If we're able to create this "client", save the sockaddr info and print a msg
     struct client *c;
 
-    c = createSocketClient(con->service, con->fd);
+    c = createSocketClient(Modes, con->service, con->fd);
     if (!c) {
         con->connecting = 0;
         fprintf(stderr, "createSocketClient failed on fd %d to %s%s port %s\n",
@@ -313,7 +313,7 @@ struct client *checkServiceConnected(struct net_connector *con) {
 // Initiate an outgoing connection.
 // Return the new client or NULL if the connection failed
 
-struct client *serviceConnect(struct net_connector *con) {
+struct client *serviceConnect(struct _Modes *Modes, struct net_connector *con) {
 
     int fd;
 
@@ -356,7 +356,7 @@ struct client *serviceConnect(struct net_connector *con) {
 
             if (con->gai_error) {
                 fprintf(stderr, "%s: Name resolution for %s failed: %s\n", con->service->descr, con->address, gai_strerror(con->gai_error));
-                con->next_reconnect = mstime() + Modes.net_connector_delay;
+                con->next_reconnect = mstime() + Modes->net_connector_delay;
                 return NULL;
             }
 
@@ -379,15 +379,15 @@ struct client *serviceConnect(struct net_connector *con) {
     }
 
     if (!con->try_addr->ai_next) {
-        con->next_reconnect = mstime() + Modes.net_connector_delay;
+        con->next_reconnect = mstime() + Modes->net_connector_delay;
     } else {
         con->next_reconnect = mstime() + 100;
     }
 
-    fd = anetTcpNonBlockConnectAddr(Modes.aneterr, con->try_addr);
+    fd = anetTcpNonBlockConnectAddr(Modes->aneterr, con->try_addr);
     if (fd == ANET_ERR) {
         fprintf(stderr, "%s: Connection to %s%s port %s failed: %s\n",
-                con->service->descr, con->address, con->resolved_addr, con->port, Modes.aneterr);
+                con->service->descr, con->address, con->resolved_addr, con->port, Modes->aneterr);
         return NULL;
     }
 
@@ -395,20 +395,20 @@ struct client *serviceConnect(struct net_connector *con) {
     con->connect_timeout = mstime() + 10 * 1000; // 10 sec TODO: Move to var
     con->fd = fd;
 
-    if (anetTcpKeepAlive(Modes.aneterr, fd) != ANET_OK) {
+    if (anetTcpKeepAlive(Modes->aneterr, fd) != ANET_OK) {
         fprintf(stderr, "%s: Unable to set keepalive: connection to %s port %s ...\n", con->service->descr, con->address, con->port);
     }
 
     // Since this is a non-blocking connect, it will always return right away.
     // We'll need to periodically check to see if it did, in fact, connect, but do it once here.
 
-    return checkServiceConnected(con);
+    return checkServiceConnected(Modes, con);
 }
 
 // Set up the given service to listen on an address/port.
 // _exits_ on failure!
 
-void serviceListen(struct net_service *service, char *bind_addr, char *bind_ports) {
+void serviceListen(struct _Modes *Modes, struct net_service *service, char *bind_addr, char *bind_ports) {
     int *fds = NULL;
     int n = 0;
     char *p, *end;
@@ -441,10 +441,10 @@ void serviceListen(struct net_service *service, char *bind_addr, char *bind_port
             p = end + 1;
         }
 
-        nfds = anetTcpServer(Modes.aneterr, buf, bind_addr, newfds, sizeof (newfds));
+        nfds = anetTcpServer(Modes->aneterr, buf, bind_addr, newfds, sizeof (newfds));
         if (nfds == ANET_ERR) {
             fprintf(stderr, "Error opening the listening port %s (%s): %s\n",
-                    buf, service->descr, Modes.aneterr);
+                    buf, service->descr, Modes->aneterr);
             exit(1);
         }
 
@@ -455,7 +455,7 @@ void serviceListen(struct net_service *service, char *bind_addr, char *bind_port
         }
 
         for (i = 0; i < nfds; ++i) {
-            anetNonBlock(Modes.aneterr, newfds[i]);
+            anetNonBlock(Modes->aneterr, newfds[i]);
             fds[n++] = newfds[i];
         }
     }
@@ -464,15 +464,15 @@ void serviceListen(struct net_service *service, char *bind_addr, char *bind_port
     service->listener_fds = fds;
 }
 
-struct net_service *makeBeastInputService(void) {
-    return serviceInit("Beast TCP input", NULL, NULL, READ_MODE_BEAST, NULL, decodeBinMessage);
+struct net_service *makeBeastInputService(struct _Modes *Modes) {
+    return serviceInit(Modes, "Beast TCP input", NULL, NULL, READ_MODE_BEAST, NULL, decodeBinMessage);
 }
 
-struct net_service *makeFatsvOutputService(void) {
-    return serviceInit("FATSV TCP output", &Modes.fatsv_out, NULL, READ_MODE_IGNORE, NULL, NULL);
+struct net_service *makeFatsvOutputService(struct _Modes *Modes) {
+    return serviceInit(Modes, "FATSV TCP output", &Modes->fatsv_out, NULL, READ_MODE_IGNORE, NULL, NULL);
 }
 
-void modesInitNet(void) {
+void modesInitNet(struct _Modes *Modes) {
     struct net_service *beast_out;
     struct net_service *beast_reduce_out;
     struct net_service *beast_in;
@@ -485,42 +485,42 @@ void modesInitNet(void) {
     uint64_t now = mstime();
 
     signal(SIGPIPE, SIG_IGN);
-    Modes.services = NULL;
+    Modes->services = NULL;
 
 
     // set up listeners
-    raw_out = serviceInit("Raw TCP output", &Modes.raw_out, send_raw_heartbeat, READ_MODE_IGNORE, NULL, NULL);
-    serviceListen(raw_out, Modes.net_bind_address, Modes.net_output_raw_ports);
+    raw_out = serviceInit(Modes, "Raw TCP output", &Modes->raw_out, send_raw_heartbeat, READ_MODE_IGNORE, NULL, NULL);
+    serviceListen(Modes, raw_out, Modes->net_bind_address, Modes->net_output_raw_ports);
 
-    beast_out = serviceInit("Beast TCP output", &Modes.beast_out, send_beast_heartbeat, READ_MODE_BEAST_COMMAND, NULL, handleBeastCommand);
-    serviceListen(beast_out, Modes.net_bind_address, Modes.net_output_beast_ports);
+    beast_out = serviceInit(Modes, "Beast TCP output", &Modes->beast_out, send_beast_heartbeat, READ_MODE_BEAST_COMMAND, NULL, handleBeastCommand);
+    serviceListen(Modes, beast_out, Modes->net_bind_address, Modes->net_output_beast_ports);
 
-    beast_reduce_out = serviceInit("BeastReduce TCP output", &Modes.beast_reduce_out, send_beast_heartbeat, READ_MODE_IGNORE, NULL, NULL);
-    serviceListen(beast_reduce_out, Modes.net_bind_address, Modes.net_output_beast_reduce_ports);
+    beast_reduce_out = serviceInit(Modes, "BeastReduce TCP output", &Modes->beast_reduce_out, send_beast_heartbeat, READ_MODE_IGNORE, NULL, NULL);
+    serviceListen(Modes, beast_reduce_out, Modes->net_bind_address, Modes->net_output_beast_reduce_ports);
 
-    vrs_out = serviceInit("VRS json output", &Modes.vrs_out, NULL, READ_MODE_IGNORE, NULL, NULL);
-    serviceListen(vrs_out, Modes.net_bind_address, Modes.net_output_vrs_ports);
+    vrs_out = serviceInit(Modes, "VRS json output", &Modes->vrs_out, NULL, READ_MODE_IGNORE, NULL, NULL);
+    serviceListen(Modes, vrs_out, Modes->net_bind_address, Modes->net_output_vrs_ports);
 
-    sbs_out = serviceInit("Basestation TCP output", &Modes.sbs_out, send_sbs_heartbeat, READ_MODE_IGNORE, NULL, NULL);
-    serviceListen(sbs_out, Modes.net_bind_address, Modes.net_output_sbs_ports);
+    sbs_out = serviceInit(Modes, "Basestation TCP output", &Modes->sbs_out, send_sbs_heartbeat, READ_MODE_IGNORE, NULL, NULL);
+    serviceListen(Modes, sbs_out, Modes->net_bind_address, Modes->net_output_sbs_ports);
 
-    sbs_in = serviceInit("Basestation TCP input", NULL, NULL, READ_MODE_ASCII, "\n", decodeSbsLine);
-    serviceListen(sbs_in, Modes.net_bind_address, Modes.net_input_sbs_ports);
+    sbs_in = serviceInit(Modes, "Basestation TCP input", NULL, NULL, READ_MODE_ASCII, "\n", decodeSbsLine);
+    serviceListen(Modes, sbs_in, Modes->net_bind_address, Modes->net_input_sbs_ports);
 
-    raw_in = serviceInit("Raw TCP input", NULL, NULL, READ_MODE_ASCII, "\n", decodeHexMessage);
-    serviceListen(raw_in, Modes.net_bind_address, Modes.net_input_raw_ports);
+    raw_in = serviceInit(Modes, "Raw TCP input", NULL, NULL, READ_MODE_ASCII, "\n", decodeHexMessage);
+    serviceListen(Modes, raw_in, Modes->net_bind_address, Modes->net_input_raw_ports);
 
     /* Beast input via network */
-    beast_in = makeBeastInputService();
-    serviceListen(beast_in, Modes.net_bind_address, Modes.net_input_beast_ports);
+    beast_in = makeBeastInputService(Modes);
+    serviceListen(Modes, beast_in, Modes->net_bind_address, Modes->net_input_beast_ports);
 
     /* Beast input from local Modes-S Beast via USB */
-    if (Modes.sdr_type == SDR_MODESBEAST || Modes.sdr_type == SDR_GNS) {
-        createGenericClient(beast_in, Modes.beast_fd);
+    if (Modes->sdr_type == SDR_MODESBEAST || Modes->sdr_type == SDR_GNS) {
+        createGenericClient(Modes, beast_in, Modes->beast_fd);
     }
 
-    for (int i = 0; i < Modes.net_connectors_count; i++) {
-        struct net_connector *con = Modes.net_connectors[i];
+    for (int i = 0; i < Modes->net_connectors_count; i++) {
+        struct net_connector *con = Modes->net_connectors[i];
         if (strcmp(con->protocol, "beast_out") == 0)
             con->service = beast_out;
         else if (strcmp(con->protocol, "beast_in") == 0)
@@ -545,7 +545,7 @@ void modesInitNet(void) {
         }
         pthread_mutex_lock(con->mutex);
     }
-    serviceReconnectCallback(now);
+    serviceReconnectCallback(Modes, now);
 }
 
 
@@ -556,20 +556,20 @@ void modesInitNet(void) {
 // awakened by new data arriving. This usually happens a few times every second
 //
 
-static uint64_t modesAcceptClients(uint64_t now) {
+static uint64_t modesAcceptClients(struct _Modes *Modes, uint64_t now) {
     int fd;
     struct net_service *s;
     struct client *c;
 
-    for (s = Modes.services; s; s = s->next) {
+    for (s = Modes->services; s; s = s->next) {
         int i;
         for (i = 0; i < s->listener_count; ++i) {
             struct sockaddr_storage storage;
             struct sockaddr *saddr = (struct sockaddr *) &storage;
             socklen_t slen = sizeof (storage);
 
-            while ((fd = anetGenericAccept(Modes.aneterr, s->listener_fds[i], saddr, &slen)) >= 0) {
-                c = createSocketClient(s, fd);
+            while ((fd = anetGenericAccept(Modes->aneterr, s->listener_fds[i], saddr, &slen)) >= 0) {
+                c = createSocketClient(Modes, s, fd);
                 if (c) {
                     // We created the client, save the sockaddr info and 'hostport'
                     getnameinfo(saddr, slen,
@@ -577,7 +577,7 @@ static uint64_t modesAcceptClients(uint64_t now) {
                             c->port, sizeof (c->port),
                             NI_NUMERICHOST | NI_NUMERICSERV);
 
-                    if (anetTcpKeepAlive(Modes.aneterr, fd) != ANET_OK) {
+                    if (anetTcpKeepAlive(Modes->aneterr, fd) != ANET_OK) {
                         fprintf(stderr, "%s: Unable to set keepalive on connection from %s port %s (fd %d)\n", c->service->descr, c->host, c->port, fd);
                     }
                 } else {
@@ -587,13 +587,13 @@ static uint64_t modesAcceptClients(uint64_t now) {
             }
 
             if (errno != EMFILE && errno != EINTR && errno != EAGAIN && errno != EWOULDBLOCK) {
-                fprintf(stderr, "%s: Error accepting new connection: %s\n", s->descr, Modes.aneterr);
+                fprintf(stderr, "%s: Error accepting new connection: %s\n", s->descr, Modes->aneterr);
             }
         }
     }
     // temporarily stop trying to accept new clients if we are limited by file descriptors
     if (errno == EMFILE) {
-        fprintf(stderr, "Accepting new connections suspended for 3 seconds: %s\n", Modes.aneterr);
+        fprintf(stderr, "Accepting new connections suspended for 3 seconds: %s\n", Modes->aneterr);
         return (now + 3000);
     }
 
@@ -607,15 +607,15 @@ static uint64_t modesAcceptClients(uint64_t now) {
 // On error free the client, collect the structure, adjust maxfd if needed.
 //
 
-static void modesCloseClient(struct client *c) {
+static void modesCloseClient(struct _Modes *Modes, struct client *c) {
     if (!c->service) {
         fprintf(stderr, "warning: double close of net client\n");
         return;
     }
 
-    if (Modes.exit == 0 && c->fd == Modes.beast_fd) {
+    if (Modes->exit == 0 && c->fd == Modes->beast_fd) {
         fprintf(stderr, "Closing client: USB handle failed?\n");
-        Modes.exit = 3;
+        Modes->exit = 3;
     }
 
     anetCloseSocket(c->fd);
@@ -626,7 +626,7 @@ static void modesCloseClient(struct client *c) {
         // only wait a short time to reconnect
         c->con->connecting = 0;
         c->con->connected = 0;
-        c->con->next_reconnect = mstime() + Modes.net_connector_delay / 10;
+        c->con->next_reconnect = mstime() + Modes->net_connector_delay / 10;
     }
 
     // mark it as inactive and ready to be freed
@@ -639,14 +639,14 @@ static void modesCloseClient(struct client *c) {
         c->sendq = NULL;
     }
 
-    autoset_modeac();
+    autoset_modeac(Modes);
 }
 
 //
 // Send data to clients, if we can...
 //
 
-static void flushClient(struct client *c, uint64_t now) {
+static void flushClient(struct _Modes *Modes, struct client *c, uint64_t now) {
     int towrite = c->sendq_len;
     char *psendq = c->sendq;
     int loops = 0;
@@ -664,7 +664,7 @@ static void flushClient(struct client *c, uint64_t now) {
                 fprintf(stderr, "%s: Send Error: %s: %s port %s (fd %d, SendQ %d, RecvQ %d)\n",
                         c->service->descr, strerror(err), c->host, c->port,
                         c->fd, c->sendq_len, c->buflen);
-                modesCloseClient(c);
+                modesCloseClient(Modes, c);
             }
             done = 1; // Blocking, just bail, try later.
         } else {
@@ -695,7 +695,7 @@ static void flushClient(struct client *c, uint64_t now) {
     // If writing has failed for 5 seconds, disconnect.
     if (c->last_flush + 5000 < now) {
         fprintf(stderr, "%s: Unable to send data, disconnecting: %s port %s (fd %d, SendQ %d)\n", c->service->descr, c->host, c->port, c->fd, c->sendq_len);
-        modesCloseClient(c);
+        modesCloseClient(Modes, c);
     }
 }
 
@@ -705,7 +705,7 @@ static void flushClient(struct client *c, uint64_t now) {
 // Send the write buffer for the specified writer to all connected clients
 //
 
-static void flushWrites(struct net_writer *writer) {
+static void flushWrites(struct _Modes *Modes, struct net_writer *writer) {
     struct client *c;
     uint64_t now = mstime();
 
@@ -721,14 +721,14 @@ static void flushWrites(struct net_writer *writer) {
                 fprintf(stderr, "%s: Dropped due to full SendQ: %s port %s (fd %d, SendQ %d, RecvQ %d)\n",
                         c->service->descr, c->host, c->port,
                         c->fd, c->sendq_len, c->buflen);
-                modesCloseClient(c);
+                modesCloseClient(Modes, c);
                 continue; // Go to the next client
             }
             // Append the data to the end of the queue, increment len
             memcpy((void*) psendq_end, writer->data, writer->dataUsed);
             c->sendq_len += writer->dataUsed;
             // Try flushing...
-            flushClient(c, now);
+            flushClient(Modes, c, now);
         }
     }
     writer->dataUsed = 0;
@@ -739,7 +739,7 @@ static void flushWrites(struct net_writer *writer) {
 // Prepare to write up to 'len' bytes to the given net_writer.
 // Returns a pointer to write to, or NULL to skip this write.
 
-static void *prepareWrite(struct net_writer *writer, int len) {
+static void *prepareWrite(struct _Modes *Modes, struct net_writer *writer, int len) {
     if (!writer ||
             !writer->service ||
             !writer->service->connections ||
@@ -751,7 +751,7 @@ static void *prepareWrite(struct net_writer *writer, int len) {
 
     if (writer->dataUsed + len >= MODES_OUT_BUF_SIZE) {
         // Flush now to free some space
-        flushWrites(writer);
+        flushWrites(Modes, writer);
     }
 
     return writer->data + writer->dataUsed;
@@ -761,11 +761,11 @@ static void *prepareWrite(struct net_writer *writer, int len) {
 // endptr should point one byte past the last byte written
 // to the buffer returned from prepareWrite.
 
-static void completeWrite(struct net_writer *writer, void *endptr) {
+static void completeWrite(struct _Modes *Modes, struct net_writer *writer, void *endptr) {
     writer->dataUsed = endptr - writer->data;
 
-    if (writer->dataUsed >= Modes.net_output_flush_size) {
-        flushWrites(writer);
+    if (writer->dataUsed >= Modes->net_output_flush_size) {
+        flushWrites(Modes, writer);
     }
 }
 
@@ -775,13 +775,13 @@ static void completeWrite(struct net_writer *writer, void *endptr) {
 // Write raw output in Beast Binary format with Timestamp to TCP clients
 //
 
-static void modesSendBeastOutput(struct modesMessage *mm, struct net_writer *writer) {
+static void modesSendBeastOutput(struct _Modes *Modes, struct modesMessage *mm, struct net_writer *writer) {
     int msgLen = mm->msgbits / 8;
-    char *p = prepareWrite(writer, 2 + 2 * (7 + msgLen));
+    char *p = prepareWrite(Modes, writer, 2 + 2 * (7 + msgLen));
     char ch;
     int j;
     int sig;
-    unsigned char *msg = (Modes.net_verbatim ? mm->verbatim : mm->msg);
+    unsigned char *msg = (Modes->net_verbatim ? mm->verbatim : mm->msg);
 
     if (!p)
         return;
@@ -840,22 +840,22 @@ static void modesSendBeastOutput(struct modesMessage *mm, struct net_writer *wri
         }
     }
 
-    completeWrite(writer, p);
+    completeWrite(Modes, writer, p);
 }
 
-static void send_beast_heartbeat(struct net_service *service) {
+static void send_beast_heartbeat(struct _Modes *Modes, struct net_service *service) {
     static char heartbeat_message[] = {0x1a, '1', 0, 0, 0, 0, 0, 0, 0, 0, 0};
     char *data;
 
     if (!service->writer)
         return;
 
-    data = prepareWrite(service->writer, sizeof (heartbeat_message));
+    data = prepareWrite(Modes, service->writer, sizeof (heartbeat_message));
     if (!data)
         return;
 
     memcpy(data, heartbeat_message, sizeof (heartbeat_message));
-    completeWrite(service->writer, data + sizeof (heartbeat_message));
+    completeWrite(Modes, service->writer, data + sizeof (heartbeat_message));
 }
 
 //
@@ -876,16 +876,16 @@ static void printHexDigit(char *p, unsigned char c) {
 // Write raw output to TCP clients
 //
 
-static void modesSendRawOutput(struct modesMessage *mm) {
+static void modesSendRawOutput(struct _Modes *Modes, struct modesMessage *mm) {
     int msgLen = mm->msgbits / 8;
-    char *p = prepareWrite(&Modes.raw_out, msgLen * 2 + 15);
+    char *p = prepareWrite(Modes, &Modes->raw_out, msgLen * 2 + 15);
     int j;
-    unsigned char *msg = (Modes.net_verbatim ? mm->verbatim : mm->msg);
+    unsigned char *msg = (Modes->net_verbatim ? mm->verbatim : mm->msg);
 
     if (!p)
         return;
 
-    if (Modes.mlat && mm->timestampMsg) {
+    if (Modes->mlat && mm->timestampMsg) {
         /* timestamp, big-endian */
         sprintf(p, "@%012" PRIX64,
                 mm->timestampMsg);
@@ -901,10 +901,10 @@ static void modesSendRawOutput(struct modesMessage *mm) {
     *p++ = ';';
     *p++ = '\n';
 
-    completeWrite(&Modes.raw_out, p);
+    completeWrite(Modes, &Modes->raw_out, p);
 }
 
-static void send_raw_heartbeat(struct net_service *service) {
+static void send_raw_heartbeat(struct _Modes *Modes, struct net_service *service) {
     static char *heartbeat_message = "*0000;\n";
     char *data;
     int len = strlen(heartbeat_message);
@@ -912,12 +912,12 @@ static void send_raw_heartbeat(struct net_service *service) {
     if (!service->writer)
         return;
 
-    data = prepareWrite(service->writer, len);
+    data = prepareWrite(Modes, service->writer, len);
     if (!data)
         return;
 
     memcpy(data, heartbeat_message, len);
-    completeWrite(service->writer, data + len);
+    completeWrite(Modes, service->writer, data + len);
 }
 
 //
@@ -926,7 +926,7 @@ static void send_raw_heartbeat(struct net_service *service) {
 // Read SBS input from TCP clients
 //
 
-static int decodeSbsLine(struct client *c, char *line, int remote) {
+static int decodeSbsLine(struct _Modes *Modes, struct client *c, char *line, int remote) {
     struct modesMessage mm;
     static struct modesMessage zeroMessage;
 
@@ -1034,7 +1034,7 @@ static int decodeSbsLine(struct client *c, char *line, int remote) {
     mm.sysTimestampMsg = mstime();
 
     //fprintf(stderr, "%d, %0.5f, %0.5f\n", mm.altitude_baro, mm.decoded_lat, mm.decoded_lon);
-    useModesMessage(&mm);
+    useModesMessage(Modes, &mm);
 
     return 0;
 }
@@ -1044,7 +1044,7 @@ static int decodeSbsLine(struct client *c, char *line, int remote) {
 // Write SBS output to TCP clients
 //
 
-static void modesSendSBSOutput(struct modesMessage *mm, struct aircraft *a) {
+static void modesSendSBSOutput(struct _Modes *Modes, struct modesMessage *mm, struct aircraft *a) {
     char *p;
     struct timespec now;
     struct tm stTime_receive, stTime_now;
@@ -1054,7 +1054,7 @@ static void modesSendSBSOutput(struct modesMessage *mm, struct aircraft *a) {
     if (mm->addr & MODES_NON_ICAO_ADDRESS)
         return;
 
-    p = prepareWrite(&Modes.sbs_out, 200);
+    p = prepareWrite(Modes, &Modes->sbs_out, 200);
     if (!p)
         return;
 
@@ -1131,7 +1131,7 @@ static void modesSendSBSOutput(struct modesMessage *mm, struct aircraft *a) {
     }
 
     // Field 12 is the altitude (if we have it)
-    if (Modes.use_gnss) {
+    if (Modes->use_gnss) {
         if (mm->altitude_geom_valid) {
             p += sprintf(p, ",%dH", mm->altitude_geom);
         } else if (mm->altitude_baro_valid && trackDataValid(&a->geom_delta_valid)) {
@@ -1173,7 +1173,7 @@ static void modesSendSBSOutput(struct modesMessage *mm, struct aircraft *a) {
     }
 
     // Field 17 is the VerticalRate (if we have it)
-    if (Modes.use_gnss) {
+    if (Modes->use_gnss) {
         if (mm->geom_rate_valid) {
             p += sprintf(p, ",%dH", mm->geom_rate);
         } else if (mm->baro_rate_valid) {
@@ -1246,10 +1246,10 @@ static void modesSendSBSOutput(struct modesMessage *mm, struct aircraft *a) {
 
     p += sprintf(p, "\r\n");
 
-    completeWrite(&Modes.sbs_out, p);
+    completeWrite(Modes, &Modes->sbs_out, p);
 }
 
-static void send_sbs_heartbeat(struct net_service *service) {
+static void send_sbs_heartbeat(struct _Modes *Modes, struct net_service *service) {
     static char *heartbeat_message = "\r\n"; // is there a better one?
     char *data;
     int len = strlen(heartbeat_message);
@@ -1257,44 +1257,44 @@ static void send_sbs_heartbeat(struct net_service *service) {
     if (!service->writer)
         return;
 
-    data = prepareWrite(service->writer, len);
+    data = prepareWrite(Modes, service->writer, len);
     if (!data)
         return;
 
     memcpy(data, heartbeat_message, len);
-    completeWrite(service->writer, data + len);
+    completeWrite(Modes, service->writer, data + len);
 }
 
 //
 //=========================================================================
 //
 
-void modesQueueOutput(struct modesMessage *mm, struct aircraft *a) {
+void modesQueueOutput(struct _Modes *Modes, struct modesMessage *mm, struct aircraft *a) {
     int is_mlat = (mm->source == SOURCE_MLAT);
 
     if (a && !is_mlat && mm->correctedbits < 2) {
         // Don't ever forward 2-bit-corrected messages via SBS output.
         // Don't ever forward mlat messages via SBS output.
-        modesSendSBSOutput(mm, a);
+        modesSendSBSOutput(Modes, mm, a);
     }
 
-    if (!is_mlat && (Modes.net_verbatim || mm->correctedbits < 2)) {
+    if (!is_mlat && (Modes->net_verbatim || mm->correctedbits < 2)) {
         // Forward 2-bit-corrected messages via raw output only if --net-verbatim is set
         // Don't ever forward mlat messages via raw output.
-        modesSendRawOutput(mm);
+        modesSendRawOutput(Modes, mm);
     }
 
-    if ((!is_mlat || Modes.forward_mlat) && (Modes.net_verbatim || mm->correctedbits < 2)) {
+    if ((!is_mlat || Modes->forward_mlat) && (Modes->net_verbatim || mm->correctedbits < 2)) {
         // Forward 2-bit-corrected messages via beast output only if --net-verbatim is set
         // Forward mlat messages via beast output only if --forward-mlat is set
-        modesSendBeastOutput(mm, &Modes.beast_out);
+        modesSendBeastOutput(Modes, mm, &Modes->beast_out);
         if (mm->reduce_forward) {
-            modesSendBeastOutput(mm, &Modes.beast_reduce_out);
+            modesSendBeastOutput(Modes, mm, &Modes->beast_reduce_out);
         }
     }
 
     if (a && !is_mlat) {
-        writeFATSVEvent(mm, a);
+        writeFATSVEvent(Modes, mm, a);
     }
 }
 
@@ -1333,34 +1333,34 @@ static float ieee754_binary32_le_to_float(uint8_t *data) {
     return ldexp(sign * ((1 << 23) | raw_significand), raw_exponent - 127 - 23);
 }
 
-static void handle_radarcape_position(float lat, float lon, float alt) {
+static void handle_radarcape_position(struct _Modes *Modes, float lat, float lon, float alt) {
     if (!isfinite(lat) || lat < -90 || lat > 90 || !isfinite(lon) || lon < -180 || lon > 180 || !isfinite(alt))
         return;
 
-    writeFATSVPositionUpdate(lat, lon, alt);
+    writeFATSVPositionUpdate(Modes, lat, lon, alt);
 
-    if (!(Modes.bUserFlags & MODES_USER_LATLON_VALID)) {
-        Modes.receiver.latitude = lat;
-        Modes.receiver.longitude = lon;
-        Modes.bUserFlags |= MODES_USER_LATLON_VALID;
-        generateReceiverProtoBuf(); // location changed
+    if (!(Modes->bUserFlags & MODES_USER_LATLON_VALID)) {
+        Modes->receiver.latitude = lat;
+        Modes->receiver.longitude = lon;
+        Modes->bUserFlags |= MODES_USER_LATLON_VALID;
+        generateReceiverProtoBuf(Modes); // location changed
     }
 }
 
 // recompute global Mode A/C setting
 
-static void autoset_modeac() {
+static void autoset_modeac(struct _Modes *Modes) {
     struct net_service *s;
     struct client *c;
 
-    if (!Modes.mode_ac_auto)
+    if (!Modes->mode_ac_auto)
         return;
 
-    Modes.mode_ac = 0;
-    for (s = Modes.services; s; s = s->next) {
+    Modes->mode_ac = 0;
+    for (s = Modes->services; s; s = s->next) {
         for (c = s->clients; c; c = c->next) {
             if (c->modeac_requested) {
-                Modes.mode_ac = 1;
+                Modes->mode_ac = 1;
                 break;
             }
         }
@@ -1391,7 +1391,8 @@ void sendBeastSettings(int fd, const char *settings) {
 // and ignore everything else.
 //
 
-static int handleBeastCommand(struct client *c, char *p, int remote) {
+static int handleBeastCommand(struct _Modes *Modes, struct client *c, char *p, int remote) {
+    MODES_NOTUSED(Modes);
     MODES_NOTUSED(remote);
     if (p[0] != '1') {
         // huh?
@@ -1407,7 +1408,7 @@ static int handleBeastCommand(struct client *c, char *p, int remote) {
             break;
     }
 
-    autoset_modeac();
+    autoset_modeac(Modes);
     return 0;
 }
 
@@ -1426,7 +1427,7 @@ static double bam32ToDouble(uint32_t bam) {
 //
 // This function decodes a GNS HULC protocol message
 
-static void decodeHulcMessage(char *p) {
+static void decodeHulcMessage(struct _Modes *Modes, char *p) {
     int alt = 0;
     double lat = 0.0;
     double lon = 0.0;
@@ -1444,11 +1445,11 @@ static void decodeHulcMessage(char *p) {
             }
         }
         // Antenna serial
-        Modes.receiver.antenna_serial = __bswap_32(hsm.status.serial);
+        Modes->receiver.antenna_serial = __bswap_32(hsm.status.serial);
         // Antenna status flags
-        Modes.receiver.antenna_flags = __bswap_16(hsm.status.flags);
+        Modes->receiver.antenna_flags = __bswap_16(hsm.status.flags);
         // Reserved for internal use
-        Modes.receiver.antenna_reserved = __bswap_16(hsm.status.reserved);
+        Modes->receiver.antenna_reserved = __bswap_16(hsm.status.reserved);
         // Antenna Unix epoch (not used)
         // Antenna GPS latitude
         lat = bam32ToDouble(hsm.status.latitude);
@@ -1457,18 +1458,18 @@ static void decodeHulcMessage(char *p) {
         // Antenna GPS altitude
         alt = __bswap_16(hsm.status.altitude);
         // Antenna GPS satellites used for fix
-        Modes.receiver.antenna_gps_sats = hsm.status.satellites;
+        Modes->receiver.antenna_gps_sats = hsm.status.satellites;
         // Antenna GPS HDOP*10, thus 12 is HDOP 1.2
-        Modes.receiver.antenna_gps_hdop = hsm.status.hdop;
+        Modes->receiver.antenna_gps_hdop = hsm.status.hdop;
         // Use only valid GPS position
-        if ((Modes.receiver.antenna_flags & 0xE000) == 0xE000) {
+        if ((Modes->receiver.antenna_flags & 0xE000) == 0xE000) {
             if (!isfinite(lat) || lat < -90 || lat > 90 || !isfinite(lon) || lon < -180 || lon > 180) {
                 return;
             }
-            Modes.receiver.latitude = lat;
-            Modes.receiver.longitude = lon;
-            Modes.receiver.altitude = alt;
-            Modes.bUserFlags |= MODES_USER_LATLON_VALID;
+            Modes->receiver.latitude = lat;
+            Modes->receiver.longitude = lon;
+            Modes->receiver.altitude = alt;
+            Modes->bUserFlags |= MODES_USER_LATLON_VALID;
         }
     } else if (id == 0x01 && len > 0x18) {
         // Future use planed.
@@ -1492,7 +1493,7 @@ static void decodeHulcMessage(char *p) {
 // case where we want broken messages here to close the client connection.
 //
 
-static int decodeBinMessage(struct client *c, char *p, int remote) {
+static int decodeBinMessage(struct _Modes *Modes, struct client *c, char *p, int remote) {
     int msgLen = 0;
     int j;
     char ch;
@@ -1505,11 +1506,11 @@ static int decodeBinMessage(struct client *c, char *p, int remote) {
     ch = *p++; /// Get the message type
 
     if (ch == '1') {
-        if (!Modes.mode_ac) {
+        if (!Modes->mode_ac) {
             if (remote) {
-                Modes.stats_current.remote_received_modeac++;
+                Modes->stats_current.remote_received_modeac++;
             } else {
-                Modes.stats_current.demod_modeac++;
+                Modes->stats_current.demod_modeac++;
             }
             return 0;
         }
@@ -1533,9 +1534,9 @@ static int decodeBinMessage(struct client *c, char *p, int remote) {
         lon = ieee754_binary32_le_to_float(msg + 8);
         alt = ieee754_binary32_le_to_float(msg + 12);
 
-        handle_radarcape_position(lat, lon, alt);
+        handle_radarcape_position(Modes, lat, lon, alt);
     } else if (ch == 'H') {
-        decodeHulcMessage(p);
+        decodeHulcMessage(Modes, p);
         return 0;
     } else {
         // Ignore this.
@@ -1569,14 +1570,14 @@ static int decodeBinMessage(struct client *c, char *p, int remote) {
         mm.signalLevel = mm.signalLevel * mm.signalLevel;
 
         /* In case of Mode-S Beast use the signal level per message for statistics */
-        if (Modes.sdr_type == SDR_MODESBEAST) {
-            Modes.stats_current.signal_power_sum += mm.signalLevel;
-            Modes.stats_current.signal_power_count += 1;
+        if (Modes->sdr_type == SDR_MODESBEAST) {
+            Modes->stats_current.signal_power_sum += mm.signalLevel;
+            Modes->stats_current.signal_power_count += 1;
 
-            if (mm.signalLevel > Modes.stats_current.peak_signal_power)
-                Modes.stats_current.peak_signal_power = mm.signalLevel;
+            if (mm.signalLevel > Modes->stats_current.peak_signal_power)
+                Modes->stats_current.peak_signal_power = mm.signalLevel;
             if (mm.signalLevel > 0.50119)
-                Modes.stats_current.strong_signal_count++; // signal power above -3dBFS
+                Modes->stats_current.strong_signal_count++; // signal power above -3dBFS
         }
 
         if (0x1A == ch) {
@@ -1592,44 +1593,44 @@ static int decodeBinMessage(struct client *c, char *p, int remote) {
 
         if (msgLen == MODEAC_MSG_BYTES) { // ModeA or ModeC
             if (remote) {
-                Modes.stats_current.remote_received_modeac++;
+                Modes->stats_current.remote_received_modeac++;
             } else {
-                Modes.stats_current.demod_modeac++;
+                Modes->stats_current.demod_modeac++;
             }
             decodeModeAMessage(&mm, ((msg[0] << 8) | msg[1]));
         } else {
             int result;
             if (remote) {
-                Modes.stats_current.remote_received_modes++;
+                Modes->stats_current.remote_received_modes++;
             } else {
-                Modes.stats_current.demod_preambles++;
+                Modes->stats_current.demod_preambles++;
             }
-            result = decodeModesMessage(&Modes, &mm, msg);
+            result = decodeModesMessage(Modes, &mm, msg);
             if (result < 0) {
                 if (result == -1) {
                     if (remote) {
-                        Modes.stats_current.remote_rejected_unknown_icao++;
+                        Modes->stats_current.remote_rejected_unknown_icao++;
                     } else {
-                        Modes.stats_current.demod_rejected_unknown_icao++;
+                        Modes->stats_current.demod_rejected_unknown_icao++;
                     }
                 } else {
                     if (remote) {
-                        Modes.stats_current.remote_rejected_bad++;
+                        Modes->stats_current.remote_rejected_bad++;
                     } else {
-                        Modes.stats_current.demod_rejected_bad++;
+                        Modes->stats_current.demod_rejected_bad++;
                     }
                 }
                 return 0;
             } else {
                 if (remote) {
-                    Modes.stats_current.remote_accepted[mm.correctedbits]++;
+                    Modes->stats_current.remote_accepted[mm.correctedbits]++;
                 } else {
-                    Modes.stats_current.demod_accepted[mm.correctedbits]++;
+                    Modes->stats_current.demod_accepted[mm.correctedbits]++;
                 }
             }
         }
 
-        useModesMessage(&mm);
+        useModesMessage(Modes, &mm);
     }
     return (0);
 }
@@ -1661,7 +1662,7 @@ static int hexDigitVal(int c) {
 // case where we want broken messages here to close the client connection.
 //
 
-static int decodeHexMessage(struct client *c, char *hex, int remote) {
+static int decodeHexMessage(struct _Modes *Modes, struct client *c, char *hex, int remote) {
     int l = strlen(hex), j;
     unsigned char msg[MODES_LONG_MSG_BYTES];
     struct modesMessage mm;
@@ -1732,7 +1733,7 @@ static int decodeHexMessage(struct client *c, char *hex, int remote) {
         return (0);
     } // Too short or long message... broken
 
-    if ((0 == Modes.mode_ac)
+    if ((0 == Modes->mode_ac)
             && (l == (MODEAC_MSG_BYTES * 2))) {
         return (0);
     } // Right length for ModeA/C, but not enabled
@@ -1749,25 +1750,25 @@ static int decodeHexMessage(struct client *c, char *hex, int remote) {
     mm.sysTimestampMsg = mstime();
 
     if (l == (MODEAC_MSG_BYTES * 2)) { // ModeA or ModeC
-        Modes.stats_current.remote_received_modeac++;
+        Modes->stats_current.remote_received_modeac++;
         decodeModeAMessage(&mm, ((msg[0] << 8) | msg[1]));
     } else { // Assume ModeS
         int result;
 
-        Modes.stats_current.remote_received_modes++;
-        result = decodeModesMessage(&Modes, &mm, msg);
+        Modes->stats_current.remote_received_modes++;
+        result = decodeModesMessage(Modes, &mm, msg);
         if (result < 0) {
             if (result == -1)
-                Modes.stats_current.remote_rejected_unknown_icao++;
+                Modes->stats_current.remote_rejected_unknown_icao++;
             else
-                Modes.stats_current.remote_rejected_bad++;
+                Modes->stats_current.remote_rejected_bad++;
             return 0;
         } else {
-            Modes.stats_current.remote_accepted[mm.correctedbits]++;
+            Modes->stats_current.remote_accepted[mm.correctedbits]++;
         }
     }
 
-    useModesMessage(&mm);
+    useModesMessage(Modes, &mm);
     return (0);
 }
 
@@ -1982,17 +1983,17 @@ static void compute_wind(struct aircraft *a) {
 /**
  * Generate aircraft metadata collection as protocol buffer file.
  */
-void generateAircraftProtoBuf(void) {
+void generateAircraftProtoBuf(struct _Modes *Modes) {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
     int fd;
     mode_t mask;
 
-    if (!Modes.output_dir) {
+    if (!Modes->output_dir) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/aircraft.pb.XXXXXX", Modes.output_dir);
+    snprintf(tmppath, PATH_MAX, "%s/aircraft.pb.XXXXXX", Modes->output_dir);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -2007,14 +2008,14 @@ void generateAircraftProtoBuf(void) {
 
     msg.n_aircraft = 0;
     msg.now = (uint64_t) (now / 1000);
-    msg.messages = Modes.stats_current.messages_total + Modes.stats_alltime.messages_total;
+    msg.messages = Modes->stats_current.messages_total + Modes->stats_alltime.messages_total;
 
-    Modes.stats_current.with_positions = 0;
-    Modes.stats_current.mlat_positions = 0;
-    Modes.stats_current.tisb_positions = 0;
+    Modes->stats_current.with_positions = 0;
+    Modes->stats_current.mlat_positions = 0;
+    Modes->stats_current.tisb_positions = 0;
 
     for (j = 0; j < AIRCRAFTS_BUCKETS; j++) {
-        for (a = Modes.aircrafts[j]; a; a = a->next) {
+        for (a = Modes->aircrafts[j]; a; a = a->next) {
             if ((a->meta.messages < 2) || (now > (a->meta.seen + 90E3))) {
                 // Basic filter for bad decodes and
                 // don't include stale aircraft.
@@ -2039,11 +2040,11 @@ void generateAircraftProtoBuf(void) {
             if (trackDataValid(&a->position_valid)) {
                 msg.aircraft[msg.n_aircraft]->seen_pos = (now - a->position_valid.updated) / 1000.0;
                 // Update position statistics.
-                Modes.stats_current.with_positions += 1;
+                Modes->stats_current.with_positions += 1;
                 if (a->position_valid.source == SOURCE_MLAT) {
-                    Modes.stats_current.mlat_positions += 1;
+                    Modes->stats_current.mlat_positions += 1;
                 } else if (a->position_valid.source == SOURCE_TISB) {
-                    Modes.stats_current.tisb_positions += 1;
+                    Modes->stats_current.tisb_positions += 1;
                 }
             }
             if (a->adsb_version >= 0) {
@@ -2074,7 +2075,7 @@ void generateAircraftProtoBuf(void) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/aircraft.pb", Modes.output_dir);
+            snprintf(pathbuf, PATH_MAX, "%s/aircraft.pb", Modes->output_dir);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -2090,17 +2091,17 @@ void generateAircraftProtoBuf(void) {
  * Generate aircraft metadata collection as protocol buffer file.
  * @param file File name for protocol buffer output.
  */
-void generateHistoryProtoBuf(const char *file) {
+void generateHistoryProtoBuf(struct _Modes *Modes, const char *file) {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
     int fd;
     mode_t mask;
 
-    if (!Modes.output_dir) {
+    if (!Modes->output_dir) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes.output_dir, file);
+    snprintf(tmppath, PATH_MAX, "%s/%s.XXXXXX", Modes->output_dir, file);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -2117,7 +2118,7 @@ void generateHistoryProtoBuf(const char *file) {
     msg.now = (uint64_t) (now / 1000);
 
     for (j = 0; j < AIRCRAFTS_BUCKETS; j++) {
-        for (a = Modes.aircrafts[j]; a; a = a->next) {
+        for (a = Modes->aircrafts[j]; a; a = a->next) {
             if ((a->meta.messages < 2) || (now > (a->meta.seen + 90E3))) {
                 // Basic filter for bad decodes and
                 // don't include stale aircraft.
@@ -2167,7 +2168,7 @@ void generateHistoryProtoBuf(const char *file) {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes.output_dir, file);
+            snprintf(pathbuf, PATH_MAX, "%s/%s", Modes->output_dir, file);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -2182,7 +2183,7 @@ void generateHistoryProtoBuf(const char *file) {
     free(msg.history);
 }
 
-static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
+static void createStatisticEntry(struct _Modes *Modes, StatisticEntry *e, struct stats *st) {
     int i;
     e->start = st->start / 1000.0;
     e->stop = st->end / 1000.0;
@@ -2191,7 +2192,7 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
     uint64_t reader_cpu_millis = (uint64_t) st->reader_cpu.tv_sec * 1000UL + st->reader_cpu.tv_nsec / 1000000UL;
     uint64_t background_cpu_millis = (uint64_t) st->background_cpu.tv_sec * 1000UL + st->background_cpu.tv_nsec / 1000000UL;
 
-    if (!Modes.net_only) {
+    if (!Modes->net_only) {
         e->local_samples_processed = st->samples_processed;
         e->local_samples_dropped = st->samples_dropped;
         e->local_modeac = st->demod_modeac;
@@ -2212,18 +2213,18 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
         }
         e->local_strong_signals = st->strong_signal_count;
 
-        for (i = 0; i <= Modes.nfix_crc; ++i) {
+        for (i = 0; i <= Modes->nfix_crc; ++i) {
             e->local_accepted += st->demod_accepted[i];
         }
     }
 
-    if (Modes.net) {
+    if (Modes->net) {
         e->remote_modeac = st->remote_received_modeac;
         e->remote_modes = st->remote_received_modes;
         e->remote_bad = st->remote_rejected_bad;
         e->remote_unknown_icao = st->remote_rejected_unknown_icao;
 
-        for (i = 0; i <= Modes.nfix_crc; ++i) {
+        for (i = 0; i <= Modes->nfix_crc; ++i) {
             e->remote_accepted += st->remote_accepted[i];
         }
     }
@@ -2260,17 +2261,17 @@ static void createStatisticEntry(StatisticEntry *e, struct stats *st) {
  * Generate statistics in protocol buffer format.
  * @param file File name.
  */
-void generateStatsProtoBuf() {
+void generateStatsProtoBuf(struct _Modes *Modes) {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
     int fd, b;
     mode_t mask;
 
-    if (!Modes.output_dir) {
+    if (!Modes->output_dir) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/stats.pb.XXXXXX", Modes.output_dir);
+    snprintf(tmppath, PATH_MAX, "%s/stats.pb.XXXXXX", Modes->output_dir);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
@@ -2285,12 +2286,12 @@ void generateStatsProtoBuf() {
     StatisticEntry total = STATISTIC_ENTRY__INIT;
     struct stats add;
 
-    createStatisticEntry(&latest, &Modes.stats_periodic);
-    createStatisticEntry(&last_1min, &Modes.stats_1min[Modes.stats_latest_1min]);
-    createStatisticEntry(&last_5min, &Modes.stats_5min);
-    createStatisticEntry(&last_15min, &Modes.stats_15min);
-    add_stats(&Modes.stats_alltime, &Modes.stats_current, &add);
-    createStatisticEntry(&total, &add);
+    createStatisticEntry(Modes, &latest, &Modes->stats_periodic);
+    createStatisticEntry(Modes, &last_1min, &Modes->stats_1min[Modes->stats_latest_1min]);
+    createStatisticEntry(Modes, &last_5min, &Modes->stats_5min);
+    createStatisticEntry(Modes, &last_15min, &Modes->stats_15min);
+    add_stats(&Modes->stats_alltime, &Modes->stats_current, &add);
+    createStatisticEntry(Modes, &total, &add);
 
     stats.latest = &latest;
     stats.last_1min = &last_1min;
@@ -2299,13 +2300,13 @@ void generateStatsProtoBuf() {
     stats.total = &total;
 
     // Inlcude maximum range polar values if enabled
-    if (Modes.stats_polar_range) {
+    if (Modes->stats_polar_range) {
         stats.polar_range = malloc(sizeof (Statistics__PolarRangeEntry*) * POLAR_RANGE_BUCKETS);
         for (b = 0; b < POLAR_RANGE_BUCKETS; b++) {
             stats.polar_range[b] = malloc(sizeof (Statistics__PolarRangeEntry));
             statistics__polar_range_entry__init(stats.polar_range[b]);
             stats.polar_range[b]->key = b;
-            stats.polar_range[b]->value = Modes.stats_range.polar_range[b];
+            stats.polar_range[b]->value = Modes->stats_range.polar_range[b];
         }
         stats.n_polar_range = POLAR_RANGE_BUCKETS;
     }
@@ -2323,7 +2324,7 @@ void generateStatsProtoBuf() {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/stats.pb", Modes.output_dir);
+            snprintf(pathbuf, PATH_MAX, "%s/stats.pb", Modes->output_dir);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -2332,7 +2333,7 @@ void generateStatsProtoBuf() {
     }
     // Free up all allocated memory.
     free(buf);
-    if (Modes.stats_polar_range) {
+    if (Modes->stats_polar_range) {
         for (b = 0; b < POLAR_RANGE_BUCKETS; b++) {
             free(stats.polar_range[b]);
         }
@@ -2344,43 +2345,43 @@ void generateStatsProtoBuf() {
  * Generate receiver description in protocol buffer format.
  * @param file File name.
  */
-void generateReceiverProtoBuf() {
+void generateReceiverProtoBuf(struct _Modes *Modes) {
     char pathbuf[PATH_MAX];
     char tmppath[PATH_MAX];
     int fd;
     mode_t mask;
     // Backup precise position
-    double preclat = Modes.receiver.latitude;
-    double preclon = Modes.receiver.longitude;
+    double preclat = Modes->receiver.latitude;
+    double preclon = Modes->receiver.longitude;
 
-    if (!Modes.output_dir) {
+    if (!Modes->output_dir) {
         return;
     }
 
-    snprintf(tmppath, PATH_MAX, "%s/receiver.pb.XXXXXX", Modes.output_dir);
+    snprintf(tmppath, PATH_MAX, "%s/receiver.pb.XXXXXX", Modes->output_dir);
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
         return;
     }
 
-    Modes.receiver.version = MODES_READSB_VERSION;
-    Modes.receiver.refresh = 1.0 * Modes.output_interval;
-    Modes.receiver.history = Modes.aircraft_history_next + 1;
+    Modes->receiver.version = MODES_READSB_VERSION;
+    Modes->receiver.refresh = 1.0 * Modes->output_interval;
+    Modes->receiver.history = Modes->aircraft_history_next + 1;
 
-    if (Modes.rx_location_accuracy && (Modes.receiver.latitude != 0.0 || Modes.receiver.longitude != 0.0)) {
+    if (Modes->rx_location_accuracy && (Modes->receiver.latitude != 0.0 || Modes->receiver.longitude != 0.0)) {
         // Reduce location accuracy if requested
-        if (Modes.rx_location_accuracy == 1) {
+        if (Modes->rx_location_accuracy == 1) {
             // round to 2 decimal digits - about 0.5-1km accuracy - for privacy reasons
-            Modes.receiver.latitude = round(Modes.receiver.latitude * 100) / 100;
-            Modes.receiver.longitude = round(Modes.receiver.longitude * 100) / 100;
+            Modes->receiver.latitude = round(Modes->receiver.latitude * 100) / 100;
+            Modes->receiver.longitude = round(Modes->receiver.longitude * 100) / 100;
         }
     }
 
     // Pack and serialize entire aicraft collection.
-    ssize_t len = receiver__get_packed_size(&Modes.receiver);
+    ssize_t len = receiver__get_packed_size(&Modes->receiver);
     void *buf = malloc(len);
-    receiver__pack(&Modes.receiver, buf);
+    receiver__pack(&Modes->receiver, buf);
     // Write aircraft collection to file.
     mask = umask(0);
     umask(mask);
@@ -2390,7 +2391,7 @@ void generateReceiverProtoBuf() {
         close(fd);
     } else {
         if (close(fd) == 0) {
-            snprintf(pathbuf, PATH_MAX, "%s/receiver.pb", Modes.output_dir);
+            snprintf(pathbuf, PATH_MAX, "%s/receiver.pb", Modes->output_dir);
             pathbuf[PATH_MAX - 1] = 0;
             rename(tmppath, pathbuf);
         } else {
@@ -2401,13 +2402,13 @@ void generateReceiverProtoBuf() {
     free(buf);
 
     // Restore precise position.
-    if (Modes.rx_location_accuracy == 1) {
-        Modes.receiver.latitude = preclat;
-        Modes.receiver.longitude = preclon;
+    if (Modes->rx_location_accuracy == 1) {
+        Modes->receiver.latitude = preclat;
+        Modes->receiver.longitude = preclon;
     }
 }
 
-static void periodicReadFromClient(struct client *c) {
+static void periodicReadFromClient(struct _Modes *Modes, struct client *c) {
     int nread, err;
     char buf[512];
 
@@ -2421,7 +2422,7 @@ static void periodicReadFromClient(struct client *c) {
         fprintf(stderr, "%s: Socket Error: %s: %s port %s (fd %d)\n",
                 c->service->descr, nread < 0 ? strerror(err) : "EOF", c->host, c->port,
                 c->fd);
-        modesCloseClient(c);
+        modesCloseClient(Modes, c);
         return;
     }
 }
@@ -2442,7 +2443,7 @@ static void periodicReadFromClient(struct client *c) {
 // close the connection with the client in case of non-recoverable errors.
 //
 
-static void modesReadFromClient(struct client *c) {
+static void modesReadFromClient(struct _Modes *Modes, struct client *c) {
     int left;
     int nread;
     int bContinue = 1;
@@ -2471,7 +2472,7 @@ static void modesReadFromClient(struct client *c) {
                 fprintf(stderr, "%s: Remote server disconnected: %s port %s (fd %d, SendQ %d, RecvQ %d)\n",
                         c->service->descr, c->con->address, c->con->port, c->fd, c->sendq_len, c->buflen);
             }
-            modesCloseClient(c);
+            modesCloseClient(Modes, c);
             return;
         }
 
@@ -2484,7 +2485,7 @@ static void modesReadFromClient(struct client *c) {
             fprintf(stderr, "%s: Receive Error: %s: %s port %s (fd %d, SendQ %d, RecvQ %d)\n",
                     c->service->descr, strerror(err), c->host, c->port,
                     c->fd, c->sendq_len, c->buflen);
-            modesCloseClient(c);
+            modesCloseClient(Modes, c);
             return;
         }
 
@@ -2494,7 +2495,7 @@ static void modesReadFromClient(struct client *c) {
         char *eod = som + c->buflen; // one byte past end of data
         char *p;
         int remote = 1; // Messages will be marked remote by default
-        if ((c->fd == Modes.beast_fd) && (Modes.sdr_type == SDR_MODESBEAST || Modes.sdr_type == SDR_GNS)) {
+        if ((c->fd == Modes->beast_fd) && (Modes->sdr_type == SDR_MODESBEAST || Modes->sdr_type == SDR_GNS)) {
             /* Message from a local connected Modes-S beast or GNS5894 are passed off the internet */
             remote = 0;
         }
@@ -2512,7 +2513,7 @@ static void modesReadFromClient(struct client *c) {
 
                 while (som < eod && ((p = memchr(som, (char) 0x1a, eod - som)) != NULL)) { // The first byte of buffer 'should' be 0x1a
 
-                    Modes.stats_current.remote_rejected_bad += ((p - som) / (8 + MODES_SHORT_MSG_BYTES));
+                    Modes->stats_current.remote_rejected_bad += ((p - som) / (8 + MODES_SHORT_MSG_BYTES));
                     som = p; // consume garbage up to the 0x1a
                     ++p; // skip 0x1a
 
@@ -2556,8 +2557,8 @@ static void modesReadFromClient(struct client *c) {
 
 
                     // Have a 0x1a followed by 1/2/3/4/5 - pass message to handler.
-                    if (c->service->read_handler(c, som + 1, remote)) {
-                        modesCloseClient(c);
+                    if (c->service->read_handler(Modes, c, som + 1, remote)) {
+                        modesCloseClient(Modes, c);
                         return;
                     }
 
@@ -2599,8 +2600,8 @@ static void modesReadFromClient(struct client *c) {
                     }
 
                     // Have a 0x1a followed by 1 - pass message to handler.
-                    if (c->service->read_handler(c, som + 1, remote)) {
-                        modesCloseClient(c);
+                    if (c->service->read_handler(Modes, c, som + 1, remote)) {
+                        modesCloseClient(Modes, c);
                         return;
                     }
 
@@ -2621,8 +2622,8 @@ static void modesReadFromClient(struct client *c) {
 
                 while (som < eod && (p = strstr(som, c->service->read_sep)) != NULL) { // end of first message if found
                     *p = '\0'; // The handler expects null terminated strings
-                    if (c->service->read_handler(c, som, remote)) { // Pass message to handler.
-                        modesCloseClient(c); // Handler returns 1 on error to signal we .
+                    if (c->service->read_handler(Modes, c, som, remote)) { // Pass message to handler.
+                        modesCloseClient(Modes, c); // Handler returns 1 on error to signal we .
                         return; // should close the client connection
                     }
                     som = p + c->service->read_sep_len; // Move to start of next message
@@ -2655,7 +2656,7 @@ __attribute__ ((format(printf, 4, 5))) static char *appendFATSV(char *p, char *e
 #define TSV_MAX_PACKET_SIZE 800
 #define TSV_VERSION "6E"
 
-static void writeFATSVPositionUpdate(float lat, float lon, float alt) {
+static void writeFATSVPositionUpdate(struct _Modes *Modes, float lat, float lon, float alt) {
     static float last_lat, last_lon, last_alt;
 
     if (lat == last_lat && lon == last_lon && alt == last_alt)
@@ -2665,7 +2666,7 @@ static void writeFATSVPositionUpdate(float lat, float lon, float alt) {
     last_lon = lon;
     last_alt = alt;
 
-    char *p = prepareWrite(&Modes.fatsv_out, TSV_MAX_PACKET_SIZE);
+    char *p = prepareWrite(Modes, &Modes->fatsv_out, TSV_MAX_PACKET_SIZE);
     if (!p)
         return;
 
@@ -2682,13 +2683,13 @@ static void writeFATSVPositionUpdate(float lat, float lon, float alt) {
     p = safe_snprintf(p, end, "\n");
 
     if (p < end)
-        completeWrite(&Modes.fatsv_out, p);
+        completeWrite(Modes, &Modes->fatsv_out, p);
     else
         fprintf(stderr, "fatsv: output too large (max %d, overran by %d)\n", TSV_MAX_PACKET_SIZE, (int) (p - end));
 }
 
-static void writeFATSVEventMessage(struct modesMessage *mm, const char *datafield, unsigned char *data, size_t len) {
-    char *p = prepareWrite(&Modes.fatsv_out, TSV_MAX_PACKET_SIZE);
+static void writeFATSVEventMessage(struct _Modes *Modes, struct modesMessage *mm, const char *datafield, unsigned char *data, size_t len) {
+    char *p = prepareWrite(Modes, &Modes->fatsv_out, TSV_MAX_PACKET_SIZE);
     if (!p)
         return;
 
@@ -2708,16 +2709,16 @@ static void writeFATSVEventMessage(struct modesMessage *mm, const char *datafiel
     p = safe_snprintf(p, end, "\n");
 
     if (p <= end)
-        completeWrite(&Modes.fatsv_out, p);
+        completeWrite(Modes, &Modes->fatsv_out, p);
     else
         fprintf(stderr, "fatsv: output too large (max %d, overran by %d)\n", TSV_MAX_PACKET_SIZE, (int) (p - end));
 #undef bufsize
 }
 
-static void writeFATSVEvent(struct modesMessage *mm, struct aircraft *a) {
+static void writeFATSVEvent(struct _Modes *Modes, struct modesMessage *mm, struct aircraft *a) {
     // Write event records for a couple of message types.
 
-    if (!Modes.fatsv_out.service || !Modes.fatsv_out.service->connections) {
+    if (!Modes->fatsv_out.service || !Modes->fatsv_out.service->connections) {
         return; // not enabled or no active connections
     }
 
@@ -2733,7 +2734,7 @@ static void writeFATSVEvent(struct modesMessage *mm, struct aircraft *a) {
                     // BDS 1,0: data link capability report
                     if (memcmp(mm->MB, a->fatsv_emitted_bds_10, 7) != 0) {
                         memcpy(a->fatsv_emitted_bds_10, mm->MB, 7);
-                        writeFATSVEventMessage(mm, "datalink_caps", mm->MB, 7);
+                        writeFATSVEventMessage(Modes, mm, "datalink_caps", mm->MB, 7);
                     }
                     break;
 
@@ -2741,7 +2742,7 @@ static void writeFATSVEvent(struct modesMessage *mm, struct aircraft *a) {
                     // BDS 3,0: ACAS RA report
                     if (memcmp(mm->MB, a->fatsv_emitted_bds_30, 7) != 0) {
                         memcpy(a->fatsv_emitted_bds_30, mm->MB, 7);
-                        writeFATSVEventMessage(mm, "commb_acas_ra", mm->MB, 7);
+                        writeFATSVEventMessage(Modes, mm, "commb_acas_ra", mm->MB, 7);
                     }
                     break;
 
@@ -2758,11 +2759,11 @@ static void writeFATSVEvent(struct modesMessage *mm, struct aircraft *a) {
                 // type 28 subtype 2: ACAS RA report
                 // first byte has the type/subtype, remaining bytes match the BDS 3,0 format
                 memcpy(a->fatsv_emitted_es_acas_ra, mm->ME, 7);
-                writeFATSVEventMessage(mm, "es_acas_ra", mm->ME, 7);
+                writeFATSVEventMessage(Modes, mm, "es_acas_ra", mm->ME, 7);
             } else if (mm->metype == 31 && (mm->mesub == 0 || mm->mesub == 1) && memcmp(mm->ME, a->fatsv_emitted_es_status, 7) != 0) {
                 // aircraft operational status
                 memcpy(a->fatsv_emitted_es_status, mm->ME, 7);
-                writeFATSVEventMessage(mm, "es_op_status", mm->ME, 7);
+                writeFATSVEventMessage(Modes, mm, "es_op_status", mm->ME, 7);
             }
             break;
     }
@@ -2843,11 +2844,11 @@ static const char *airground_enum_string(AircraftMeta__AirGround ag) {
     }
 }
 
-static void writeFATSV() {
+static void writeFATSV(struct _Modes *Modes) {
     struct aircraft *a;
     static uint64_t next_update;
 
-    if (!Modes.fatsv_out.service || !Modes.fatsv_out.service->connections) {
+    if (!Modes->fatsv_out.service || !Modes->fatsv_out.service->connections) {
         return; // not enabled or no active connections
     }
 
@@ -2860,7 +2861,7 @@ static void writeFATSV() {
     next_update = now + 1000;
 
     for (int j = 0; j < AIRCRAFTS_BUCKETS; j++) {
-        for (a = Modes.aircrafts[j]; a; a = a->next) {
+        for (a = Modes->aircrafts[j]; a; a = a->next) {
             if (a->meta.messages < 2) // basic filter for bad decodes
                 continue;
 
@@ -2949,7 +2950,7 @@ static void writeFATSV() {
             if ((now - a->fatsv_last_emitted) < minAge)
                 continue;
 
-            char *p = prepareWrite(&Modes.fatsv_out, TSV_MAX_PACKET_SIZE);
+            char *p = prepareWrite(Modes, &Modes->fatsv_out, TSV_MAX_PACKET_SIZE);
             if (!p)
                 return;
             char *end = p + TSV_MAX_PACKET_SIZE;
@@ -3036,7 +3037,7 @@ static void writeFATSV() {
             p = safe_snprintf(p, end, "\n");
 
             if (p < end)
-                completeWrite(&Modes.fatsv_out, p);
+                completeWrite(Modes, &Modes->fatsv_out, p);
             else
                 fprintf(stderr, "fatsv: output too large (max %d, overran by %d)\n", TSV_MAX_PACKET_SIZE, (int) (p - end));
 
@@ -3079,12 +3080,12 @@ static void writeFATSV() {
     }
 }
 
-void modesNetSecondWork(void) {
+void modesNetSecondWork(struct _Modes *Modes) {
     struct client *c, **prev;
     struct net_service *s;
     uint64_t now = mstime();
 
-    for (s = Modes.services; s; s = s->next) {
+    for (s = Modes->services; s; s = s->next) {
         if (s->read_handler)
             continue;
         for (c = s->clients; c; c = c->next) {
@@ -3093,7 +3094,7 @@ void modesNetSecondWork(void) {
             if (c->last_read + 30000 < now) {
                 // This is called if there is no read handler - we just read and discard to try to trigger socket errors
                 // (if 30 sec have passed)
-                periodicReadFromClient(c);
+                periodicReadFromClient(Modes, c);
                 c->last_read = now;
             }
         }
@@ -3101,19 +3102,19 @@ void modesNetSecondWork(void) {
 
     // If we have generated no messages for a while, send
     // a heartbeat
-    if (Modes.net_heartbeat_interval) {
-        for (s = Modes.services; s; s = s->next) {
+    if (Modes->net_heartbeat_interval) {
+        for (s = Modes->services; s; s = s->next) {
             if (s->writer &&
                     s->connections &&
                     s->writer->send_heartbeat &&
-                    (s->writer->lastWrite + Modes.net_heartbeat_interval) <= now) {
-                s->writer->send_heartbeat(s);
+                    (s->writer->lastWrite + Modes->net_heartbeat_interval) <= now) {
+                s->writer->send_heartbeat(Modes, s);
             }
         }
     }
 
     // Unlink and free closed clients
-    for (s = Modes.services; s; s = s->next) {
+    for (s = Modes->services; s; s = s->next) {
         for (prev = &s->clients, c = *prev; c; c = *prev) {
             if (c->fd == -1) {
                 // Recently closed, prune from list
@@ -3130,7 +3131,7 @@ void modesNetSecondWork(void) {
 // Perform periodic network work
 //
 
-void modesNetPeriodicWork(void) {
+void modesNetPeriodicWork(struct _Modes *Modes) {
     struct client *c;
     struct net_service *s;
     uint64_t now = mstime();
@@ -3139,17 +3140,17 @@ void modesNetPeriodicWork(void) {
 
     // Accept new connections
     if (now > next_accept) {
-        next_accept = modesAcceptClients(now);
+        next_accept = modesAcceptClients(Modes, now);
     }
 
     // Read from clients, and if any need flushing, do so.
-    for (s = Modes.services; s; s = s->next) {
+    for (s = Modes->services; s; s = s->next) {
         for (c = s->clients; c; c = c->next) {
             if (!c->service)
                 continue;
 
             if (s->read_handler) {
-                modesReadFromClient(c);
+                modesReadFromClient(Modes, c);
             }
 
             // If there is a sendq, try to flush it
@@ -3158,19 +3159,19 @@ void modesNetPeriodicWork(void) {
                     c->last_flush = now;
                     continue;
                 }
-                flushClient(c, now);
+                flushClient(Modes, c, now);
             }
         }
     }
 
     // Generate FATSV output
-    writeFATSV();
+    writeFATSV(Modes);
 
     // supply JSON to vrs_out writer
-    if (Modes.vrs_out.service && Modes.vrs_out.service->connections && now >= next_tcp_json) {
+    if (Modes->vrs_out.service && Modes->vrs_out.service->connections && now >= next_tcp_json) {
         static int part;
         int n_parts = 1 << 3; // must be power of 2
-        writeJsonToNet(&Modes.vrs_out, generateVRS(part, n_parts));
+        writeJsonToNet(Modes, &Modes->vrs_out, generateVRS(Modes, part, n_parts));
         if (++part >= n_parts)
             part = 0;
         next_tcp_json = now + 1000 / n_parts;
@@ -3178,25 +3179,25 @@ void modesNetPeriodicWork(void) {
 
     // If we have data that has been waiting to be written for a while,
     // write it now.
-    for (s = Modes.services; s; s = s->next) {
+    for (s = Modes->services; s; s = s->next) {
         if (s->writer &&
                 s->writer->dataUsed &&
-                ((s->writer->lastWrite + Modes.net_output_flush_interval) <= now)) {
-            flushWrites(s->writer);
+                ((s->writer->lastWrite + Modes->net_output_flush_interval) <= now)) {
+            flushWrites(Modes, s->writer);
         }
     }
 
-    serviceReconnectCallback(now);
+    serviceReconnectCallback(Modes, now);
 }
 
-void writeJsonToNet(struct net_writer *writer, struct char_buffer cb) {
+void writeJsonToNet(struct _Modes *Modes, struct net_writer *writer, struct char_buffer cb) {
     int len = cb.len;
     int written = 0;
     char *content = cb.buffer;
     char *pos;
     int bytes = MODES_OUT_BUF_SIZE / 2;
 
-    char *p = prepareWrite(writer, bytes);
+    char *p = prepareWrite(Modes, writer, bytes);
     if (!p) {
         free(content);
         return;
@@ -3212,16 +3213,16 @@ void writeJsonToNet(struct net_writer *writer, struct char_buffer cb) {
         p += bytes;
         pos += bytes;
         written += bytes;
-        completeWrite(writer, p);
+        completeWrite(Modes, writer, p);
 
-        p = prepareWrite(writer, bytes);
+        p = prepareWrite(Modes, writer, bytes);
     }
 
-    flushWrites(writer);
+    flushWrites(Modes, writer);
     free(content);
 }
 
-struct char_buffer generateVRS(int part, int n_parts) {
+struct char_buffer generateVRS(struct _Modes *Modes, int part, int n_parts) {
     struct char_buffer cb;
     uint64_t now = mstime();
     struct aircraft *a;
@@ -3238,7 +3239,7 @@ struct char_buffer generateVRS(int part, int n_parts) {
             "{\"acList\":[");
 
     for (int j = part_start; j < part_start + part_len; j++) {
-        for (a = Modes.aircrafts[j]; a; a = a->next) {
+        for (a = Modes->aircrafts[j]; a; a = a->next) {
             if (a->meta.messages < 2) { // basic filter for bad decodes
                 continue;
             }
@@ -3394,8 +3395,8 @@ static void *pthreadGetaddrinfo(void *param) {
     return NULL;
 }
 
-inline void cleanupNetwork(void) {
-    for (struct net_service *s = Modes.services; s; s = s->next) {
+inline void cleanupNetwork(struct _Modes *Modes) {
+    for (struct net_service *s = Modes->services; s; s = s->next) {
         struct client *c = s->clients, *nc;
         while (c) {
             nc = c->next;
@@ -3412,7 +3413,7 @@ inline void cleanupNetwork(void) {
         }
     }
 
-    struct net_service *s = Modes.services, *ns;
+    struct net_service *s = Modes->services, *ns;
     while (s) {
         ns = s->next;
         free(s->listener_fds);
@@ -3424,8 +3425,8 @@ inline void cleanupNetwork(void) {
         s = ns;
     }
 
-    for (int i = 0; i < Modes.net_connectors_count; i++) {
-        struct net_connector *con = Modes.net_connectors[i];
+    for (int i = 0; i < Modes->net_connectors_count; i++) {
+        struct net_connector *con = Modes->net_connectors[i];
         free(con->address);
         if (con->addr_info) {
             freeaddrinfo(con->addr_info);
@@ -3438,21 +3439,21 @@ inline void cleanupNetwork(void) {
         }
         free(con);
     }
-    free(Modes.net_connectors);
+    free(Modes->net_connectors);
 }
 
 
-void displayModesMessage(struct modesMessage *mm) {
+void displayModesMessage(struct _Modes *Modes, struct modesMessage *mm) {
     int j;
 
     // Handle only addresses mode first.
-    if (Modes.onlyaddr) {
+    if (Modes->onlyaddr) {
         printf("%06x\n", mm->addr);
         return; // Enough for --onlyaddr mode
     }
 
     // Show the raw message.
-    if (Modes.mlat && mm->timestampMsg) {
+    if (Modes->mlat && mm->timestampMsg) {
         printf("@%012" PRIX64, mm->timestampMsg);
     } else
         printf("*");
@@ -3460,7 +3461,7 @@ void displayModesMessage(struct modesMessage *mm) {
     for (j = 0; j < mm->msgbits / 8; j++) printf("%02x", mm->msg[j]);
     printf(";\n");
 
-    if (Modes.raw) {
+    if (Modes->raw) {
         fflush(stdout); // Provide data to the reader ASAP
         return; // Enough for --raw mode
     }
@@ -3811,17 +3812,17 @@ void displayModesMessage(struct modesMessage *mm) {
 // processing and visualization
 //
 
-void useModesMessage(struct modesMessage *mm) {
+void useModesMessage(struct _Modes *Modes, struct modesMessage *mm) {
     struct aircraft *a;
 
-    ++Modes.stats_current.messages_total;
+    ++Modes->stats_current.messages_total;
 
     // Track aircraft state
-    a = trackUpdateFromMessage(mm);
+    a = trackUpdateFromMessage(Modes, mm);
 
     // In non-interactive non-quiet mode, display messages on standard output
-    if (!Modes.interactive && !Modes.quiet && (!Modes.show_only || mm->addr == Modes.show_only) && !mm->sbs_in) {
-        displayModesMessage(mm);
+    if (!Modes->interactive && !Modes->quiet && (!Modes->show_only || mm->addr == Modes->show_only) && !mm->sbs_in) {
+        displayModesMessage(Modes, mm);
     }
 
     // Feed output clients.
@@ -3829,17 +3830,17 @@ void useModesMessage(struct modesMessage *mm) {
     // Otherwise, apply a sanity-check filter and only
     // forward messages when we have seen two of them.
 
-    if (Modes.net && !mm->sbs_in) {
-        if (Modes.net_verbatim || mm->msgtype == 32 || !a) {
+    if (Modes->net && !mm->sbs_in) {
+        if (Modes->net_verbatim || mm->msgtype == 32 || !a) {
             // Unconditionally send
-            modesQueueOutput(mm, a);
+            modesQueueOutput(Modes, mm, a);
         } else if (a->meta.messages > 1) {
             // Suppress the first message. When we receive a second message,
             // emit the first two messages.
             if (a->meta.messages == 2) {
-                modesQueueOutput(&a->first_message, a);
+                modesQueueOutput(Modes, &a->first_message, a);
             }
-            modesQueueOutput(mm, a);
+            modesQueueOutput(Modes, mm, a);
         }
     }
 }

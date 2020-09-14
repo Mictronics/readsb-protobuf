@@ -131,7 +131,7 @@ static void modesInitConfig(void) {
     Modes.basestation_is_mlat = 1;
     receiver__init(&Modes.receiver);
 
-    sdrInitConfig();
+    sdrInitConfig(&Modes);
 }
 //
 //=========================================================================
@@ -225,7 +225,7 @@ static void *readerThreadEntryPoint(void *arg) {
     // Try sticking this thread to core 3
     thread_to_core(3);
 
-    sdrRun();
+    sdrRun(&Modes);
 
     if (!Modes.exit) {
         Modes.exit = 2; // unexpected exit
@@ -260,7 +260,7 @@ static void snipMode(int level) {
 static void display_total_stats(void) {
     struct stats added;
     add_stats(&Modes.stats_alltime, &Modes.stats_current, &added);
-    display_stats(&added);
+    display_stats(&Modes, &added);
 }
 
 //
@@ -280,12 +280,12 @@ static void backgroundTasks(void) {
     uint64_t now = mstime();
 
     icaoFilterExpire();
-    trackPeriodicUpdate();
+    trackPeriodicUpdate(&Modes);
 
     if (Modes.net) {
-        modesNetPeriodicWork();
+        modesNetPeriodicWork(&Modes);
         if (last_second + 1000 < now) {
-            modesNetSecondWork();
+            modesNetSecondWork(&Modes);
             last_second = now;
         }
     }
@@ -293,11 +293,11 @@ static void backgroundTasks(void) {
 
     // Refresh screen when in interactive mode
     if (Modes.interactive) {
-        interactiveShowData();
+        interactiveShowData(&Modes);
     }
 
     // copy out reader CPU time and reset it
-    sdrUpdateCPUTime(&Modes.stats_current.reader_cpu);
+    sdrUpdateCPUTime(&Modes, &Modes.stats_current.reader_cpu);
 
     // always update end time so it is current when requests arrive
     Modes.stats_current.end = mstime();
@@ -326,7 +326,7 @@ static void backgroundTasks(void) {
             Modes.stats_current.start = Modes.stats_current.end = now;
 
             if (Modes.output_dir) {
-                generateStatsProtoBuf();
+                generateStatsProtoBuf(&Modes);
                 if (sem_post(Modes.stats_semptr) < 0) {
                     fprintf(stderr, "error posting stats semaphore: %s\n", strerror(errno));
                 }
@@ -335,7 +335,7 @@ static void backgroundTasks(void) {
             // Create new receiver file frequently when antenna has a valid GPS fix.
             // Thus, we can show status in webapp.
             if ((Modes.receiver.antenna_flags & 0xE000) == 0xE000) {
-                generateReceiverProtoBuf();
+                generateReceiverProtoBuf(&Modes);
             }
 
             next_stats_update += 60000;
@@ -347,7 +347,7 @@ static void backgroundTasks(void) {
             next_stats_display = now + Modes.stats;
         } else {
             add_stats(&Modes.stats_periodic, &Modes.stats_current, &Modes.stats_periodic);
-            display_stats(&Modes.stats_periodic);
+            display_stats(&Modes, &Modes.stats_periodic);
             reset_stats(&Modes.stats_periodic);
 
             next_stats_display += Modes.stats;
@@ -359,17 +359,17 @@ static void backgroundTasks(void) {
     }
 
     if (Modes.output_dir && now >= next_full) {
-        generateAircraftProtoBuf();
+        generateAircraftProtoBuf(&Modes);
         next_full = now + Modes.output_interval;
     }
 
     if (Modes.output_dir && now >= next_history) {
         char filebuf[PATH_MAX];
         snprintf(filebuf, PATH_MAX, "history_%d.pb", Modes.aircraft_history_next);
-        generateHistoryProtoBuf(filebuf);
+        generateHistoryProtoBuf(&Modes, filebuf);
 
         if (!Modes.aircraft_history_full) {
-            generateReceiverProtoBuf();
+            generateReceiverProtoBuf(&Modes);
             if (Modes.aircraft_history_next == HISTORY_SIZE - 1)
                 Modes.aircraft_history_full = 1;
         }
@@ -385,7 +385,7 @@ static void backgroundTasks(void) {
 static void cleanup_and_exit(int code) {
     sem_close(Modes.stats_semptr);
     // Free any used memory
-    interactiveCleanup();
+    interactiveCleanup(&Modes);
     free(Modes.dev_name);
     free(Modes.filename);
     /* Free only when pointing to string in heap (strdup allocated when given as run parameter)
@@ -416,7 +416,7 @@ static void cleanup_and_exit(int code) {
 
     crcCleanupTables();
 
-    cleanupNetwork();
+    cleanupNetwork(&Modes);
 
     exit(code);
 }
@@ -658,7 +658,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 #endif
         case OptDeviceType:
             /* Forward interface option to the specific device handler */
-            if (sdrHandleOption(key, arg) == false)
+            if (sdrHandleOption(&Modes, key, arg) == false)
                 return 1;
             break;
         case ARGP_KEY_END:
@@ -706,12 +706,12 @@ int main(int argc, char **argv) {
     modesInit();
     geomag_init();
 
-    if (!sdrOpen()) {
+    if (!sdrOpen(&Modes)) {
         cleanup_and_exit(1);
     }
 
     if (Modes.net) {
-        modesInitNet();
+        modesInitNet(&Modes);
     }
 
     // init stats:
@@ -725,11 +725,11 @@ int main(int argc, char **argv) {
         Modes.stats_1min[j].start = Modes.stats_1min[j].end = Modes.stats_current.start;
 
     // write initial protocol buffer files so they're not missing
-    generateReceiverProtoBuf();
-    generateStatsProtoBuf();
-    generateAircraftProtoBuf();
+    generateReceiverProtoBuf(&Modes);
+    generateStatsProtoBuf(&Modes);
+    generateAircraftProtoBuf(&Modes);
 
-    interactiveInit();
+    interactiveInit(&Modes);
 
     /* If the user specifies --net-only, just run in order to serve network
      * clients without reading data from the RTL device.
@@ -806,7 +806,7 @@ int main(int argc, char **argv) {
     if (Modes.stats) {
         display_total_stats();
     }
-    sdrClose();
+    sdrClose(&Modes);
     if (Modes.exit != 1) {
         log_with_timestamp("Abnormal exit.");
         cleanup_and_exit(1);

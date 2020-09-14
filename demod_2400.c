@@ -383,7 +383,7 @@ void demodulate2400(struct _Modes *Modes, struct mag_buf *mag) {
         j += msglen * 12 / 5;
 
         // Pass data to the next layer
-        useModesMessage(&mm);
+        useModesMessage(Modes, &mm);
     }
 
     /* update noise power */
@@ -667,7 +667,7 @@ void demodulate2400AC(struct _Modes *Modes, struct mag_buf *mag) {
         decodeModeAMessage(&mm, modeac);
 
         // Pass data to the next layer
-        useModesMessage(&mm);
+        useModesMessage(Modes, &mm);
 
         f1_sample += (20 * 87 / 25);
         Modes->stats_current.demod_modeac++;

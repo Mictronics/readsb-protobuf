@@ -31,13 +31,14 @@
 
 struct aircraft;
 struct modesMessage;
+struct _Modes;
 struct client;
 struct net_service;
-typedef int (*read_fn)(struct client *, char *, int);
-typedef void (*heartbeat_fn)(struct net_service *);
+typedef int (*read_fn)(struct _Modes *Modes, struct client *, char *, int);
+typedef void (*heartbeat_fn)(struct _Modes *Modes, struct net_service *);
 
-void displayModesMessage(struct modesMessage *mm);
-void useModesMessage(struct modesMessage *mm);
+void displayModesMessage(struct _Modes *Modes, struct modesMessage *mm);
+void useModesMessage(struct _Modes *Modes, struct modesMessage *mm);
 
 typedef enum {
     READ_MODE_IGNORE,
@@ -142,17 +143,17 @@ typedef union __packed {
     } status;
 } hulc_status_msg_t;
 
-struct net_service *serviceInit(const char *descr, struct net_writer *writer, heartbeat_fn hb_handler, read_mode_t mode, const char *sep, read_fn read_handler);
-struct client *serviceConnect(struct net_connector *con);
-void serviceReconnectCallback(uint64_t now);
-struct client *checkServiceConnected(struct net_connector *con);
-void serviceListen(struct net_service *service, char *bind_addr, char *bind_ports);
-struct client *createSocketClient(struct net_service *service, int fd);
-struct client *createGenericClient(struct net_service *service, int fd);
+struct net_service *serviceInit(struct _Modes *Modes, const char *descr, struct net_writer *writer, heartbeat_fn hb_handler, read_mode_t mode, const char *sep, read_fn read_handler);
+struct client *serviceConnect(struct _Modes *Modes, struct net_connector *con);
+void serviceReconnectCallback(struct _Modes *Modes, uint64_t now);
+struct client *checkServiceConnected(struct _Modes *Modes, struct net_connector *con);
+void serviceListen(struct _Modes *Modes, struct net_service *service, char *bind_addr, char *bind_ports);
+struct client *createSocketClient(struct _Modes *Modes, struct net_service *service, int fd);
+struct client *createGenericClient(struct _Modes *Modes, struct net_service *service, int fd);
 
 // viewadsb want to create these itselves
-struct net_service *makeBeastInputService(void);
-struct net_service *makeFatsvOutputService(void);
+struct net_service *makeBeastInputService(struct _Modes *Modes);
+struct net_service *makeFatsvOutputService(struct _Modes *Modes);
 
 struct char_buffer {
     char *buffer;
@@ -161,17 +162,17 @@ struct char_buffer {
 
 void sendBeastSettings(int fd, const char *settings);
 
-void modesInitNet(void);
-void modesQueueOutput(struct modesMessage *mm, struct aircraft *a);
-void modesNetSecondWork(void);
-void modesNetPeriodicWork(void);
-void cleanupNetwork(void);
+void modesInitNet(struct _Modes *Modes);
+void modesQueueOutput(struct _Modes *Modes, struct modesMessage *mm, struct aircraft *a);
+void modesNetSecondWork(struct _Modes *Modes);
+void modesNetPeriodicWork(struct _Modes *Modes);
+void cleanupNetwork(struct _Modes *Modes);
 
-struct char_buffer generateVRS(int part, int n_parts);
-void writeJsonToNet(struct net_writer *writer, struct char_buffer cb);
-void generateAircraftProtoBuf(void);
-void generateHistoryProtoBuf(const char *file);
-void generateReceiverProtoBuf(void);
-void generateStatsProtoBuf(void);
+struct char_buffer generateVRS(struct _Modes *Modes, int part, int n_parts);
+void writeJsonToNet(struct _Modes *Modes, struct net_writer *writer, struct char_buffer cb);
+void generateAircraftProtoBuf(struct _Modes *Modes);
+void generateHistoryProtoBuf(struct _Modes *Modes, const char *file);
+void generateReceiverProtoBuf(struct _Modes *Modes);
+void generateStatsProtoBuf(struct _Modes *Modes);
 
 #endif

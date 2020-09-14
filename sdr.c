@@ -44,7 +44,7 @@
 
 typedef struct {
     void (*initConfig)();
-    bool(*handleOption)(int, char*);
+    bool(*handleOption)(struct _Modes *Modes, int, char*);
     bool(*open)();
     void (*run)();
     void (*close)();
@@ -56,7 +56,8 @@ typedef struct {
 static void noInitConfig() {
 }
 
-static bool noHandleOption(int argc, char *argv) {
+static bool noHandleOption(struct _Modes *Modes, int argc, char *argv) {
+    MODES_NOTUSED(Modes);
     MODES_NOTUSED(argc);
     MODES_NOTUSED(argv);
 
@@ -101,29 +102,29 @@ static sdr_handler sdr_handlers[] = {
     { NULL, NULL, NULL, NULL, NULL, NULL, SDR_NONE, 0} /* must come last */
 };
 
-void sdrInitConfig() {
+void sdrInitConfig(struct _Modes *Modes) {
     // Default SDR is the first type available in the handlers array.
-    Modes.sdr_type = sdr_handlers[0].sdr_type;
+    Modes->sdr_type = sdr_handlers[0].sdr_type;
 
     for (int i = 0; sdr_handlers[i].name; ++i) {
         sdr_handlers[i].initConfig();
     }
 }
 
-bool sdrHandleOption(int argc, char *argv) {
+bool sdrHandleOption(struct _Modes *Modes, int argc, char *argv) {
     switch (argc) {
         case OptDeviceType:
             for (int i = 0; sdr_handlers[i].name; ++i) {
                 if (!strcasecmp(sdr_handlers[i].name, argv)) {
-                    Modes.sdr_type = sdr_handlers[i].sdr_type;
+                    Modes->sdr_type = sdr_handlers[i].sdr_type;
                     return true;
                 }
             }
             break;
         default:
             for (int i = 0; sdr_handlers[i].sdr_type; ++i) {
-                if (Modes.sdr_type == sdr_handlers[i].sdr_type) {
-                    return sdr_handlers[i].handleOption(argc, argv);
+                if (Modes->sdr_type == sdr_handlers[i].sdr_type) {
+                    return sdr_handlers[i].handleOption(Modes, argc, argv);
                 }
             }
     }
@@ -136,11 +137,11 @@ bool sdrHandleOption(int argc, char *argv) {
     return false;
 }
 
-static sdr_handler *current_handler() {
+static sdr_handler *current_handler(struct _Modes *Modes) {
     static sdr_handler unsupported_handler = {noInitConfig, noHandleOption, unsupportedOpen, noRun, noClose, "unsupported", SDR_NONE, 0};
 
     for (int i = 0; sdr_handlers[i].name; ++i) {
-        if (Modes.sdr_type == sdr_handlers[i].sdr_type) {
+        if (Modes->sdr_type == sdr_handlers[i].sdr_type) {
             return &sdr_handlers[i];
         }
     }
@@ -148,42 +149,42 @@ static sdr_handler *current_handler() {
     return &unsupported_handler;
 }
 
-bool sdrOpen() {
-    pthread_mutex_init(&Modes.reader_cpu_mutex, NULL);
-    return current_handler()->open();
+bool sdrOpen(struct _Modes *Modes) {
+    pthread_mutex_init(&Modes->reader_cpu_mutex, NULL);
+    return current_handler(Modes)->open();
 }
 
-void sdrRun() {
+void sdrRun(struct _Modes *Modes) {
     set_thread_name("readsb-sdr");
 
-    pthread_mutex_lock(&Modes.reader_cpu_mutex);
-    Modes.reader_cpu_accumulator.tv_sec = 0;
-    Modes.reader_cpu_accumulator.tv_nsec = 0;
-    start_cpu_timing(&Modes.reader_cpu_start);
-    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
+    pthread_mutex_lock(&Modes->reader_cpu_mutex);
+    Modes->reader_cpu_accumulator.tv_sec = 0;
+    Modes->reader_cpu_accumulator.tv_nsec = 0;
+    start_cpu_timing(&Modes->reader_cpu_start);
+    pthread_mutex_unlock(&Modes->reader_cpu_mutex);
 
-    current_handler()->run();
+    current_handler(Modes)->run();
 
-    pthread_mutex_lock(&Modes.reader_cpu_mutex);
-    end_cpu_timing(&Modes.reader_cpu_start, &Modes.reader_cpu_accumulator);
-    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
+    pthread_mutex_lock(&Modes->reader_cpu_mutex);
+    end_cpu_timing(&Modes->reader_cpu_start, &Modes->reader_cpu_accumulator);
+    pthread_mutex_unlock(&Modes->reader_cpu_mutex);
 }
 
-void sdrClose() {
-    pthread_mutex_destroy(&Modes.reader_cpu_mutex);
-    current_handler()->close();
+void sdrClose(struct _Modes *Modes) {
+    pthread_mutex_destroy(&Modes->reader_cpu_mutex);
+    current_handler(Modes)->close();
 }
 
-void sdrMonitor() {
-    pthread_mutex_lock(&Modes.reader_cpu_mutex);
-    update_cpu_timing(&Modes.reader_cpu_start, &Modes.reader_cpu_accumulator);
-    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
+void sdrMonitor(struct _Modes *Modes) {
+    pthread_mutex_lock(&Modes->reader_cpu_mutex);
+    update_cpu_timing(&Modes->reader_cpu_start, &Modes->reader_cpu_accumulator);
+    pthread_mutex_unlock(&Modes->reader_cpu_mutex);
 }
 
-void sdrUpdateCPUTime(struct timespec *addTo) {
-    pthread_mutex_lock(&Modes.reader_cpu_mutex);
-    add_timespecs(&Modes.reader_cpu_accumulator, addTo, addTo);
-    Modes.reader_cpu_accumulator.tv_sec = 0;
-    Modes.reader_cpu_accumulator.tv_nsec = 0;
-    pthread_mutex_unlock(&Modes.reader_cpu_mutex);
+void sdrUpdateCPUTime(struct _Modes *Modes, struct timespec *addTo) {
+    pthread_mutex_lock(&Modes->reader_cpu_mutex);
+    add_timespecs(&Modes->reader_cpu_accumulator, addTo, addTo);
+    Modes->reader_cpu_accumulator.tv_sec = 0;
+    Modes->reader_cpu_accumulator.tv_nsec = 0;
+    pthread_mutex_unlock(&Modes->reader_cpu_mutex);
 }

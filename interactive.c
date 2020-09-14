@@ -63,15 +63,15 @@
 //
 //========================= Interactive mode ===============================
 
-static int convert_altitude(int ft) {
-    if (Modes.metric)
+static int convert_altitude(struct _Modes* Modes, int ft) {
+    if (Modes->metric)
         return (ft / 3.2828);
     else
         return ft;
 }
 
-static int convert_speed(int kts) {
-    if (Modes.metric)
+static int convert_speed(struct _Modes* Modes, int kts) {
+    if (Modes->metric)
         return (kts * 1.852);
     else
         return kts;
@@ -83,8 +83,8 @@ static int convert_speed(int kts) {
 // Show the currently captured interactive data on screen.
 //
 
-void interactiveInit() {
-    if (!Modes.interactive)
+void interactiveInit(struct _Modes* Modes) {
+    if (!Modes->interactive)
         return;
 
     initscr();
@@ -95,13 +95,13 @@ void interactiveInit() {
     mvhline(1, 0, ACS_HLINE, 80);
 }
 
-void interactiveCleanup(void) {
-    if (Modes.interactive) {
+void interactiveCleanup(struct _Modes* Modes) {
+    if (Modes->interactive) {
         endwin();
     }
 }
 
-void interactiveShowData(void) {
+void interactiveShowData(struct _Modes *Modes) {
     static uint64_t next_update;
     uint64_t now = mstime();
     char progress;
@@ -120,10 +120,10 @@ void interactiveShowData(void) {
     int row = 2;
 
     for (int j = 0; j < AIRCRAFTS_BUCKETS; j++) {
-        struct aircraft *a = Modes.aircrafts[j];
+        struct aircraft *a = Modes->aircrafts[j];
         while (a && row < rows) {
 
-            if ((now - a->meta.seen) < Modes.interactive_display_ttl) {
+            if ((now - a->meta.seen) < Modes->interactive_display_ttl) {
                 int msgs = a->meta.messages;
 
                 if (msgs > 1) {
@@ -137,7 +137,7 @@ void interactiveShowData(void) {
                     }
 
                     if (trackDataValid(&a->gs_valid)) {
-                        snprintf(strGs, 5, "%3d", convert_speed(a->meta.gs));
+                        snprintf(strGs, 5, "%3d", convert_speed(Modes, a->meta.gs));
                     }
 
                     if (trackDataValid(&a->track_valid)) {
@@ -170,10 +170,10 @@ void interactiveShowData(void) {
 
                     if (trackDataValid(&a->airground_valid) && a->meta.air_ground == AIRCRAFT_META__AIR_GROUND__AG_GROUND) {
                         snprintf(strFl, 7, " grnd");
-                    } else if (Modes.use_gnss && trackDataValid(&a->altitude_geom_valid)) {
-                        snprintf(strFl, 7, "%5dH", convert_altitude(a->meta.alt_geom));
+                    } else if (Modes->use_gnss && trackDataValid(&a->altitude_geom_valid)) {
+                        snprintf(strFl, 7, "%5dH", convert_altitude(Modes, a->meta.alt_geom));
                     } else if (trackDataValid(&a->altitude_baro_valid)) {
-                        snprintf(strFl, 7, "%5d ", convert_altitude(a->meta.alt_baro));
+                        snprintf(strFl, 7, "%5d ", convert_altitude(Modes, a->meta.alt_baro));
                     }
 
                     mvprintw(row, 0, "%s%06X %-4s  %-4s  %-8s %6s %3s  %3s  %7s %8s %5.1f %5d %2.0f",
@@ -187,7 +187,7 @@ void interactiveShowData(void) {
         }
     }
 
-    if (Modes.mode_ac) {
+    if (Modes->mode_ac) {
         for (unsigned i = 1; i < 4096 && row < rows; ++i) {
             if (modeAC_match[i] || modeAC_count[i] < 50 || modeAC_age[i] > 5)
                 continue;
@@ -198,7 +198,7 @@ void interactiveShowData(void) {
             int modeC = modeAToModeC(modeA);
             if (modeC != INVALID_ALTITUDE) {
                 strMode[3] = 'C';
-                snprintf(strFl, 7, "%5d ", convert_altitude(modeC * 100));
+                snprintf(strFl, 7, "%5d ", convert_altitude(Modes, modeC * 100));
             }
 
             mvprintw(row, 0,

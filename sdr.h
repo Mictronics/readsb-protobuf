@@ -30,14 +30,15 @@
 
 // Common interface to different SDR inputs.
 
-void sdrInitConfig();
-bool sdrHandleOption(int argc, char *argv);
-bool sdrOpen();
-void sdrRun();
-void sdrClose();
+struct _Modes;
+void sdrInitConfig(struct _Modes *Modes);
+bool sdrHandleOption(struct _Modes *Modes, int argc, char *argv);
+bool sdrOpen(struct _Modes *Modes);
+void sdrRun(struct _Modes *Modes);
+void sdrClose(struct _Modes *Modes);
 // Call periodically from the SDR read thread to update reader thread CPU stats:
-void sdrMonitor();
+void sdrMonitor(struct _Modes *Modes);
 // Retrieve CPU stats and add new CPU time to *addTo
-void sdrUpdateCPUTime(struct timespec *addTo);
+void sdrUpdateCPUTime(struct _Modes *Modes, struct timespec *addTo);
 
 #endif

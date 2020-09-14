@@ -27,10 +27,11 @@
 
 // Pseudo-SDR that reads from a sample file
 
+struct _Modes;
 void ifileInitConfig();
-bool ifileHandleOption(int argc, char *argv);
-bool ifileOpen();
-void ifileRun();
+bool ifileHandleOption(struct _Modes *Modes, int argc, char *argv);
+bool ifileOpen(struct _Modes *Modes);
+void ifileRun(struct _Modes *Modes);
 void ifileClose();
 
 #endif
