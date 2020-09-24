@@ -83,8 +83,13 @@
 #include <time.h>
 #include <limits.h>
 #include <semaphore.h>
+#include <protobuf-c/protobuf-c.h>
 
 #include "compat/compat.h"
+
+#if PROTOBUF_C_VERSION_NUMBER < 1003001
+#error This code is incompatible with your libprotobuf-c headers and protoc-c compiler. Please compile with a newer version (>1.3.1+) of protoc-c.
+#endif
 
 // ============================= #defines ===============================
 

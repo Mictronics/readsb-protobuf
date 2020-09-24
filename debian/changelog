@@ -1,6 +1,7 @@
 readsb (4.0.1~dev) UNRELEASED; urgency=medium
 
   * In development
+  * Add check for compatible protoc-c compiler version. 
   * Fix out of bounds write in polar range that affected reader CPU accumulator. (credits @wiedehopf)
   * Fix unescaping in Hulc status message.
   * readsbrrd: Improve detection of system time in past with corresponding error message.
