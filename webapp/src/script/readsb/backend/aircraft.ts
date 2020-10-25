@@ -309,7 +309,9 @@ namespace READSB {
                 }
 
                 if ("desc" in result) {
-                    this.TypeDescription = result.desc;
+                    if (result.desc !== null && (result.desc as string).length > 0) {
+                        this.TypeDescription = result.desc;
+                    }
                 }
             }
         }
@@ -323,8 +325,11 @@ namespace READSB {
                 if ("wtc" in result) {
                     this.Wtc = result.wtc;
                 }
-                if ("desc" in result) {
+                if ("species" in result) {
                     this.Species = result.desc;
+                }
+                if ("model" in result) {
+                    this.TypeDescription = result.model;
                 }
             }
         }
