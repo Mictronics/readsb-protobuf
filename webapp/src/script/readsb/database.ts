@@ -396,10 +396,10 @@ namespace READSB {
                     const store = trans.objectStore("Operators");
                     for (const [key, value] of Object.entries(json)) {
                         const entry = {
-                            country: value.c,
+                            country: value[1],
                             id: key,
-                            name: value.n,
-                            radio: value.r,
+                            name: value[0],
+                            radio: value[2],
                         };
                         const req = store.put(entry);
                     }
@@ -436,9 +436,10 @@ namespace READSB {
                     const store = trans.objectStore("Types");
                     for (const [key, value] of Object.entries(json)) {
                         const entry = {
-                            desc: value.desc,
+                            model: value[0],
+                            species: value[1],
                             type: key,
-                            wtc: value.wtc,
+                            wtc: value[2],
                         };
                         const req = store.put(entry);
                     }
@@ -473,12 +474,15 @@ namespace READSB {
                     const store = trans.objectStore("Aircrafts");
                     for (const [key, value] of Object.entries(json)) {
                         const entry = {
-                            desc: value.d,
-                            flags: value.f,
+                            desc: null as string,
+                            flags: value[2],
                             icao24: key,
-                            reg: value.r,
-                            type: value.t,
+                            reg: value[0],
+                            type: value[1],
                         };
+                        if (value.length === 4) {
+                            entry.desc = value[3];
+                        }
                         const req = store.put(entry);
                     }
                     console.info("Done preloading aircraft database.");
