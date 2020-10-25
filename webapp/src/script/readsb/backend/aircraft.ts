@@ -329,7 +329,9 @@ namespace READSB {
                     this.Species = result.desc;
                 }
                 if ("model" in result) {
-                    this.TypeDescription = result.model;
+                    if (result.model !== null && (result.model as string).length > 0) {
+                        this.TypeDescription = result.model;
+                    }
                 }
             }
         }

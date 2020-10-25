@@ -280,7 +280,9 @@ var READSB;
                     this.Species = result.desc;
                 }
                 if ("model" in result) {
-                    this.TypeDescription = result.model;
+                    if (result.model !== null && result.model.length > 0) {
+                        this.TypeDescription = result.model;
+                    }
                 }
             }
         }
