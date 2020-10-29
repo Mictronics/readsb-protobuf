@@ -14,6 +14,7 @@ readsb (4.0.1~dev) UNRELEASED; urgency=medium
     * Factor out FIFO handling; reimplement as a linked list, not a circular buffer.
     * Use a bounce buffer for rtlsdr on ARM to work around zero-copy problems.
     * Factor out SDR thread CPU monitoring.
+    * Avoid false positives for address 000000 in the icao filter hashtable.
 
  -- Michael Wolf <michael@mictronics.de>  Sat, 01 Aug 2020 09:38:01 +0200
 
