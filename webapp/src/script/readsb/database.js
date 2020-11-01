@@ -264,7 +264,7 @@ var READSB;
                     e.target.transaction.oncomplete = this.InitOperators.bind(this);
                 };
                 request.onerror = (e) => {
-                    alert(i18next.t("error.databaseOpenFailure", { name: e.target.error.name, msg: e.target.error.message }));
+                    alert(`${e.target.error.name}: ${e.target.error.message}`);
                     reject();
                 };
             });
