@@ -364,7 +364,7 @@ namespace READSB {
                 };
 
                 request.onerror = (e: any) => {
-                    alert(i18next.t("error.databaseOpenFailure", { name: e.target.error.name, msg: e.target.error.message }));
+                    alert(`${e.target.error.name}: ${e.target.error.message}`);
                     reject();
                 };
             });
