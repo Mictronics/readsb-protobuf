@@ -571,7 +571,7 @@ int main(int argc, char** argv) {
     }
 
     stats_semptr = sem_open("/readsbStatsTrigger", O_CREAT, 0644, 0);
-    if (stats_semptr == (void*) - 1) {
+    if (stats_semptr == SEM_FAILED) {
         fprintf(stderr, "error creating stats semaphore: %s\n", strerror(errno));
         cleanup_and_exit(4);
     }

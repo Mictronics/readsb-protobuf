@@ -176,8 +176,9 @@ static void modesInitConfig(void) {
 
 static void modesInit(void) {
     Modes.stats_semptr = sem_open("/readsbStatsTrigger", O_CREAT, 0644, 0);
-    if (Modes.stats_semptr == (void*) - 1) {
-        fprintf(stderr, "error creating stats semaphore: %s\n", strerror(errno));
+    if (Modes.stats_semptr == SEM_FAILED) {
+        fprintf(stderr, "<3> Error creating stats semaphore: %s (readsbrrd won't work)\n", strerror(errno));
+        Modes.stats_semptr = NULL;
     }
 
     Modes.sample_rate = (double) 2400000.0;
@@ -364,7 +365,7 @@ static void backgroundTasks(void) {
 
             if (Modes.output_dir) {
                 generateStatsProtoBuf();
-                if (sem_post(Modes.stats_semptr) < 0) {
+                if (Modes.stats_semptr && sem_post(Modes.stats_semptr) < 0) {
                     fprintf(stderr, "error posting stats semaphore: %s\n", strerror(errno));
                 }
             }
@@ -420,7 +421,8 @@ static void backgroundTasks(void) {
 // Clean up memory prior to exit.
 
 static void cleanup_and_exit(int code) {
-    sem_close(Modes.stats_semptr);
+    if (Modes.stats_semptr)
+        sem_close(Modes.stats_semptr);
     // Free any used memory
     interactiveCleanup();
     free(Modes.dev_name);
