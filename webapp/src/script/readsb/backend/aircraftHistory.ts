@@ -58,7 +58,6 @@ namespace READSB {
                     mode: "cors",
                 })
                     .then((res: Response) => {
-                        loaded++;
                         if (res.status >= 200 && res.status < 400) {
                             return Promise.resolve(res);
                         } else {

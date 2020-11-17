@@ -31,7 +31,6 @@ var READSB;
                     mode: "cors",
                 })
                     .then((res) => {
-                    loaded++;
                     if (res.status >= 200 && res.status < 400) {
                         return Promise.resolve(res);
                     }
