@@ -10,8 +10,9 @@ readsb (4.0.1~dev) UNRELEASED; urgency=medium
   * Removed obsolete debug options.
   * Fix timeout and multiple event RRD update in readsbrrd.
   * Update bootstrap v4.5.0.
-  * Gracefully fail when the semaphore can't be created. See PR #11
+  * Gracefully fail when the semaphore can't be created.
   * Fix handling of HTTP return codes.
+  * Fix race condition in loading history files.
   * Contribution via dump1090-fa
     * Factor out FIFO handling; reimplement as a linked list, not a circular buffer.
     * Use a bounce buffer for rtlsdr on ARM to work around zero-copy problems.

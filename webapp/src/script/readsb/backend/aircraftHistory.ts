@@ -65,9 +65,9 @@ namespace READSB {
                             return Promise.reject(res.statusText);
                         }
                     })
-                    .then((res: Response) => {
+                    .then((res) => {
                         return res.arrayBuffer();
-                    }, (res: any) => {
+                    }, (res) => {
                         loaded++;
                         console.error(`Failed to load history chunk: ${res.message}`);
                     })
@@ -75,10 +75,11 @@ namespace READSB {
                         if (loaded < 0) {
                             return;
                         }
+                        loaded++;
                         const pbf = new Pbf(pb);
-                        const data = AircraftsUpdate.read(pbf);
+                        const data = READSB.AircraftsUpdate.read(pbf);
                         pbf.destroy();
-                        PositionHistoryBuffer.push(data); // don't care for order, will sort later
+                        PositionHistoryBuffer.push(data);
                         if (loaded >= historySize) {
                             loaded = -1;
                             DoneLoadHistory();

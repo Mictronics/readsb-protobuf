@@ -49,6 +49,7 @@ var READSB;
                     if (loaded < 0) {
                         return;
                     }
+                    loaded++;
                     const pbf = new Pbf(pb);
                     const data = READSB.AircraftsUpdate.read(pbf);
                     pbf.destroy();
