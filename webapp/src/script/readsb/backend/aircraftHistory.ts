@@ -59,7 +59,7 @@ namespace READSB {
                 })
                     .then((res: Response) => {
                         loaded++;
-                        if (res.status >= 200 && res.status < 300) {
+                        if (res.status >= 200 && res.status < 400) {
                             return Promise.resolve(res);
                         } else {
                             return Promise.reject(res.statusText);

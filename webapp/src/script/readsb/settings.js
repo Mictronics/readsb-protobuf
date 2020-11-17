@@ -279,7 +279,7 @@ var READSB;
                 mode: "cors",
             })
                 .then((res) => {
-                if (res.status >= 200 && res.status < 300) {
+                if (res.status >= 200 && res.status < 400) {
                     return Promise.resolve(res);
                 }
                 else {
