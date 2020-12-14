@@ -1,3 +1,9 @@
+readsb (4.0.2~dev) UNRELEASED; urgency=medium
+
+  * In development
+
+ -- Michael Wolf <michael@mictronics.de>  Mon, 14 Dec 2020 12:01:33 +0100
+
 readsb (4.0.1) stable; urgency=medium
 
   * Add check for compatible protoc-c compiler version. 
