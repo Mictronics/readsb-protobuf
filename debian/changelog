@@ -1,6 +1,5 @@
-readsb (4.0.1~dev) UNRELEASED; urgency=medium
+readsb (4.0.1) stable; urgency=medium
 
-  * In development
   * Add check for compatible protoc-c compiler version. 
   * Fix out of bounds write in polar range that affected reader CPU accumulator. (credits @wiedehopf)
   * Fix unescaping in Hulc status message.
@@ -20,7 +19,7 @@ readsb (4.0.1~dev) UNRELEASED; urgency=medium
     * Factor out SDR thread CPU monitoring.
     * Avoid false positives for address 000000 in the icao filter hashtable.
 
- -- Michael Wolf <michael@mictronics.de>  Sat, 01 Aug 2020 09:38:01 +0200
+ -- Michael Wolf <michael@mictronics.de>  Mon, 14 Dec 2020 11:59:15 +0100
 
 readsb (4.0.0) stable; urgency=medium
 
