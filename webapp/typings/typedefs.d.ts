@@ -287,33 +287,21 @@ declare namespace READSB {
      * Aircraft database entry.
      */
     export interface IAircraftDatabase {
-        [key: string]: {
-            d: string;
-            f: string;
-            r: string;
-            t: string;
-        };
+        [key: string]: [string, string, string, string?];
     }
 
     /**
      * Operator database entry.
      */
     export interface IOperatorDatabase {
-        [key: string]: {
-            n: string;
-            c: string;
-            r: string;
-        };
+        [key: string]: [string, string, string];
     }
 
     /**
      * Aircraft type database entry.
      */
     export interface ITypeDatabase {
-        [key: string]: {
-            desc: string;
-            wtc: string;
-        };
+        [key: string]: [string, string, string];
     }
 
     /**

@@ -4,8 +4,8 @@ when the indexed database is empty or doesn't exists. Once loaded the readsb
 application getting its meta data from the browsers database.
 
 Static data for three‐letter designator to aircraft operator company, company
-country and company radio callsign decode is based on FAA JO7340.2J issued 20-06-2019.
+country and company radio callsign decode is based on FAA JO7340.2.
 
 Aircraft type data was retrieved from http://www.icao.int/publications/DOC8643/
 
-Update database from https://raspberrypi.nerdcamp.net/export.php
+Update database from https://www.mictronics.de/aircraft-database/export.php

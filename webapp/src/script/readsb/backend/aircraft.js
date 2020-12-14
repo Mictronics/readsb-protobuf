@@ -265,7 +265,9 @@ var READSB;
                     }
                 }
                 if ("desc" in result) {
-                    this.TypeDescription = result.desc;
+                    if (result.desc !== null && result.desc.length > 0) {
+                        this.TypeDescription = result.desc;
+                    }
                 }
             }
         }
@@ -274,8 +276,13 @@ var READSB;
                 if ("wtc" in result) {
                     this.Wtc = result.wtc;
                 }
-                if ("desc" in result) {
+                if ("species" in result) {
                     this.Species = result.desc;
+                }
+                if ("model" in result) {
+                    if (result.model !== null && result.model.length > 0) {
+                        this.TypeDescription = result.model;
+                    }
                 }
             }
         }

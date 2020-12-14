@@ -13,6 +13,7 @@ readsb (4.0.1~dev) UNRELEASED; urgency=medium
   * Gracefully fail when the semaphore can't be created.
   * Fix handling of HTTP return codes.
   * Fix race condition in loading history files.
+  * Change database format to reduce file size and increase import performance.
   * Contribution via dump1090-fa
     * Factor out FIFO handling; reimplement as a linked list, not a circular buffer.
     * Use a bounce buffer for rtlsdr on ARM to work around zero-copy problems.
