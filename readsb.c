@@ -139,6 +139,17 @@ static void modesInitConfig(void) {
     // Default everything to zero/NULL
     memset(&Modes, 0, sizeof (Modes));
 
+    cpu_set_t mask;
+    int nprocs = 1;
+    if (sched_getaffinity(getpid(), sizeof (mask), &mask) == 0) {
+        nprocs = CPU_COUNT(&mask);
+    }
+
+    Modes.preambleThreshold = PREAMBLE_THRESHOLD_DEFAULT;
+    if (nprocs < 2) {
+        Modes.preambleThreshold = PREAMBLE_THRESHOLD_PIZERO;
+    }
+
     // Now initialise things that should not be 0/NULL to their defaults
     Modes.gain = MODES_MAX_GAIN;
     Modes.freq = MODES_DEFAULT_FREQ;
@@ -452,7 +463,7 @@ static void cleanup_and_exit(int code) {
     }
 
     fifo_destroy();
-    
+
     crcCleanupTables();
 
     cleanupNetwork();
@@ -489,7 +500,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case OptRaw:
             Modes.raw = 1;
             break;
-        case OptNet:
+        case OptPreambleThreshold:
+            Modes.preambleThreshold = (uint32_t) (max(min(strtoll(arg, NULL, 10), PREAMBLE_THRESHOLD_MAX), PREAMBLE_THRESHOLD_MIN));
+            break;
+        case OptNet:Modes.preambleThreshold = (uint32_t) (max(min(strtoll(arg, NULL, 10), PREAMBLE_THRESHOLD_MAX), PREAMBLE_THRESHOLD_MIN));
             Modes.net = 1;
             break;
         case OptModeAc:

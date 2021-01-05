@@ -237,9 +237,6 @@ void demodulate2400(struct mag_buf *mag) {
     unsigned char *bestmsg;
     int bestscore, bestphase;
 
-    // maximum lookahead we use
-    assert(mag->overlap >= 19 + 1 + 269);
-
     uint16_t *m = mag->data;
     uint32_t mlen = mag->validLength - mag->overlap;
 
@@ -266,7 +263,7 @@ void demodulate2400(struct mag_buf *mag) {
         //
 
         // do a pre-check to reduce CPU usage
-        if (!(pa[1] > pa[6] && pa[12] > pa[14] && pa[12] > pa[15])) {
+        if (!(pa[1] > pa[7] && pa[12] > pa[14] && pa[12] > pa[15])) {
             continue;
         }
 
@@ -275,7 +272,13 @@ void demodulate2400(struct mag_buf *mag) {
         // pa_mag is the sum of the 4 preamble high bits
         // minus 2 low bits between each of high bit pairs
 
-        ref_level = base_noise * 75;
+        // reduce number of preamble detections if we recently dropped samples
+        if (Modes.stats_15min.samples_dropped) {
+            ref_level = base_noise * max(PREAMBLE_THRESHOLD_PIZERO, Modes.preambleThreshold);
+        } else {
+            ref_level = base_noise * Modes.preambleThreshold;
+        }
+
         ref_level >>= 5; // divide by 32
 
         bestmsg = NULL;
@@ -311,7 +314,7 @@ void demodulate2400(struct mag_buf *mag) {
         // peaks at 1-2,4,10,12: phase 7
         // sample#: 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
         // phase 7: 0/3 3\1/5\0 0 0 0 1/5\0/4\2 0 0 0 0 0 0 X3
-        pa_mag = sum_1_4 + diff_2_3 + diff_10_11 + pa[12];
+        pa_mag = sum_1_4 + 2 * diff_2_3 + diff_10_11 + pa[12];
         if (pa_mag >= ref_level) {
             score_phase(8, m, j, &bestmsg, &bestscore, &bestphase, &msg, msg1, msg2);
         }

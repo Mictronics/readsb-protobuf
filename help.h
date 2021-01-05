@@ -24,6 +24,10 @@
 const char *argp_program_bug_address = "Michael Wolf <michael@mictronics.de>";
 static error_t parse_opt(int key, char *arg, struct argp_state *state);
 
+// preprocessor sillyness, yes both lines are necessary.
+#define _stringize(x) #x
+#define stringize(x) _stringize(x)
+
 static struct argp_option options[] = {
     {0, 0, 0, 0, "General options:", 1},
 #if defined(READSB) || defined(VIEWADSB)
@@ -50,6 +54,7 @@ static struct argp_option options[] = {
     {"freq", OptFreq, "<hz>", 0, "Set frequency (default: 1090 MHz)", 1},
     {"interactive", OptInteractive, 0, 0, "Interactive mode refreshing data on screen. Implies --throttle", 1},
     {"raw", OptRaw, 0, 0, "Show only messages hex values", 1},
+    {"preamble-threshold", OptPreambleThreshold, "<"stringize(PREAMBLE_THRESHOLD_MIN)"-"stringize(PREAMBLE_THRESHOLD_MAX)">", 0, "lower threshold --> more CPU usage (default: "stringize(PREAMBLE_THRESHOLD_DEFAULT)", pi zero / pi 1: "stringize(PREAMBLE_THRESHOLD_PIZERO)", hot CPU "stringize(PREAMBLE_THRESHOLD_HOT)")", 1},
     {"no-modeac-auto", OptNoModeAcAuto, 0, 0, "Don't enable Mode A/C if requested by a Beast connection", 1},
     {"forward-mlat", OptForwardMlat, 0, 0, "Allow forwarding of received mlat results to output ports", 1},
     {"mlat", OptMlat, 0, 0, "Display raw messages in Beast ASCII mode", 1},

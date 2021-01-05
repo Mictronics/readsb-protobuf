@@ -274,6 +274,7 @@ struct _Modes { // Internal state
     int8_t mode_ac_auto; // allow toggling of A/C by Beast commands
     int8_t net; // Enable networking
     int8_t net_only; // Enable just networking
+    uint32_t preambleThreshold;
     int net_output_flush_size; // Minimum Size of output data
     uint32_t net_connector_delay;
     int filter_persistence; // Maximum number of consecutive implausible positions from global CPR to invalidate a known position.
@@ -552,6 +553,7 @@ enum {
     OptNoInteractive,
     OptInteractiveTTL,
     OptRaw,
+    OptPreambleThreshold,
     OptModeAc,
     OptNoModeAcAuto,
     OptForwardMlat,

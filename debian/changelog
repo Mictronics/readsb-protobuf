@@ -4,6 +4,7 @@ readsb (4.0.2~dev) UNRELEASED; urgency=medium
   * Contribution wiedehopf:
     * Demodulator slice_phase improvements
     * Change preamble detection to a modified approach
+    * Add configurable preample threshold.
 
  -- Michael Wolf <michael@mictronics.de>  Mon, 14 Dec 2020 12:01:33 +0100
 
