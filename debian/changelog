@@ -1,7 +1,9 @@
 readsb (4.0.2~dev) UNRELEASED; urgency=medium
 
   * In development
-  * Demodulator slice_phase improvements (by wiedehopf)
+  * Contribution wiedehopf:
+    * Demodulator slice_phase improvements
+    * Change preamble detection to a modified approach
 
  -- Michael Wolf <michael@mictronics.de>  Mon, 14 Dec 2020 12:01:33 +0100
 

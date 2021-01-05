@@ -248,10 +248,8 @@ void demodulate2400(struct mag_buf *mag) {
     msg = msg1;
 
     for (j = 0; j < mlen; j++) {
-        uint16_t *preamble = &m[j];
-        int high;
-        uint32_t base_signal, base_noise;
-        int try_phase;
+        uint16_t *pa = &m[j];
+        int32_t pa_mag, base_noise, ref_level;
         int msglen;
 
         // Look for a message starting at around sample 0 with phase offset 3..7
@@ -267,80 +265,65 @@ void demodulate2400(struct mag_buf *mag) {
         // phase 7: 0/3 3\1/5\0 0 0 0 1/5\0/4\2 0 0 0 0 0 0 X3
         //
 
-        // quick check: we must have a rising edge 0->1 and a falling edge 12->13
-        if (!(preamble[0] < preamble[1] && preamble[12] > preamble[13]))
-            continue;
-
-        if (preamble[1] > preamble[2] && // 1
-                preamble[2] < preamble[3] && preamble[3] > preamble[4] && // 3
-                preamble[8] < preamble[9] && preamble[9] > preamble[10] && // 9
-                preamble[10] < preamble[11]) { // 11-12
-            // peaks at 1,3,9,11-12: phase 3
-            high = (preamble[1] + preamble[3] + preamble[9] + preamble[11] + preamble[12]) / 4;
-            base_signal = preamble[1] + preamble[3] + preamble[9];
-            base_noise = preamble[5] + preamble[6] + preamble[7];
-        } else if (preamble[1] > preamble[2] && // 1
-                preamble[2] < preamble[3] && preamble[3] > preamble[4] && // 3
-                preamble[8] < preamble[9] && preamble[9] > preamble[10] && // 9
-                preamble[11] < preamble[12]) { // 12
-            // peaks at 1,3,9,12: phase 4
-            high = (preamble[1] + preamble[3] + preamble[9] + preamble[12]) / 4;
-            base_signal = preamble[1] + preamble[3] + preamble[9] + preamble[12];
-            base_noise = preamble[5] + preamble[6] + preamble[7] + preamble[8];
-        } else if (preamble[1] > preamble[2] && // 1
-                preamble[2] < preamble[3] && preamble[4] > preamble[5] && // 3-4
-                preamble[8] < preamble[9] && preamble[10] > preamble[11] && // 9-10
-                preamble[11] < preamble[12]) { // 12
-            // peaks at 1,3-4,9-10,12: phase 5
-            high = (preamble[1] + preamble[3] + preamble[4] + preamble[9] + preamble[10] + preamble[12]) / 4;
-            base_signal = preamble[1] + preamble[12];
-            base_noise = preamble[6] + preamble[7];
-        } else if (preamble[1] > preamble[2] && // 1
-                preamble[3] < preamble[4] && preamble[4] > preamble[5] && // 4
-                preamble[9] < preamble[10] && preamble[10] > preamble[11] && // 10
-                preamble[11] < preamble[12]) { // 12
-            // peaks at 1,4,10,12: phase 6
-            high = (preamble[1] + preamble[4] + preamble[10] + preamble[12]) / 4;
-            base_signal = preamble[1] + preamble[4] + preamble[10] + preamble[12];
-            base_noise = preamble[5] + preamble[6] + preamble[7] + preamble[8];
-        } else if (preamble[2] > preamble[3] && // 1-2
-                preamble[3] < preamble[4] && preamble[4] > preamble[5] && // 4
-                preamble[9] < preamble[10] && preamble[10] > preamble[11] && // 10
-                preamble[11] < preamble[12]) { // 12
-            // peaks at 1-2,4,10,12: phase 7
-            high = (preamble[1] + preamble[2] + preamble[4] + preamble[10] + preamble[12]) / 4;
-            base_signal = preamble[4] + preamble[10] + preamble[12];
-            base_noise = preamble[6] + preamble[7] + preamble[8];
-        } else {
-            // no suitable peaks
+        // do a pre-check to reduce CPU usage
+        if (!(pa[1] > pa[6] && pa[12] > pa[14] && pa[12] > pa[15])) {
             continue;
         }
 
-        // Check for enough signal
-        if (base_signal * 2 < 3 * base_noise) // about 3.5dB SNR
-            continue;
+        // 5 noise samples
+        base_noise = pa[5] + pa[8] + pa[16] + pa[17] + pa[18];
+        // pa_mag is the sum of the 4 preamble high bits
+        // minus 2 low bits between each of high bit pairs
 
-        // Check that the "quiet" bits 6,7,15,16,17 are actually quiet
-        if (preamble[5] >= high ||
-                preamble[6] >= high ||
-                preamble[7] >= high ||
-                preamble[8] >= high ||
-                preamble[14] >= high ||
-                preamble[15] >= high ||
-                preamble[16] >= high ||
-                preamble[17] >= high ||
-                preamble[18] >= high) {
-            continue;
-        }
+        ref_level = base_noise * 75;
+        ref_level >>= 5; // divide by 32
 
-        // try all phases
-        Modes.stats_current.demod_preambles++;
         bestmsg = NULL;
-        bestscore = -2;
+        bestscore = -42;
         bestphase = -1;
-        for (try_phase = 4; try_phase <= 8; ++try_phase) {
-            score_phase(try_phase, m, j, &bestmsg, &bestscore, &bestphase, &msg, msg1, msg2);
+
+        int32_t diff_2_3 = pa[2] - pa[3];
+        int32_t sum_1_4 = pa[1] + pa[4];
+        int32_t diff_10_11 = pa[10] - pa[11];
+        int32_t common3456 = sum_1_4 - diff_2_3 + pa[9] + pa[12];
+
+        // sample#: 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+        // phase 3: 2/4\0/5\1 0 0 0 0/5\1/3 3\0 0 0 0 0 0 X4
+        // phase 4: 1/5\0/4\2 0 0 0 0/4\2 2/4\0 0 0 0 0 0 0 X0
+        pa_mag = common3456 - diff_10_11;
+        if (pa_mag >= ref_level) {
+            // peaks at 1,3,9,11-12: phase 3
+            score_phase(4, m, j, &bestmsg, &bestscore, &bestphase, &msg, msg1, msg2);
+            // peaks at 1,3,9,12: phase 4
+            score_phase(5, m, j, &bestmsg, &bestscore, &bestphase, &msg, msg1, msg2);
         }
+        // sample#: 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+        // phase 5: 0/5\1/3 3\0 0 0 0/3 3\1/5\0 0 0 0 0 0 0 X1
+        // phase 6: 0/4\2 2/4\0 0 0 0 2/4\0/5\1 0 0 0 0 0 0 X2
+        pa_mag = common3456 + diff_10_11;
+        if (pa_mag >= ref_level) {
+            // peaks at 1,3-4,9-10,12: phase 5
+            score_phase(6, m, j, &bestmsg, &bestscore, &bestphase, &msg, msg1, msg2);
+            // peaks at 1,4,10,12: phase 6
+            score_phase(7, m, j, &bestmsg, &bestscore, &bestphase, &msg, msg1, msg2);
+        }
+
+        // peaks at 1-2,4,10,12: phase 7
+        // sample#: 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+        // phase 7: 0/3 3\1/5\0 0 0 0 1/5\0/4\2 0 0 0 0 0 0 X3
+        pa_mag = sum_1_4 + diff_2_3 + diff_10_11 + pa[12];
+        if (pa_mag >= ref_level) {
+            score_phase(8, m, j, &bestmsg, &bestscore, &bestphase, &msg, msg1, msg2);
+        }
+
+        // no preamble detected
+        if (bestscore == -42) {
+            continue;
+        }
+
+        // we had at least one phase greater than the preamble threshold
+        // and used scoremodesmessage on those bytes
+        Modes.stats_current.demod_preambles++;
 
         // Do we have a candidate?
         if (bestscore < 0) {
