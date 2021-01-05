@@ -45,24 +45,50 @@
 // nb: the correlation functions sum to zero, so we do not need to adjust for the DC offset in the input signal
 // (adding any constant value to all of m[0..3] does not change the result)
 
+// Changes 2020 by wiedehopf:
+// 20 units per sample, 24 units per symbol that are distributed according to phase
+// 1 bit has 2 symbols, in a bit representing a one the first symbol is high and the second is low
+
+// The previous assumption was that symbols beyond our control are zero.
+// Let's make the assumption that the symbols beyond our control are a statistical mean of 0 and 1.
+// Such a mean is represented by 12 units per symbol.
+// As an example for the above let's discuss the first slice function:
+// Samples 0 and 1 are completely occupied by the bit we are trying to judge thus no outside symbols.
+// The 3rd sample is 8 units of our bit and 12 units of the following symbol.
+// Our bit contributes part of a low symbol represented by -8 units
+// but we also get 12 units of 0.5 resulting in +6 units from the following symbol.
+//
+// The above comment is how these changes started out, i'll leave them here as food for thought.
+// Using --ifile the coefficients from the above thought process were iteratively tweaked by hand.
+// Note one of the correlation functions is no longer DC balanced (but just slightly)
+// Further testing on your own samples using --ifile --quiet --stats is welcome
+// Note you might need to use --throttle unless your using wiedehopf's readsb fork,
+// otherwise position stats won't work as they rely on realtime differences between
+// reception of CPRs.
+// Creating a 5 minute sample with a gain of 43.9:
+// timeout 300 rtl_sdr -f 1090000000 -s 2400000 -g 43.9 sample.dat
+// Checking a set of correlation functions using the above sample:
+// make && ./readsb --device-type ifile --ifile sample.dat --quiet --stats
+
 static inline int slice_phase0(uint16_t *m) {
-    return 5 * m[0] - 3 * m[1] - 2 * m[2];
+    return 18 * m[0] - 15 * m[1] - 3 * m[2];
 }
 
 static inline int slice_phase1(uint16_t *m) {
-    return 4 * m[0] - m[1] - 3 * m[2];
+    return 14 * m[0] - 5 * m[1] - 9 * m[2];
 }
 
+// slightly DC unbalanced but better results
 static inline int slice_phase2(uint16_t *m) {
-    return 3 * m[0] + m[1] - 4 * m[2];
+    return 16 * m[0] + 5 * m[1] - 20 * m[2];
 }
 
 static inline int slice_phase3(uint16_t *m) {
-    return 2 * m[0] + 3 * m[1] - 5 * m[2];
+    return 7 * m[0] + 11 * m[1] - 18 * m[2];
 }
 
 static inline int slice_phase4(uint16_t *m) {
-    return m[0] + 5 * m[1] - 5 * m[2] - m[3];
+    return 4 * m[0] + 15 * m[1] - 20 * m[2] + 1 * m[3];
 }
 
 //

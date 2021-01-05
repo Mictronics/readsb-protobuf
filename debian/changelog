@@ -1,6 +1,7 @@
 readsb (4.0.2~dev) UNRELEASED; urgency=medium
 
   * In development
+  * Demodulator slice_phase improvements (by wiedehopf)
 
  -- Michael Wolf <michael@mictronics.de>  Mon, 14 Dec 2020 12:01:33 +0100
 
