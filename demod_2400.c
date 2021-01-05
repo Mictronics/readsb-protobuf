@@ -199,7 +199,7 @@ static void score_phase(int try_phase, uint16_t *m, int j, unsigned char **bestm
             break;
 
         default:
-            return; // unknown DF, give up immediately
+            bytelen = 1; // unknown DF, give up immediately
             break;
     }
 
@@ -209,7 +209,12 @@ static void score_phase(int try_phase, uint16_t *m, int j, unsigned char **bestm
     }
 
     // Score the mode S message and see if it's any good.
-    score = scoreModesMessage(*msg, i * 8);
+    if (bytelen > 1) {
+        score = scoreModesMessage(*msg, i * 8);
+    } else {
+        score = -2;
+    }
+
     if (score > *bestscore) {
         // new high score!
         *bestmsg = *msg;
