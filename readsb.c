@@ -831,7 +831,7 @@ int main(int argc, char **argv) {
                     demodulate2400AC(buf);
                 }
 
-                Modes.stats_current.samples_processed += buf->validLength - buf->overlap;
+                Modes.stats_current.samples_processed += buf->validLength;
                 Modes.stats_current.samples_dropped += buf->dropped;
                 end_cpu_timing(&start_time, &Modes.stats_current.demod_cpu);
 
