@@ -181,6 +181,7 @@ static inline __attribute__ ((always_inline)) uint8_t slice_byte(uint16_t **pPtr
 // update bestmsg, bestscore and bestphase
 
 static void score_phase(int try_phase, uint16_t *m, int j, unsigned char **bestmsg, int *bestscore, int *bestphase, unsigned char **msg, unsigned char *msg1, unsigned char *msg2) {
+    Modes.stats_current.demod_preamblePhase[try_phase - 4]++;
     uint16_t *pPtr;
     int phase, i, score, bytelen;
 
@@ -380,6 +381,8 @@ void demodulate2400(struct mag_buf *mag) {
             }
         }
 
+        Modes.stats_current.demod_bestPhase[bestphase - 4]++;
+        
         // measure signal power
         {
             double signal_power;

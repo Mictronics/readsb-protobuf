@@ -109,6 +109,17 @@ void display_stats(struct stats *st) {
                 st->strong_signal_count);
     }
 
+    printf("\n Phase stats");
+    printf("\n ");
+    for (int i = 0; i < 5; i++) printf(" %8u", i + 3);
+    printf("\n ");
+    for (int i = 0; i < 5; i++) printf(" %8u", st->demod_preamblePhase[i]);
+    printf("\n ");
+    for (int i = 0; i < 5; i++) printf(" %8u", i + 4);
+    printf("\n ");
+    for (int i = 0; i < 5; i++) printf(" %8u", st->demod_bestPhase[i]);
+    printf("\n\n");
+
     if (Modes.net) {
         printf("Messages from network clients:\n");
         printf("  %u Mode A/C messages received\n", st->remote_received_modeac);
@@ -202,6 +213,11 @@ void add_stats(const struct stats *st1, const struct stats *st2, struct stats *t
     for (i = 0; i < MODES_MAX_BITERRORS + 1; ++i)
         target->demod_accepted[i] = st1->demod_accepted[i] + st2->demod_accepted[i];
     target->demod_modeac = st1->demod_modeac + st2->demod_modeac;
+
+    for (int i = 0; i < 5; i++) {
+        target->demod_preamblePhase[i] = st1->demod_preamblePhase[i] + st2->demod_preamblePhase[i];
+        target->demod_bestPhase[i] = st1->demod_bestPhase[i] + st2->demod_bestPhase[i];
+    }
 
     target->samples_processed = st1->samples_processed + st2->samples_processed;
     target->samples_dropped = st1->samples_dropped + st2->samples_dropped;
