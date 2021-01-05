@@ -735,6 +735,9 @@ int main(int argc, char **argv) {
     // Set sane defaults
     modesInitConfig();
 
+    Modes.startup_time = mstime();
+    Modes.ifile_now = Modes.startup_time;
+    
     // signal handlers:
     signal(SIGINT, sigintHandler);
     signal(SIGTERM, sigtermHandler);
@@ -828,7 +831,7 @@ int main(int argc, char **argv) {
                     demodulate2400AC(buf);
                 }
 
-                Modes.stats_current.samples_processed += buf->validLength;
+                Modes.stats_current.samples_processed += buf->validLength - buf->overlap;
                 Modes.stats_current.samples_dropped += buf->dropped;
                 end_cpu_timing(&start_time, &Modes.stats_current.demod_cpu);
 

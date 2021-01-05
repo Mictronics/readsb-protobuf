@@ -183,8 +183,11 @@ void ifileRun() {
 
         sdrMonitor();
         
+        // Compute the sample timestamp for the start of the block
+        outbuf->sampleTimestamp = sampleCounter * 12e6 / Modes.sample_rate;
+        
         // Get the system time for the start of this block
-        outbuf->sysTimestamp = mstime();
+        outbuf->sysTimestamp = outbuf->sampleTimestamp / 12000U + Modes.startup_time;
 
         unsigned bytes_wanted = (outbuf->totalLength - outbuf->overlap) * ifile.bytes_per_sample;
         if (bytes_wanted > ifile.bufsize) {
@@ -229,6 +232,8 @@ void ifileRun() {
 
     // Wait for the FIFO to drain so we don't throw away trailing data
     fifo_drain();
+    
+    Modes.exit = 1;
 }
 
 void ifileClose() {

@@ -59,6 +59,10 @@
 uint64_t _messageNow = 0;
 
 uint64_t mstime(void) {
+    if (Modes.sdr_type == SDR_IFILE) {
+        return Modes.ifile_now;
+    }
+
     struct timeval tv;
     uint64_t mst;
 

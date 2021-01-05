@@ -284,6 +284,8 @@ struct _Modes { // Internal state
     double sample_rate; // actual sample rate in use (in hz)
     uint32_t interactive_display_ttl; // Interactive mode: TTL display
     uint64_t stats; // Interval (millis) between stats dumps,
+    uint64_t startup_time; // Readsb startup epoch
+    uint64_t ifile_now; // ifile timestamp
     uint32_t output_interval; // Interval between rewriting the aircraft file, in milliseconds; also the advertised map refresh interval
     char *net_output_raw_ports; // List of raw output TCP ports
     char *net_input_raw_ports; // List of raw input TCP ports
