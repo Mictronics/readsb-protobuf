@@ -70,25 +70,25 @@
 // Checking a set of correlation functions using the above sample:
 // make && ./readsb --device-type ifile --ifile sample.dat --quiet --stats
 
-static inline int slice_phase0(uint16_t *m) {
+static inline __attribute__ ((always_inline)) int slice_phase0(uint16_t *m) {
     return 18 * m[0] - 15 * m[1] - 3 * m[2];
 }
 
-static inline int slice_phase1(uint16_t *m) {
+static inline __attribute__ ((always_inline)) int slice_phase1(uint16_t *m) {
     return 14 * m[0] - 5 * m[1] - 9 * m[2];
 }
 
 // slightly DC unbalanced but better results
 
-static inline int slice_phase2(uint16_t *m) {
+static inline __attribute__ ((always_inline)) int slice_phase2(uint16_t *m) {
     return 16 * m[0] + 5 * m[1] - 20 * m[2];
 }
 
-static inline int slice_phase3(uint16_t *m) {
+static inline __attribute__ ((always_inline)) int slice_phase3(uint16_t *m) {
     return 7 * m[0] + 11 * m[1] - 18 * m[2];
 }
 
-static inline int slice_phase4(uint16_t *m) {
+static inline __attribute__ ((always_inline)) int slice_phase4(uint16_t *m) {
     return 4 * m[0] + 15 * m[1] - 20 * m[2] + 1 * m[3];
 }
 
