@@ -70,83 +70,89 @@
             ></h5>
             <button
               type="button"
-              class="close"
+              class="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
+            ></button>
           </div>
           <div class="modal-body">
             <form>
-              <div class="form-group form-inline">
+              <div class="row mb-1">
                 <label
                   for="editIcao24"
-                  class="col-form-label-sm"
+                  class="col-form-label-sm col-sm-5"
                   data-i18n="editDialog.addr"
                 ></label>
-                <input
-                  type="text"
-                  id="editIcao24"
-                  class="form-control form-control-sm col-sm-4 mx-sm-1"
-                />
+                <div class="col-sm-6 mx-sm-1">
+                  <input
+                    type="text"
+                    id="editIcao24"
+                    class="form-control form-control-sm"
+                  />
+                </div>
               </div>
-              <div class="form-group form-inline">
+              <div class="row mb-1">
                 <label
                   for="editRegistration"
-                  class="col-form-label-sm"
+                  class="col-form-label-sm col-sm-5"
                   data-i18n="editDialog.reg"
                 ></label>
-                <input
-                  type="text"
-                  id="editRegistration"
-                  class="form-control form-control-sm col-sm-4 mx-sm-1"
-                />
+                <div class="col-sm-6 mx-sm-1">
+                  <input
+                    type="text"
+                    id="editRegistration"
+                    class="form-control form-control-sm"
+                  />
+                </div>
               </div>
-              <div class="form-group form-inline">
+              <div class="row mb-1">
                 <label
                   for="editType"
-                  class="col-form-label-sm"
+                  class="col-form-label-sm col-sm-5"
                   data-i18n="editDialog.type"
                 ></label>
-                <input
-                  type="text"
-                  id="editType"
-                  class="form-control form-control-sm col-sm-4 mx-sm-1"
-                />
+                <div class="col-sm-6 mx-sm-1">
+                  <input
+                    type="text"
+                    id="editType"
+                    class="form-control form-control-sm"
+                  />
+                </div>
               </div>
-              <div class="form-group form-inline">
+              <div class="row mb-1">
                 <label
                   for="editDescription"
-                  class="col-form-label-sm"
+                  class="col-form-label-sm col-sm-5"
                   data-i18n="editDialog.desc"
                 ></label>
-                <input
-                  type="text"
-                  id="editDescription"
-                  class="form-control form-control-sm col-sm-4 mx-sm-1"
-                />
+                <div class="col-sm-6 mx-sm-1">
+                  <input
+                    type="text"
+                    id="editDescription"
+                    class="form-control form-control-sm"
+                  />
+                </div>
               </div>
-              <div class="custom-control custom-checkbox custom-control-inline">
+              <div class="form-check form-check-inline">
                 <input
                   type="checkbox"
-                  class="custom-control-input"
+                  class="form-check-input"
                   id="editInterestingCheck"
                 />
                 <label
-                  class="custom-control-label col-form-label-sm"
+                  class="form-check-label col-form-label-sm"
                   for="editInterestingCheck"
                   data-i18n="editDialog.interesting"
                 ></label>
               </div>
-              <div class="custom-control custom-checkbox custom-control-inline">
+              <div class="form-check form-check-inline">
                 <input
                   type="checkbox"
-                  class="custom-control-input"
+                  class="form-check-input"
                   id="editMilitaryCheck"
                 />
                 <label
-                  class="custom-control-label col-form-label-sm"
+                  class="form-check-label col-form-label-sm"
                   for="editMilitaryCheck"
                   data-i18n="editDialog.military"
                 ></label>
@@ -190,12 +196,10 @@
             ></h5>
             <button
               type="button"
-              class="close"
+              class="btn-close"
               data-bs-dismiss="modal"
               aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
+            ></button>
           </div>
           <div class="modal-body">
             <p>
@@ -636,35 +640,32 @@
       </div>
       <!-- lMapContainer -->
       <div id="sidebarContainer">
-        <div class="accordion" id="sidebarAccordion">
-          <div class="card">
-            <div class="card-header" id="headingInfo">
-              <h6 class="mb-0">
-                <button
-                  class="btn btn-link"
-                  style="padding-top: 0px; padding-bottom: 0px"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseInfo"
-                  aria-expanded="true"
-                  aria-controls="collapseInfo"
-                  data-i18n="cards.info"
-                ></button>
-              </h6>
-            </div>
+        <div class="accordion" id="sideBarAccordion">
+          <div class="accordion-item">
+            <h6 class="accordion-header" id="headingInfo">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseInfo"
+                aria-expanded="true"
+                aria-controls="collapseInfo"
+                data-i18n="cards.info"
+              ></button>
+            </h6>
             <div
               id="collapseInfo"
-              class="collapse show"
+              class="accordion-collapse collapse show"
               aria-labelledby="headingInfo"
-              data-bs-parent="#sidebarAccordion"
+              data-bs-parent="#sideBarAccordion"
             >
-              <div class="card-body">
+              <div class="accordion-body">
                 <div id="infoblock">
                   <div class="row">
                     <div class="col-sm">
                       <b id="infoblockName">Mictronics Readsb</b>
                     </div>
-                    <div class="col-sm text-right">
+                    <div class="col-sm text-end">
                       <a
                         href="https://github.com/Mictronics/readsb-protobuf"
                         id="infoblockVersion"
@@ -694,7 +695,7 @@
                       id="infoblockGpsStatus"
                       class="col-sm gps-icon no-gps-icon"
                     ></div>
-                    <div class="col-sm text-right">
+                    <div class="col-sm text-end">
                       <a
                         href="../graphs/"
                         target="_blank"
@@ -707,28 +708,25 @@
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-header" id="headingSettings">
-              <h6 class="mb-0">
-                <button
-                  class="btn btn-link collapsed"
-                  style="padding-top: 0px; padding-bottom: 0px"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseSettings"
-                  aria-expanded="false"
-                  aria-controls="collapseSettings"
-                  data-i18n="cards.settings"
-                ></button>
-              </h6>
-            </div>
+          <div class="accordion-item">
+            <h6 class="accordion-header" id="headingSettings">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseSettings"
+                aria-expanded="false"
+                aria-controls="collapseSettings"
+                data-i18n="cards.settings"
+              ></button>
+            </h6>
             <div
               id="collapseSettings"
-              class="collapse"
+              class="accordion-collapse collapse"
               aria-labelledby="headingSettings"
-              data-bs-parent="#sidebarAccordion"
+              data-bs-parent="#sideBarAccordion"
             >
-              <div class="card-body">
+              <div class="accordion-body">
                 <div class="dropdown p-1">
                   <button
                     class="btn btn-sm btn-outline-secondary dropdown-toggle"
@@ -770,316 +768,336 @@
                     </button>
                   </div>
                 </div>
-                <fieldset class="form-group p-1">
-                  <select
-                    id="unitsSelector"
-                    class="custom-select custom-select-sm col-sm-4"
-                  >
-                    <option
-                      value="nautical"
-                      data-i18n="units.aeronautical"
-                    ></option>
-                    <option value="metric" data-i18n="units.metric"></option>
-                    <option
-                      value="imperial"
-                      data-i18n="units.imperial"
-                    ></option>
-                  </select>
-                  <label
-                    for="unitSelector"
-                    class="col-form-label-sm mr-sm-3"
-                    data-i18n="units.units"
-                  ></label>
+                <fieldset class="row p-1">
+                  <div class="col-sm-4">
+                    <select
+                      id="unitsSelector"
+                      class="form-select form-select-sm"
+                    >
+                      <option
+                        value="nautical"
+                        data-i18n="units.aeronautical"
+                      ></option>
+                      <option value="metric" data-i18n="units.metric"></option>
+                      <option
+                        value="imperial"
+                        data-i18n="units.imperial"
+                      ></option>
+                    </select>
+                  </div>
+                  <div class="col-sm-4 g-0">
+                    <label
+                      for="unitSelector"
+                      class="col-form-label-sm mr-sm-3"
+                      data-i18n="units.units"
+                    ></label>
+                  </div>
                 </fieldset>
                 <fieldset class="form-group p-1">
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="showAircraftCountCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="showAircraftCountCheck"
                       data-i18n="settings.showAircraftCount"
                     ></label>
                   </div>
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="showMessageRateCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="showMessageRateCheck"
                       data-i18n="settings.showMessageRate"
                     ></label>
                   </div>
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="showFlagsCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="showFlagsCheck"
                       data-i18n="settings.showFlags"
                     ></label>
                   </div>
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="showAdditionalDataCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="showAdditionalDataCheck"
                       data-i18n="settings.showAdditionalData"
                     ></label>
                   </div>
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="showTraceDetailsCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="showTraceDetailsCheck"
                       data-i18n="settings.showTraceDetails"
                     ></label>
                   </div>
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="hideAircraftNotInViewCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="hideAircraftNotInViewCheck"
                       data-i18n="settings.hideAircraftNotInView"
                     ></label>
                   </div>
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="dimMapCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="dimMapCheck"
                       data-i18n="settings.dimMap"
                     ></label>
                   </div>
-                  <div class="custom-control custom-switch col-auto">
+                  <div class="form-check form-switch col-auto">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="useDarkThemeCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="useDarkThemeCheck"
                       data-i18n="settings.darkTheme"
                     ></label>
                   </div>
                 </fieldset>
-                <fieldset class="form-group mb-0">
-                  <div class="form-group form-inline">
-                    <label
-                      for="inputPageName"
-                      class="col-form-label-sm"
-                      data-i18n="settings.pageName"
-                    ></label>
-                    <input
-                      type="text"
-                      id="inputPageName"
-                      class="form-control form-control-sm col-sm-4 mx-sm-1"
-                    />
+                <fieldset class="mb-0">
+                  <div class="row mb-2">
+                    <div class="col-sm-auto">
+                      <label
+                        for="inputPageName"
+                        class="col-form-label-sm"
+                        data-i18n="settings.pageName"
+                      ></label>
+                    </div>
+                    <div class="col-sm-auto g-0">
+                      <input
+                        type="text"
+                        id="inputPageName"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
                   </div>
-                  <div class="form-group form-inline">
-                    <label
-                      for="inputSiteLat"
-                      class="col-form-label-sm"
-                      data-i18n="settings.siteLat"
-                    ></label>
-                    <input
-                      type="text"
-                      id="inputSiteLat"
-                      class="form-control form-control-sm col-sm-4 mx-sm-1"
-                      aria-describedby="siteLatHelpInline"
-                    />
-                    <small
-                      id="siteLatHelpInline"
-                      class="text-muted"
-                      data-i18n="settings.siteLatHelp"
-                    >
-                    </small>
+                  <div class="row mb-2">
+                    <div class="col-sm-auto">
+                      <label
+                        for="inputSiteLat"
+                        class="col-form-label-sm"
+                        data-i18n="settings.siteLat"
+                      ></label>
+                    </div>
+                    <div class="col-sm-auto g-0">
+                      <input
+                        type="text"
+                        id="inputSiteLat"
+                        class="form-control form-control-sm"
+                        aria-describedby="siteLatHelpInline"
+                      />
+                      <small
+                        id="siteLatHelpInline"
+                        class="text-muted"
+                        data-i18n="settings.siteLatHelp"
+                      >
+                      </small>
+                    </div>
                   </div>
-                  <div class="form-group form-inline">
-                    <label
-                      for="inputSiteLon"
-                      class="col-form-label-sm"
-                      data-i18n="settings.siteLon"
-                    ></label>
-                    <input
-                      type="text"
-                      id="inputSiteLon"
-                      class="form-control form-control-sm col-sm-4 mx-sm-1"
-                      aria-describedby="siteLonHelpInline"
-                    />
-                    <small
-                      id="siteLonHelpInline"
-                      class="text-muted"
-                      data-i18n="settings.siteLatHelp"
-                    >
-                    </small>
+                  <div class="row mb-2">
+                    <div class="col-sm-auto">
+                      <label
+                        for="inputSiteLon"
+                        class="col-form-label-sm"
+                        data-i18n="settings.siteLon"
+                      ></label>
+                    </div>
+                    <div class="col-sm-auto g-0">
+                      <input
+                        type="text"
+                        id="inputSiteLon"
+                        class="form-control form-control-sm"
+                        aria-describedby="siteLonHelpInline"
+                      />
+                      <small
+                        id="siteLonHelpInline"
+                        class="text-muted"
+                        data-i18n="settings.siteLatHelp"
+                      >
+                      </small>
+                    </div>
                   </div>
-                  <div class="form-group form-inline">
-                    <label
-                      for="inputSiteCirclesDistance"
-                      class="col-form-label-sm"
-                      data-i18n="settings.siteCirclesDist"
-                    ></label>
-                    <input
-                      type="text"
-                      id="inputSiteCirclesDistance"
-                      class="form-control form-control-sm mx-sm-1"
-                      aria-describedby="siteCirclesDistHelpInline"
-                    />
-                    <small
-                      id="siteCirclesDistHelpInline"
-                      class="text-muted"
-                      data-i18n="settings.siteCirclesDistHelp"
-                    >
-                    </small>
+                  <div class="row mb-2">
+                    <div class="col-sm-auto">
+                      <label
+                        for="inputSiteCirclesDistance"
+                        class="col-form-label-sm"
+                        data-i18n="settings.siteCirclesDist"
+                      ></label>
+                    </div>
+                    <div class="col-sm-auto mb-0">
+                      <input
+                        type="text"
+                        id="inputSiteCirclesDistance"
+                        class="form-control form-control-sm"
+                        aria-describedby="siteCirclesDistHelpInline"
+                      />
+                      <small
+                        id="siteCirclesDistHelpInline"
+                        class="text-muted"
+                        data-i18n="settings.siteCirclesDistHelp"
+                      >
+                      </small>
+                    </div>
                   </div>
-                  <div class="form-group form-inline">
-                    <label
-                      for="inputSkyVectorApiKey"
-                      class="col-form-label-sm"
-                      data-i18n="settings.skyVectorApiKey"
-                    ></label>
-                    <input
-                      type="text"
-                      id="inputSkyVectorApiKey"
-                      class="form-control form-control-sm col-sm-4 mx-sm-1"
-                    />
+                  <div class="row mb-2">
+                    <div class="col-sm-auto">
+                      <label
+                        for="inputSkyVectorApiKey"
+                        class="col-form-label-sm"
+                        data-i18n="settings.skyVectorApiKey"
+                      ></label>
+                    </div>
+                    <div class="col-sm-auto g-0">
+                      <input
+                        type="text"
+                        id="inputSkyVectorApiKey"
+                        class="form-control form-control-sm"
+                      />
+                    </div>
                   </div>
-                  <div class="form-group">
+                  <div class="">
                     <button
                       id="saveSettingsButton"
                       class="btn btn-success btn-sm mt-2"
                       data-i18n="save"
                     ></button>
                   </div>
-                  <div class="form-group form-inline">
-                    <legend
-                      class="col-form-label-sm"
-                      data-i18n="settings.databaseLegend"
-                    ></legend>
-                    <button
-                      id="exportDatabaseButton"
-                      class="btn btn-secondary btn-sm"
-                      data-i18n="export"
-                    ></button>
-                    <div class="custom-file col-sm-2 ml-2">
-                      <input
-                        type="file"
-                        name="importFiles[]"
-                        accept=".zip"
-                        class="custom-file-input"
-                        id="importDatabaseButton"
-                        aria-describedby="importDatabaseLabel"
-                      />
+                  <div class="row">
+                    <div class="col-sm">
+                      <legend
+                        class="col-form-label-sm"
+                        data-i18n="settings.databaseLegend"
+                      ></legend>
+                      <button
+                        id="exportDatabaseButton"
+                        class="btn btn-secondary btn-sm"
+                        data-i18n="export"
+                      ></button>
                       <label
-                        class="import-file-label"
+                        class="form-label-sm"
                         for="importDatabaseButton"
                         id="importDatabaseLabel"
                         data-i18n="import"
                       ></label>
+                      <input
+                        type="file"
+                        name="importFiles[]"
+                        accept=".zip"
+                        class="form-control-sm"
+                        id="importDatabaseButton"
+                        aria-describedby="importDatabaseLabel"
+                      />
                     </div>
                   </div>
                 </fieldset>
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-header" id="headingFilter">
-              <h6 class="mb-0">
-                <button
-                  class="btn btn-link"
-                  style="padding-top: 0px; padding-bottom: 0px"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseFilter"
-                  aria-expanded="true"
-                  aria-controls="collapseFilter"
-                  data-i18n="cards.filter"
-                ></button>
-              </h6>
-            </div>
-
+          <div class="accordion-item">
+            <h6 class="accordion-header" id="headingFilter">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseFilter"
+                aria-expanded="false"
+                aria-controls="collapseFilter"
+                data-i18n="cards.filter"
+              ></button>
+            </h6>
             <div
               id="collapseFilter"
-              class="collapse"
+              class="accordion-collapse collapse"
               aria-labelledby="headingFilter"
-              data-bs-parent="#sidebarAccordion"
+              data-bs-parent="#sideBarAccordion"
             >
-              <div class="card-body">
+              <div class="accordion-body">
                 <fieldset class="form-group p-1">
                   <div
-                    class="custom-control custom-switch custom-control-inline col-auto"
+                    class="form-check form-switch custom-control-inline col-auto"
                   >
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="enableFilterCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="enableFilterCheck"
                       data-i18n="filter.enable"
                     ></label>
                   </div>
-                  <div
-                    class="custom-control custom-checkbox custom-control-inline"
-                  >
+                  <div class="form-check form-switch">
                     <input
                       type="checkbox"
-                      class="custom-control-input"
+                      class="form-check-input"
                       id="highlightFilterCheck"
                     />
                     <label
-                      class="custom-control-label col-form-label-sm"
+                      class="form-check-label col-form-label-sm"
                       for="highlightFilterCheck"
                       data-i18n="filter.highlight"
                     ></label>
                   </div>
                   <ol id="filterList" class="list-unstyled"></ol>
-                  <div class="input-group">
-                    <select
-                      id="filterSelector"
-                      class="custom-select custom-select-sm col-sm-6"
-                    >
-                      <option
-                        value="-1"
-                        selected=""
-                        data-i18n="filter.choose"
-                      ></option>
-                    </select>
-                    <div class="input-group-append">
-                      <button
-                        class="btn btn-success btn-sm"
-                        type="button"
-                        id="addFilterButton"
-                        data-i18n="add"
-                      ></button>
+                  <div class="row col-sm-6">
+                    <div class="input-group">
+                      <select
+                        id="filterSelector"
+                        class="form-select form-select-sm col-sm-6"
+                      >
+                        <option
+                          value="-1"
+                          selected=""
+                          data-i18n="filter.choose"
+                        ></option>
+                      </select>
+                      <div class="input-group-append">
+                        <button
+                          class="btn btn-success btn-sm"
+                          type="button"
+                          id="addFilterButton"
+                          data-i18n="add"
+                        ></button>
+                      </div>
                     </div>
                   </div>
                 </fieldset>
@@ -1185,17 +1203,17 @@
                 <td class="hidden prio-3"></td>
                 <td class="text-center prio-2"></td>
                 <td class="prio-5"></td>
-                <td class="text-right prio-3"></td>
-                <td class="text-right"></td>
-                <td class="text-right"></td>
-                <td class="text-right hidden prio-4"></td>
-                <td class="text-right"></td>
-                <td class="text-right hidden prio-4"></td>
-                <td class="text-right hidden prio-4"></td>
-                <td class="text-right hidden prio-4"></td>
-                <td class="text-right hidden prio-5"></td>
-                <td class="text-right hidden prio-5"></td>
-                <td class="text-right hidden prio-5"></td>
+                <td class="text-end prio-3"></td>
+                <td class="text-end"></td>
+                <td class="text-end"></td>
+                <td class="text-end hidden prio-4"></td>
+                <td class="text-end"></td>
+                <td class="text-end hidden prio-4"></td>
+                <td class="text-end hidden prio-4"></td>
+                <td class="text-end hidden prio-4"></td>
+                <td class="text-end hidden prio-5"></td>
+                <td class="text-end hidden prio-5"></td>
+                <td class="text-end hidden prio-5"></td>
               </tr>
             </tbody>
           </table>

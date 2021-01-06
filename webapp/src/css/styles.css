@@ -13,7 +13,8 @@
   --row-selected-color: #b7c9d3;
   --aircraft-marker-selected-color: crimson;
   --form-control-color: #495057;
-  --custom-control-checked-color: #007bff;
+  --form-check-checked-color: #007bff;
+  --form-check-color: #ffffff;
   --btn-link-color: #007bff;
   --btn-success-color: #28a745;
   --btn-danger-color: #dc3545;
@@ -56,7 +57,8 @@
   --row-selected-color: #546e7a;
   --aircraft-marker-selected-color: #ad1457;
   --form-control-color: #c0c0c0;
-  --custom-control-checked-color: #8e24aa;
+  --form-check-checked-color: #8e24aa;
+  --form-check-color: #c0c0c0;
   --btn-link-color: #8e24aa;
   --btn-success-color: #33691e;
   --btn-danger-color: #b71c1c;
@@ -582,21 +584,30 @@ span#selectedWindDirection {
 }
 
 /* Overwrite bootstrap defaults */
-.col-form-label-sm {
+.form-check-label.col-form-label-sm {
   padding-top: 0px;
   padding-bottom: 0px;
 }
 
-.card-header {
-  padding: 0px;
-  background-color: var(--card-header-background-color);
-}
-
-.card-body {
+.accordion-button {
   padding: 0.25rem;
 }
 
-.card {
+.accordion-button.collapsed {
+  background-color: var(--card-header-background-color);
+  color: var(--font-color);
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--card-header-background-color);
+  color: var(--font-color);
+}
+
+.accordion-body {
+  padding: 0.25rem;
+}
+
+.accordion-item {
   background-color: var(--background-color);
   border-color: var(--card-border-color);
 }
@@ -618,11 +629,7 @@ span#selectedWindDirection {
   color: var(--toast-color);
 }
 
-.custom-file {
-  height: calc(1em + 0.75rem + 2px);
-}
-
-.custom-file-label {
+.form-control-label {
   height: calc(1em + 0.75rem + 2px);
   color: #495057;
   border: 1px solid #6c757d;
@@ -630,10 +637,10 @@ span#selectedWindDirection {
 
 .form-control,
 .form-control:focus,
-.custom-select,
+.form-select,
 .dropdown-menu,
 .dropdown-toggle,
-.custom-control-label::before {
+.form-control-label::before {
   background-color: var(--background-color);
   color: var(--form-control-color);
   border: 1px solid var(--card-border-color);
@@ -643,14 +650,19 @@ span#selectedWindDirection {
   color: var(--form-control-color);
 }
 
-.custom-control-input:checked ~ .custom-control-label::before {
+.form-check-input:checked {
   color: var(--form-control-color);
-  border-color: var(--custom-control-checked-color);
-  background-color: var(--custom-control-checked-color);
+  border-color: var(--form-check-checked-color);
+  background-color: var(--form-check-checked-color);
 }
 
-.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+.form-check-input {
+  background-color: var(--form-check-color);
+}
+
+.modal-content {
   background-color: var(--background-color);
+  color: var(--form-control-color);
 }
 
 .btn-success {
