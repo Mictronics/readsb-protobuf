@@ -13,17 +13,19 @@ var READSB;
                 READSB.Input.SetSiteCoordinates();
             }
             else {
-                this.AircraftListShowColumn("#aircraftListDistance", false);
+                this.AircraftListShowColumn("aircraftListDistance", false);
             }
             this.aircraftCollectionWorker = new Worker("./script/readsb/backend/aircraftCollection.js", { name: "AircraftCollectionWorker" });
             this.aircraftCollectionWorker.addEventListener("message", this.OnAircraftCollectionWorkerMessage.bind(this));
-            $(".toast").toast({ autohide: false, animation: false });
-            $(".toast").toast("hide");
+            this.errorToast = new bootstrap.Toast(document.getElementById("divErrorToast"), { autohide: false, animation: false, delay: 5000 });
+            this.errorToast.hide();
+            new bootstrap.Modal(document.getElementById("EditAircraftModal"), {});
+            new bootstrap.Modal(document.getElementById("EditConfirmModal"), {});
             document.getElementById("editIcao24").addEventListener("click", () => {
-                $("#EditConfirmModal").modal("show");
+                bootstrap.Modal.getInstance(document.getElementById("EditConfirmModal")).show();
             });
             document.getElementById("editAircraftButton").addEventListener("click", () => {
-                $("#EditAircraftModal").modal("show");
+                bootstrap.Modal.getInstance(document.getElementById("EditAircraftModal")).show();
                 document.getElementById("editRegistration").focus();
             });
             document.getElementById("editAircraftSaveButton").addEventListener("click", () => {
@@ -128,10 +130,10 @@ var READSB;
             }
             document.getElementsByClassName("toast-body").item(0).textContent = text;
             if (show) {
-                $(".toast").toast("show");
+                this.errorToast.show();
             }
             else {
-                $(".toast").toast("hide");
+                this.errorToast.hide();
             }
             this.errorToastStatus = show;
         }
@@ -822,7 +824,7 @@ var READSB;
                 type: t,
             };
             READSB.DatabaseFrontend.PutAircraftData(entry);
-            $("#EditAircraftModal").modal("hide");
+            bootstrap.Modal.getInstance(document.getElementById("EditAircraftModal")).hide();
             this.GetAircraft(i24);
         }
         static OnLanguageChange(e) {

@@ -37,7 +37,7 @@ namespace READSB {
             if (typeof AppSettings.SiteLat === "number" && typeof AppSettings.SiteLon === "number") {
                 Input.SetSiteCoordinates();
             } else {
-                this.AircraftListShowColumn("#aircraftListDistance", false); // hide distance header
+                this.AircraftListShowColumn("aircraftListDistance", false); // hide distance header
             }
 
             // Start backend worker that is collecting and managing all aircraft data.
@@ -45,18 +45,21 @@ namespace READSB {
             this.aircraftCollectionWorker.addEventListener("message", this.OnAircraftCollectionWorkerMessage.bind(this));
 
             // Initialize error toast
-            $(".toast").toast({ autohide: false, animation: false });
-            $(".toast").toast("hide");
+            this.errorToast = new bootstrap.Toast(document.getElementById("divErrorToast"), { autohide: false, animation: false, delay: 5000 });
+            this.errorToast.hide();
+
+            new bootstrap.Modal(document.getElementById("EditAircraftModal"), {});
+            new bootstrap.Modal(document.getElementById("EditConfirmModal"), {});
 
             // Assign confirmation modal to ICAO24 edit field in edit aircraft dialog.
             document.getElementById("editIcao24").addEventListener("click", () => {
-                $("#EditConfirmModal").modal("show");
+                bootstrap.Modal.getInstance(document.getElementById("EditConfirmModal")).show();
             });
 
             // Open edit aircaft dialog with button in selected infoblock
             document.getElementById("editAircraftButton").addEventListener("click", () => {
                 // Edit dialog is prefilled in function RefreshSelectedAircraft
-                $("#EditAircraftModal").modal("show");
+                bootstrap.Modal.getInstance(document.getElementById("EditAircraftModal")).show();
                 document.getElementById("editRegistration").focus();
             });
 
@@ -190,9 +193,9 @@ namespace READSB {
             }
             document.getElementsByClassName("toast-body").item(0).textContent = text;
             if (show) {
-                $(".toast").toast("show");
+                this.errorToast.show();
             } else {
-                $(".toast").toast("hide");
+                this.errorToast.hide();
             }
             this.errorToastStatus = show;
         }
@@ -283,6 +286,7 @@ namespace READSB {
             this.aircraftCollectionWorker.postMessage({ type: "SitePosition", data: [AppSettings.SiteLat, AppSettings.SiteLon] });
         }
 
+        private static errorToast: bootstrap.Toast;
         private static errorToastStatus: boolean = false;
         private static rowTemplate: HTMLTableRowElement = null;
         private static followSelected: boolean = false;
@@ -1030,7 +1034,7 @@ namespace READSB {
                 type: t,
             };
             DatabaseFrontend.PutAircraftData(entry);
-            $("#EditAircraftModal").modal("hide");
+            bootstrap.Modal.getInstance(document.getElementById("EditAircraftModal")).hide();
             this.GetAircraft(i24); // Refresh this aircraft
         }
 
