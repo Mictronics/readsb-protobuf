@@ -148,11 +148,10 @@ namespace READSB {
 
             /* Create parent list element */
             const li = document.createElement("li");
-            li.className = "form-inline";
+            li.className = "form-inline col-form-label-sm";
             let label = document.createElement("label");
             label.innerText = i18next.t(filterHandler.I18n);
             label.setAttribute("data-i18n", filterHandler.I18n);
-            label.className = "custom-control-label col-form-label-sm";
             li.appendChild(label);
 
             /* Create condition list*/
@@ -160,7 +159,7 @@ namespace READSB {
             if (l > 0) {
                 sel = document.createElement("select");
                 sel.id = "filterCondition";
-                sel.className = "custom-select custom-select-sm col-auto";
+                sel.className = "form-select form-select-sm col-auto";
                 for (i = 0; i < l; i++) {
                     const x = filterHandler.FilterConditions[i];
                     const opt = new Option();
@@ -181,13 +180,14 @@ namespace READSB {
             switch (filterHandler.MatchType) {
                 // Checkbox type filter
                 case eFilterMatchType.OnOff:
-                    li.className = "custom-control custom-checkbox";
+                    li.className = "form-check";
                     const cb = document.createElement("input");
                     cb.type = "checkbox";
                     cb.id = filterHandler.Label;
-                    cb.className = "custom-control-input";
+                    cb.className = "form-check-input";
                     cb.checked = v1;
                     label.setAttribute("for", filterHandler.Label);
+                    label.className = "col-form-label-sm";
                     li.insertBefore(cb, label);
                     break;
                 // Single textbox type filter
@@ -232,7 +232,7 @@ namespace READSB {
                 case eFilterMatchType.EnumMatch:
                     sel = document.createElement("select");
                     sel.id = "inputValue1";
-                    sel.className = "custom-select custom-select-sm col-auto";
+                    sel.className = "form-select form-select-sm col-auto";
                     l = filterHandler.EnumValues.length;
                     for (i = 0; i < l; i++) {
                         const x = filterHandler.FilterConditions[i];
@@ -254,7 +254,7 @@ namespace READSB {
             const btn = document.createElement("button");
             btn.type = "button";
             btn.value = key.toString();
-            btn.className = "btn btn-danger btn-sm mx-sm-1 btn-trash";
+            btn.className = "btn btn-light btn-sm mx-sm-1 btn-trash";
             btn.addEventListener("click", this.OnFilterRemove);
             li.appendChild(btn);
             document.getElementById("filterList").appendChild(li);
