@@ -219,7 +219,8 @@
     "none": "Brak",
     "light": "Lekki",
     "medium": "Średni",
-    "heavy": "Ciężki"
+    "heavy": "Ciężki",
+    "super": "Super"
   },
   "species": {
     "none": "Brak",

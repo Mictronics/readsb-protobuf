@@ -599,6 +599,7 @@ var READSB;
                 { Value: READSB.eWakeTurbulenceCategory.Light, Text: "Light", I18n: "wtc.light" },
                 { Value: READSB.eWakeTurbulenceCategory.Medium, Text: "Medium", I18n: "wtc.medium" },
                 { Value: READSB.eWakeTurbulenceCategory.Heavy, Text: "Heavy", I18n: "wtc.heavy" },
+                { Value: READSB.eWakeTurbulenceCategory.Super, Text: "Super", I18n: "wtc.super" },
             ];
         }
         IsFiltered(aircraft) {
@@ -617,6 +618,11 @@ var READSB;
                         break;
                     case READSB.eWakeTurbulenceCategory.Heavy:
                         if (aircraft.Wtc === "H") {
+                            f = false;
+                        }
+                        break;
+                    case READSB.eWakeTurbulenceCategory.Super:
+                        if (aircraft.Wtc === "J") {
                             f = false;
                         }
                         break;

@@ -76,6 +76,7 @@ namespace READSB {
         Light = 1,
         Medium = 2,
         Heavy = 3,
+        Super = 4,
     }
 
     export enum eEngineType {

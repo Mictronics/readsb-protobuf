@@ -219,7 +219,8 @@
     "none": "Ohne",
     "light": "Leicht",
     "medium": "Mittel",
-    "heavy": "Schwer"
+    "heavy": "Schwer",
+    "super": "Super"
   },
   "species": {
     "none": "Ohne",

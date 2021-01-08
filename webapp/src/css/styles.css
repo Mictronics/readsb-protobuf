@@ -19,6 +19,7 @@
   --btn-success-color: #28a745;
   --btn-danger-color: #dc3545;
   --btn-secondary-color: #ffffff;
+  --btn-light-color: #f8f9fa;
   --toast-border-color: crimson;
   --toast-header-background-color: crimson;
   --toast-background-color: gold;
@@ -62,6 +63,7 @@
   --btn-link-color: #8e24aa;
   --btn-success-color: #33691e;
   --btn-danger-color: #b71c1c;
+  --btn-light-color: #c0c0c0;
   --btn-secondary-color: #212121;
   --toast-border-color: #d50000;
   --toast-header-background-color: #ff6d00;
@@ -629,7 +631,7 @@ span#selectedWindDirection {
   color: var(--toast-color);
 }
 
-.form-control-label {
+.form-label {
   height: calc(1em + 0.75rem + 2px);
   color: #495057;
   border: 1px solid #6c757d;
@@ -640,7 +642,7 @@ span#selectedWindDirection {
 .form-select,
 .dropdown-menu,
 .dropdown-toggle,
-.form-control-label::before {
+.form-label::before {
   background-color: var(--background-color);
   color: var(--form-control-color);
   border: 1px solid var(--card-border-color);
@@ -658,6 +660,81 @@ span#selectedWindDirection {
 
 .form-check-input {
   background-color: var(--form-check-color);
+}
+
+.form-inline {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.form-inline .form-check {
+  width: 100%;
+}
+
+@media (min-width: 576px) {
+  .form-inline label {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    margin-bottom: 0;
+  }
+  .form-inline .form-group {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    margin-bottom: 0;
+  }
+  .form-inline .form-control {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+  }
+  .form-inline .form-control-plaintext {
+    display: inline-block;
+  }
+  .form-inline .input-group,
+  .form-inline .form-select {
+    width: auto;
+  }
+  .form-inline .form-check {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    width: auto;
+    padding-left: 0;
+  }
+  .form-inline .form-check-input {
+    position: relative;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    margin-top: 0;
+    margin-right: 0.25rem;
+    margin-left: 0;
+  }
+  .form-inline .form-control {
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+  }
+  .form-inline .form-label {
+    margin-bottom: 0;
+  }
 }
 
 .modal-content {
@@ -683,4 +760,10 @@ span#selectedWindDirection {
 
 .btn-secondary {
   color: var(--btn-secondary-color);
+}
+
+.btn-light {
+  color: var(--font-color);
+  background-color: var(--btn-light-color);
+  border-color: var(--btn-light-color);
 }

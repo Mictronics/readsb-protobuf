@@ -60,6 +60,7 @@ var READSB;
         eWakeTurbulenceCategory[eWakeTurbulenceCategory["Light"] = 1] = "Light";
         eWakeTurbulenceCategory[eWakeTurbulenceCategory["Medium"] = 2] = "Medium";
         eWakeTurbulenceCategory[eWakeTurbulenceCategory["Heavy"] = 3] = "Heavy";
+        eWakeTurbulenceCategory[eWakeTurbulenceCategory["Super"] = 4] = "Super";
     })(eWakeTurbulenceCategory = READSB.eWakeTurbulenceCategory || (READSB.eWakeTurbulenceCategory = {}));
     let eEngineType;
     (function (eEngineType) {

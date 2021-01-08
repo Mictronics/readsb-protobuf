@@ -585,6 +585,7 @@ namespace READSB {
                 { Value: eWakeTurbulenceCategory.Light, Text: "Light", I18n: "wtc.light" },
                 { Value: eWakeTurbulenceCategory.Medium, Text: "Medium", I18n: "wtc.medium" },
                 { Value: eWakeTurbulenceCategory.Heavy, Text: "Heavy", I18n: "wtc.heavy" },
+                { Value: eWakeTurbulenceCategory.Super, Text: "Super", I18n: "wtc.super" },
             ];
 
         public IsFiltered(aircraft: IAircraft): boolean {
@@ -599,6 +600,9 @@ namespace READSB {
                         break;
                     case eWakeTurbulenceCategory.Heavy:
                         if (aircraft.Wtc === "H") { f = false; }
+                        break;
+                    case eWakeTurbulenceCategory.Super:
+                        if (aircraft.Wtc === "J") { f = false; }
                         break;
                     default:
                         f = false;
