@@ -21,13 +21,40 @@ set -e
 
 case "$1" in
     purge)
-        rm -f /etc/default/readsb
-        rm -rf /var/lib/collectd/rrd/localhost/readsb
-        rm -rf /usr/share/readsb/graphs
-        rm -rf /usr/share/readsb
-        rm -f /etc/collectd/readsb.collectd.conf
-        cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
-        service collectd restart
+        if [ -f "/etc/default/readsb" ] ; then
+            echo "Removing default configuration.." >&2
+            rm -f /etc/default/readsb
+        fi
+
+        if [ -d "/var/lib/collectd/rrd/localhost/readsb" ] ; then
+            echo "Removing RRD files.." >&2
+            rm -rf /var/lib/collectd/rrd/localhost/readsb
+        fi
+
+        if [ -d "/usr/share/readsb/graphs" ] ; then
+            echo "Removing graph scripts.." >&2
+            rm -rf /usr/share/readsb/graphs
+        fi
+
+        if [ -d "/usr/share/readsb" ] ; then
+            echo "Removing web application.." >&2
+            rm -rf /usr/share/readsb
+        fi
+
+        if [ -f "/etc/collectd/readsb.collectd.conf" ] ; then
+            rm -f /etc/collectd/readsb.collectd.conf
+        fi
+
+        if [ -f "/etc/collectd/collectd.conf.bak" ] ; then
+            echo "Restoring collectd configuration.." >&2
+            cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
+        fi
+
+        if [ -f "/lib/systemd/system/collectd.service" ] ; then
+            echo "Restarting collectd service.." >&2
+            service collectd restart
+        fi
+
         deluser readsb plugdev
         deluser readsb dialout
         deluser readsb
@@ -35,8 +62,15 @@ case "$1" in
 
     remove)
         # Restore original collectd configuration
-        cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
-        service collectd restart
+        if [ -f "/etc/collectd/collectd.conf.bak" ] ; then
+            echo "Restoring collectd configuration.." >&2
+            cp /etc/collectd/collectd.conf.bak /etc/collectd/collectd.conf
+        fi
+
+        if [ -f "/lib/systemd/system/collectd.service" ] ; then
+            echo "Restarting collectd service.." >&2
+            service collectd restart
+        fi
 
         changed=false
         if [ -e /etc/lighttpd/conf-enabled/89-readsb.conf ]

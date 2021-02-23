@@ -46,7 +46,10 @@ case "$1" in
         adduser "$RUNAS" dialout
 
         # Make a backup of existing collectd configuration
-        cp /etc/collectd/collectd.conf /etc/collectd/collectd.conf.bak
+        if [ -f "/etc/collectd/collectd.conf" ] ; then
+            cp /etc/collectd/collectd.conf /etc/collectd/collectd.conf.bak
+        fi
+
         if [ -f "/etc/collectd/readsb.collectd.conf" ] ; then
             cp /etc/collectd/readsb.collectd.conf /etc/collectd/collectd.conf
             echo "Restarting collectd.." >&2
