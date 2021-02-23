@@ -3,6 +3,7 @@ readsb (4.0.2~dev) UNRELEASED; urgency=medium
   * In development
   * Remove dependency for collectd.
   * Make installation and removal process more robust.
+  * Move build build instruction into INSTALL file.
   * Contribution wiedehopf:
     * Demodulator slice_phase improvements
     * Change preamble detection to a modified approach
