@@ -1,8 +1,8 @@
 # readsbrrd service for systemd
 
 [Unit]
-Description=readsbrrd Round Robin Database statistics collector for readsb ADS-B receiver.
-Documentation=https://github.com/mictronics/readsb
+Description=Round Robin Database statistics collector for readsb ADS-B receiver.
+Documentation=https://github.com/mictronics/readsb-protobuf
 After=readsb.service
 Wants=readsb.service
 
