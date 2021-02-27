@@ -222,7 +222,7 @@ var READSB;
                     }
                     if ((msg.data[2] & 0xE000) === 0xE000) {
                         document.getElementById("infoblockGpsStatus").classList.replace("gps-no-position-icon", "gps-position-icon");
-                        document.getElementById("infoblockGpsStatus").innerHTML = `&nbsp;${msg.data[3]}/${msg.data[4] / 10}`;
+                        document.getElementById("infoblockGpsStatus").innerHTML = `&nbsp;&nbsp;&nbsp;${msg.data[3]}/${msg.data[4] / 10}`;
                     }
                     else if ((msg.data[2] & 0xC000) === 0xC000) {
                         document.getElementById("infoblockGpsStatus").classList.replace("gps-position-icon", "gps-no-position-icon");
