@@ -1981,9 +1981,10 @@ void generateAircraftProtoBuf(void) {
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
+        fprintf(stderr, "Creating aircraft.pb failed.\n");   
         return;
     }
-
+   
     uint64_t now = mstime();
     struct aircraft *a;
     size_t j;
@@ -2089,9 +2090,10 @@ void generateHistoryProtoBuf(const char *file) {
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
+        fprintf(stderr, "Creating history file failed.\n");    
         return;
     }
-
+   
     uint64_t now = mstime();
     struct aircraft *a;
     size_t j;
@@ -2259,6 +2261,7 @@ void generateStatsProtoBuf() {
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
+        fprintf(stderr, "Creating stats.pb failed.\n");
         return;
     }
 
@@ -2346,6 +2349,7 @@ void generateReceiverProtoBuf() {
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
+        fprintf(stderr, "Creating receiver.pb failed.\n");
         return;
     }
 
