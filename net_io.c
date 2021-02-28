@@ -1982,10 +1982,10 @@ void generateAircraftProtoBuf(void) {
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
-        fprintf(stderr, "Creating aircraft.pb failed.\n");   
+        fprintf(stderr, "Creating aircraft.pb failed.\n");
         return;
     }
-   
+
     uint64_t now = mstime();
     struct aircraft *a;
     size_t j;
@@ -2091,10 +2091,10 @@ void generateHistoryProtoBuf(const char *file) {
     tmppath[PATH_MAX - 1] = 0;
     fd = mkstemp(tmppath);
     if (fd < 0) {
-        fprintf(stderr, "Creating history file failed.\n");    
+        fprintf(stderr, "Creating history file failed.\n");
         return;
     }
-   
+
     uint64_t now = mstime();
     struct aircraft *a;
     size_t j;
@@ -2524,7 +2524,10 @@ static void modesReadFromClient(struct client *c) {
                         eom = p + MODES_LONG_MSG_BYTES + 8;
                     } else if (*p == 'H') {
                         // GNS HULC protocol message
-                        int len = *(p + 2);
+                        int len = *(unsigned char *) (p + 2);
+                        if (len > 24) {
+                            fprintf(stderr, "HULC status len > 24: %d - %s\n", len, p + 2);
+                        }
                         eom = p + len + 3;
                     } else {
                         // Not a valid beast message, skip 0x1a and try again
