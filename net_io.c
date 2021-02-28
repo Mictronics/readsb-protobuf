@@ -1519,6 +1519,7 @@ static int decodeBinMessage(struct client *c, char *p, int remote) {
         alt = ieee754_binary32_le_to_float(msg + 12);
 
         handle_radarcape_position(lat, lon, alt);
+        return 0;
     } else if (ch == 'H') {
         decodeHulcMessage(p);
         return 0;
