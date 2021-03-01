@@ -4,6 +4,8 @@ readsb (4.0.2~dev) UNRELEASED; urgency=medium
   * Remove dependency for collectd.
   * Make installation and removal process more robust.
   * Move build build instruction into INSTALL file.
+  * Fix handling of inproper status message length for GNS Hulc antenna.
+  * Add error reporting for output file creation and setting non blocking mode.
   * Contribution wiedehopf:
     * Demodulator slice_phase improvements
     * Change preamble detection to a modified approach
