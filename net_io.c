@@ -160,7 +160,9 @@ struct client *createGenericClient(struct net_service *service, int fd) {
     struct client *c;
     uint64_t now = mstime();
 
-    anetNonBlock(Modes.aneterr, fd);
+    if (anetNonBlock(Modes.aneterr, fd) == ANET_ERR) {
+        fprintf(stderr, "%s fd %d: Failed to set non-block: %s\n", service->descr, fd, Modes.aneterr);
+    }
 
     if (!service || fd == -1) {
         fprintf(stderr, "Fatal: createGenericClient called with invalid parameters!\n");
@@ -440,7 +442,9 @@ void serviceListen(struct net_service *service, char *bind_addr, char *bind_port
         }
 
         for (i = 0; i < nfds; ++i) {
-            anetNonBlock(Modes.aneterr, newfds[i]);
+            if (anetNonBlock(Modes.aneterr, newfds[i]) == ANET_ERR) {
+                fprintf(stderr, "%s port %s: Failed to set non-block: %s\n", service->descr, buf, Modes.aneterr);
+            }
             fds[n++] = newfds[i];
         }
     }
@@ -1403,7 +1407,7 @@ static int handleBeastCommand(struct client *c, char *p, int remote) {
  * @return Angular degree.
  */
 static double bam32ToDouble(uint32_t bam) {
-    return (double) ((int32_t)__bswap_32(bam) * 8.38190317153931E-08);
+    return (double) ((int32_t) __bswap_32(bam) * 8.38190317153931E-08);
 }
 
 //
