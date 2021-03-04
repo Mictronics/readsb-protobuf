@@ -65,6 +65,8 @@
 #include <poll.h>
 #include <pthread.h>
 
+#include <linux/serial.h>
+
 //
 // ============================= Networking =============================
 //
@@ -2528,9 +2530,13 @@ static void modesReadFromClient(struct client *c) {
                         eom = p + MODES_LONG_MSG_BYTES + 8;
                     } else if (*p == 'H') {
                         // GNS HULC protocol message
+                        if (p + 2 >= eod) { // Incomplete message in buffer, retry later
+                            break;
+                        }
                         int len = *(unsigned char *) (p + 2);
                         if (len > 24) {
-                            fprintf(stderr, "HULC status len > 24: %d - %s\n", len, p + 2);
+                            ++som; // Length doesn't match, skip message
+                            continue;
                         }
                         eom = p + len + 3;
                     } else {
@@ -2550,7 +2556,6 @@ static void modesReadFromClient(struct client *c) {
                     if (eom > eod) { // Incomplete message in buffer, retry later
                         break;
                     }
-
 
                     // Have a 0x1a followed by 1/2/3/4/5 - pass message to handler.
                     if (c->service->read_handler(c, som + 1, remote)) {
@@ -2629,8 +2634,12 @@ static void modesReadFromClient(struct client *c) {
         }
 
         if (som > c->buf) { // We processed something - so
-            c->buflen = eod - som; //     Update the unprocessed buffer length
-            memmove(c->buf, som, c->buflen); //     Move what's remaining to the start of the buffer
+            c->buflen = eod - som; // Update the unprocessed buffer length
+            if (c->buflen <= 0) {
+                c->buflen = 0;
+            } else {
+                memmove(c->buf, som, c->buflen); // Move what's remaining to the start of the buffer
+            }
         } else { // If no message was decoded process the next client
             return;
         }
