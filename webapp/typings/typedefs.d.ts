@@ -55,6 +55,7 @@ declare namespace READSB {
         ShowTraceDetails: boolean;
         DimMap: boolean;
         ShowRange: boolean;
+        ShowNightDayLayer: boolean;
     }
 
     /*
@@ -94,6 +95,7 @@ declare namespace READSB {
         UseDarkTheme: boolean;
         ShowTraceDetails: boolean;
         ShowRange: boolean;
+        ShowNightDayLayer: boolean;
     }
 
     /**
