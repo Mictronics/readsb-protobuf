@@ -157,6 +157,9 @@ namespace READSB {
                     if (AppSettings.ShowRange && o.name === "polarrange") {
                         o.isActive = true;
                     }
+                    if (AppSettings.ShowNightDayLayer && o.name === "nightday") {
+                        o.isActive = true;
+                    }
                 });
             }
             if (this.Initialized) {
@@ -360,6 +363,9 @@ namespace READSB {
                     break;
                 case "polarrange":
                     AppSettings.ShowRange = input.checked;
+                    break;
+                case "nightday":
+                    AppSettings.ShowNightDayLayer = input.checked;
                     break;
                 default:
                     break;

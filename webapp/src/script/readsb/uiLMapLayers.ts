@@ -311,6 +311,18 @@ namespace READSB {
                 site.push(lg);
             }
 
+            // Create night and day overlay
+            const ndg = L.layerGroup(null, {
+                isActive: false,
+                name: "nightday",
+                title: i18next.t("map.layer.nightday"),
+                type: "overlay",
+            } as L.ExtLayerOptions);
+
+            ndg.addLayer(L.terminator());
+            site.push(ndg);
+
+            // Add all layers in features group
             if (site.length > 0) {
                 layers[i18next.t("map.layer.features")] = site;
             }

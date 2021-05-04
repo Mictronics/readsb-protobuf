@@ -254,6 +254,14 @@ var READSB;
                 lg.addLayer(this.CreatePolarRangeLayer(this.polarRanges));
                 site.push(lg);
             }
+            const ndg = L.layerGroup(null, {
+                isActive: false,
+                name: "nightday",
+                title: i18next.t("map.layer.nightday"),
+                type: "overlay",
+            });
+            ndg.addLayer(L.terminator());
+            site.push(ndg);
             if (site.length > 0) {
                 layers[i18next.t("map.layer.features")] = site;
             }
