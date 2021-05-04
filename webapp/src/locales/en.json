@@ -300,7 +300,8 @@
       "siteCircles": "Site Cirlces",
       "site": "Site",
       "altitudeChart": "Altitude Chart",
-      "range": "Range"
+      "range": "Range",
+      "nightday": "Night&Day"
     }
   }
 }

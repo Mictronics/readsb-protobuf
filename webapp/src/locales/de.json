@@ -300,7 +300,8 @@
       "siteCircles": "Entfernungsringe",
       "site": "Standort",
       "altitudeChart": "Höhenkarte",
-      "range": "Reichweite"
+      "range": "Reichweite",
+      "nightday": "Nacht&Tag"
     }
   }
 }

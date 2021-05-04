@@ -300,7 +300,8 @@
       "siteCircles": "Okręgi odległości od stacji",
       "site": "Stacja",
       "altitudeChart": "Skala pułapu",
-      "range": "Zasięg"
+      "range": "Zasięg",
+      "nightday": "Noc i dzień"
     }
   }
 }
