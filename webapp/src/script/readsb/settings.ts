@@ -310,6 +310,17 @@ namespace READSB {
             DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
         }
 
+        static get ShowNightDayLayer(): boolean {
+            if (this.appSettings.ShowNightDayLayer === undefined) {
+                this.appSettings.ShowNightDayLayer = false;
+            }
+            return this.appSettings.ShowNightDayLayer;
+        }
+        static set ShowNightDayLayer(value: boolean) {
+            this.appSettings.ShowNightDayLayer = value;
+            DatabaseFrontend.PutSetting("MapSettings", this.appSettings);
+        }
+
         public static ReadSettings() {
             DatabaseFrontend.GetSetting("MapSettings")
                 .then((result: any) => {
@@ -368,6 +379,7 @@ namespace READSB {
                         ShowFlags: ("ShowFlags" in data) ? data.ShowFlags : true,
                         ShowHoverOverLabels: ("ShowHoverOverLabels" in data) ? data.ShowHoverOverLabels : true,
                         ShowMessageRateInTitle: ("ShowMessageRateInTitle" in data) ? data.ShowMessageRateInTitle : true,
+                        ShowNightDayLayer: ("ShowNightDayLayer" in data) ? data.ShowNightDayLayer : false,
                         ShowRange: ("ShowRange" in data) ? data.ShowRange : false,
                         ShowSite: ("ShowSite" in data) ? data.ShowSite : true,
                         ShowSiteCircles: ("ShowSiteCircles" in data) ? data.ShowSiteCircles : true,
@@ -423,6 +435,7 @@ namespace READSB {
                         ShowFlags: true,
                         ShowHoverOverLabels: true,
                         ShowMessageRateInTitle: true,
+                        ShowNightDayLayer: false,
                         ShowRange: false,
                         ShowSite: true,
                         ShowSiteCircles: true,
