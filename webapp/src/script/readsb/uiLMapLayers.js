@@ -260,7 +260,14 @@ var READSB;
                 title: i18next.t("map.layer.nightday"),
                 type: "overlay",
             });
-            ndg.addLayer(L.terminator());
+            ndg.addLayer(L.nightDayLayer({
+                color: "#000000",
+                fillColor: "#000000",
+                fillOpacity: 0.3,
+                opacity: 0.5,
+                resolution: 2,
+                stroke: false,
+            }));
             site.push(ndg);
             if (site.length > 0) {
                 layers[i18next.t("map.layer.features")] = site;

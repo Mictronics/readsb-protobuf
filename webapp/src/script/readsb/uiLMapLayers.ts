@@ -319,7 +319,14 @@ namespace READSB {
                 type: "overlay",
             } as L.ExtLayerOptions);
 
-            ndg.addLayer(L.terminator());
+            ndg.addLayer(L.nightDayLayer({
+                color: "#000000",
+                fillColor: "#000000",
+                fillOpacity: 0.3,
+                opacity: 0.5,
+                resolution: 2,
+                stroke: false,
+            }));
             site.push(ndg);
 
             // Add all layers in features group
