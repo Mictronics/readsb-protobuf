@@ -21,6 +21,7 @@
   "ShowFlags": true,
   "ShowHoverOverLabels": true,
   "ShowMessageRateInTitle": true,
+  "ShowNightDayLayer": false,
   "ShowSite": true,
   "ShowSiteCircles": true,
   "ShowTraceDetails": false,
