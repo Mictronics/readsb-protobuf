@@ -1,8 +1,8 @@
 // Part of readsb, a Mode-S/ADSB/TIS message decoder.
 //
-// leaflet.readsb.d.ts: Extended Typescript definitions for leaflet.
+// leaflet.extend.d.ts: Extended Typescript definitions for leaflet.
 //
-// Copyright (c) 2020 Michael Wolf <michael@mictronics.de>
+// Copyright (c) 2021 Michael Wolf <michael@mictronics.de>
 //
 // This file is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -156,6 +156,23 @@ declare namespace L {
     }
 
     export function aircraftSvgIcon(options?: IAircraftSvgIconOptions): AircraftSvgIcon;
+
+    /**
+     * Options for night&day layer.
+     */
+    export interface NightDayLayerOptions extends L.PolylineOptions {
+        resolution: number;
+        time?: Date;
+    }
+
+    /**
+     * Night&day layer class.
+     */
+    export class NightDayLayer extends Polygon {
+        SetTime(date?: Date): void;
+    }
+
+    export function nightDayLayer(options?: NightDayLayerOptions): L.NightDayLayer;
 
     /**
      * Heat map layer options.
