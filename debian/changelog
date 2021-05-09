@@ -7,6 +7,7 @@ readsb (4.0.2~dev) UNRELEASED; urgency=medium
   * Fix handling of inproper status message length for GNS Hulc antenna.
   * Prevent out of bounds read in case of Hulc status message.
   * Add error reporting for output file creation and setting non blocking mode.
+  * Add night&day layer in web application.
   * Contribution wiedehopf:
     * Demodulator slice_phase improvements
     * Change preamble detection to a modified approach
