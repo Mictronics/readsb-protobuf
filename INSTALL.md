@@ -1,6 +1,6 @@
 # Build and installation
 
-Example build and installation process, e.g. Ubuntu Server 20.04 or Dietpi.
+Example build and installation process, e.g. Ubuntu Server 20.04 or Dietpi. Package build tested on DietPi armv6 (armv7l) and armv8 (aarch64).
 
 ## General dependencies
 
