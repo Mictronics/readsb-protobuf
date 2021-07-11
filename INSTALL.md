@@ -64,13 +64,13 @@ sudo ldconfig
 ## Build and install libiio and libad9361-iio (optional)
 
 ```
-sudo apt-get --no-install-suggests --no-install-recommends install libxml2-dev bison flex
+sudo apt-get --no-install-suggests --no-install-recommends install libxml2-dev bison flex libaio-dev 
 
 git clone -q --branch master --depth 1 --single-branch https://github.com/analogdevicesinc/libiio.git
 cd libiio
 mkdir build
 cd build
-cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
+cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DHAVE_DNS_SD=OFF
 make
 sudo make install
 sudo ldconfig
