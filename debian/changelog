@@ -8,6 +8,7 @@ readsb (4.0.2~dev) UNRELEASED; urgency=medium
   * Prevent out of bounds read in case of Hulc status message.
   * Add error reporting for output file creation and setting non blocking mode.
   * Add night&day layer in web application.
+  * Fix overflow in get_deadline for large timeouts.
   * Contribution wiedehopf:
     * Demodulator slice_phase improvements
     * Change preamble detection to a modified approach
