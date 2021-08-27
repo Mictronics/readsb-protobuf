@@ -1,4 +1,4 @@
-readsb (4.0.2~dev) UNRELEASED; urgency=medium
+readsb (4.0.2) stable; urgency=medium
 
   * In development
   * Remove dependency for collectd.
@@ -16,7 +16,7 @@ readsb (4.0.2~dev) UNRELEASED; urgency=medium
     * Fake clock when using ifile.
     * Output statistics phase statistics.
 
- -- Michael Wolf <michael@mictronics.de>  Mon, 14 Dec 2020 12:01:33 +0100
+ -- Michael Wolf <michael@mictronics.de>  Fri, 27 Aug 2021 17:15:25 +0200
 
 readsb (4.0.1) stable; urgency=medium
 
