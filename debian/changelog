@@ -1,6 +1,11 @@
-readsb (4.0.2) stable; urgency=medium
+readsb (4.0.3~dev) UNRELEASED; urgency=medium
 
   * In development
+
+ -- Michael Wolf <michael@mictronics.de>  Fri, 27 Aug 2021 17:18:31 +0200
+
+readsb (4.0.2) stable; urgency=medium
+
   * Remove dependency for collectd.
   * Make installation and removal process more robust.
   * Move build build instruction into INSTALL file.
