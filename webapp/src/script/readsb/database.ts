@@ -331,7 +331,7 @@ namespace READSB {
                 throw new Error("Failed to open database!\n" + e.message);
             }
 
-            return new Promise((resolve, reject) => {
+            return new Promise<void>((resolve, reject) => {
                 request.onsuccess = (e) => {
                     this.db = request.result;
                     resolve();
