@@ -2162,18 +2162,14 @@ void useModesMessage(struct modesMessage *mm) {
     // forward messages when we have seen two of them.
 
     if (Modes.net && !mm->sbs_in) {
-        if (Modes.net_verbatim || mm->msgtype == 32 || !a) {
+        if (Modes.net_verbatim || !a || Modes.net_only) {
             // Unconditionally send
             modesQueueOutput(mm, a);
-        } else if (a->meta.messages > 1) {
-            // Suppress the first message. When we receive a second message,
-            // emit the first two messages.
-            if (a->meta.messages == 2) {
-                modesQueueOutput(&a->first_message, a);
-            }
+        } else if (a->meta.messages > 1) { 
+            // Suppress the first message when using an SDR
             modesQueueOutput(mm, a);
         }
-    }
+    }   
 }
 
 //
