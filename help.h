@@ -119,6 +119,7 @@ static struct argp_option options[] = {
     {"beast-df045-on", OptBeastDF045, 0, 0, "Turn ON DF0/4/5 filter", 5},
     {"beast-fec-off", OptBeastFecOff, 0, 0, "Turn OFF forward error correction", 5},
     {"beast-modeac", OptBeastModeAc, 0, 0, "Turn ON mode A/C", 5},
+    {"beast-baudrate", OptBeastBaudrate, "<baud>", 0, "Override Baudrate (default rate 3000000 baud)", 5},
 
     {0, 0, 0, 0, "GNS HULC options:", 6},
     {0, 0, 0, OPTION_DOC, "use with --device-type gnshulc", 6},

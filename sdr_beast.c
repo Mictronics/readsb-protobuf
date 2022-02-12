@@ -41,6 +41,7 @@ static void beastSetOption(char opt) {
 void beastInitConfig(void) {
     free(Modes.beast_serial);
     Modes.beast_serial = strdup("/dev/ttyUSB0");
+    Modes.beast_baudrate = 0;
     BeastSettings.filter_df045 = false;
     BeastSettings.filter_df1117 = false;
     BeastSettings.mode_ac = false;
@@ -55,6 +56,9 @@ bool beastHandleOption(int argc, char *argv) {
         case OptBeastSerial:
             free(Modes.beast_serial);
             Modes.beast_serial = strdup(argv);
+            break;
+        case OptBeastBaudrate:
+            Modes.beast_baudrate = (int) strtoll(argv, NULL, 10);
             break;
         case OptBeastDF1117:
             BeastSettings.filter_df1117 = true;
@@ -106,6 +110,10 @@ bool beastOpen(void) {
 
     if (Modes.sdr_type == SDR_GNS) {
         baud = B921600;
+    }
+
+    if (Modes.beast_baudrate) {
+        baud = Modes.beast_baudrate;
     }
 
     if (cfsetispeed(&tios, baud) < 0) {

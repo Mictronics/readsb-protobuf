@@ -255,6 +255,7 @@ struct _Modes { // Internal state
     int ppm_error;
     char aneterr[ANET_ERR_LEN];
     int beast_fd; // Local Modes-S Beast handler
+    int beast_baudrate; // Mode-S beast and similar baud rate
     struct net_service *services; // Active services
     struct aircraft *aircrafts[AIRCRAFTS_BUCKETS];
     struct net_writer raw_out; // Raw output
@@ -604,6 +605,7 @@ enum {
     OptRtlSdrEnableAgc,
     OptRtlSdrPpm,
     OptBeastSerial,
+    OptBeastBaudrate,
     OptBeastDF1117,
     OptBeastDF045,
     OptBeastMlatTimeOff,

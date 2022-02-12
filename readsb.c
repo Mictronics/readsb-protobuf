@@ -691,6 +691,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
         case OptRtlSdrPpm:
 #endif
         case OptBeastSerial:
+        case OptBeastBaudrate:
         case OptBeastDF1117:
         case OptBeastDF045:
         case OptBeastMlatTimeOff:
@@ -737,7 +738,7 @@ int main(int argc, char **argv) {
 
     Modes.startup_time = mstime();
     Modes.ifile_now = Modes.startup_time;
-    
+
     // signal handlers:
     signal(SIGINT, sigintHandler);
     signal(SIGTERM, sigtermHandler);
