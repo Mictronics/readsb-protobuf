@@ -178,14 +178,16 @@ static void plutosdrCallback(int16_t *buf, uint32_t len) {
     }
 
     outbuf->flags = 0;
+    outbuf->dropped = 0;
 
     if (dropped) {
         // We previously dropped some samples due to no buffers being available
         outbuf->flags |= MAGBUF_DISCONTINUOUS;
         outbuf->dropped = dropped;
-    }
 
-    dropped = 0;
+        // reset dropped counter
+        dropped = 0;
+    }
 
     outbuf->sampleTimestamp = sampleCounter * 12e6 / Modes.sample_rate;
     sampleCounter += samples_read;
