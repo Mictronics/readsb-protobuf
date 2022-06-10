@@ -285,11 +285,15 @@ static void rtlsdrCallback(unsigned char *buf, uint32_t len, void *ctx) {
     }
 
     outbuf->flags = 0;
+    outbuf->dropped = 0;
 
     if (dropped) {
         // We previously dropped some samples due to no buffers being available
         outbuf->flags |= MAGBUF_DISCONTINUOUS;
         outbuf->dropped = dropped;
+
+        // reset dropped counter
+        dropped = 0;
     }
 
     // Compute the sample timestamp and system timestamp for the start of the block
