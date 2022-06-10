@@ -3,6 +3,7 @@ readsb (4.0.3~dev) UNRELEASED; urgency=medium
   * In development
   * Upgrade bootstrap v5.1.3.
   * Add option for user defined Baud rate with Modes-Beast or similar decoders
+  * Fix dropped counter for rtlsdr
 
  -- Michael Wolf <michael@mictronics.de>  Fri, 28 Jan 2022 09:17:31 +0200
 
