@@ -715,7 +715,7 @@ namespace READSB {
             }
 
             document.getElementById("selectedIcao").innerText = ac.Icao.toUpperCase();
-            (document.getElementById("selectedIcao") as HTMLLinkElement).href = "https://www.planespotters.net/search?q=" + ac.Icao;
+            (document.getElementById("selectedIcao") as HTMLLinkElement).href = "https://www.planespotters.net/?icao=" + ac.Icao;
 
             document.getElementById("selectedSpeedGs").innerText = Format.SpeedLong(ac.Gs, AppSettings.DisplayUnits);
             document.getElementById("selectedVerticalRate").innerText = Format.VerticalRateLong(ac.VertRate, AppSettings.DisplayUnits);
