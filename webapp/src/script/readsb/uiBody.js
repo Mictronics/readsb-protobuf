@@ -544,7 +544,7 @@ var READSB;
                 document.getElementById("selectedSquawk").innerText = ac.Squawk;
             }
             document.getElementById("selectedIcao").innerText = ac.Icao.toUpperCase();
-            document.getElementById("selectedIcao").href = "https://www.planespotters.net/search?q=" + ac.Icao;
+            document.getElementById("selectedIcao").href = "https://www.planespotters.net/?icao=" + ac.Icao;
             document.getElementById("selectedSpeedGs").innerText = READSB.Format.SpeedLong(ac.Gs, READSB.AppSettings.DisplayUnits);
             document.getElementById("selectedVerticalRate").innerText = READSB.Format.VerticalRateLong(ac.VertRate, READSB.AppSettings.DisplayUnits);
             document.getElementById("selectedTrack").innerText = READSB.Format.TrackLong(ac.Track);
