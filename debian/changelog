@@ -4,8 +4,9 @@ readsb (4.0.3~dev) UNRELEASED; urgency=medium
   * Upgrade bootstrap v5.1.3.
   * Add option for user defined Baud rate with Modes-Beast or similar decoders
   * Fix dropped counter for rtlsdr
+  * Fix prototype pollution and path traversal via loadAsync in JSZip
 
- -- Michael Wolf <michael@mictronics.de>  Fri, 28 Jan 2022 09:17:31 +0200
+ -- Michael Wolf <michael@mictronics.de>  Fri, 01 Apr 2023 20:33:43 +0200
 
 readsb (4.0.2) stable; urgency=medium
 
