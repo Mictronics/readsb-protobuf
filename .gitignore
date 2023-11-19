@@ -4,6 +4,7 @@
 *.rej
 *.orig
 nbproject/*
+.vscode/*
 oneoff/convert_benchmark
 oneoff/decode_comm_b
 /readsb
