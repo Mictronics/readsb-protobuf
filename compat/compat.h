@@ -20,7 +20,7 @@
 
 #else // other platforms
 
-# include <endian.h>
+# include <byteswap.h>
 
 #endif
 

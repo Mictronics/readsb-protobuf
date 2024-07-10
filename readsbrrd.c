@@ -587,7 +587,7 @@ int main(int argc, char** argv) {
     // Run this until we get a termination signal.
     while (!readsbrrd_exit) {
         clock_gettime(CLOCK_REALTIME, &ts);
-        ts.tv_sec += (__time_t) (rrd.step * 1.5);
+        ts.tv_sec += (time_t) rrd.step * 1.5;
         r = sem_getvalue(stats_semptr, &semcnt);
         // Avoid frequent updates when more than one event is queued in semaphore.
         // Update only one very last event.
