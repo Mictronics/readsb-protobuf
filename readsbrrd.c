@@ -216,7 +216,7 @@ static int rrd_create_files() {
             snprintf(rrd.argv[6 + r], 256, "%s", rra[r]);
             rrd.argc += 1;
         }
-        rrd.status = rrd_create(rrd.argc, rrd.argv);
+        rrd.status = rrd_create(rrd.argc, (const char **) rrd.argv);
         if (rrd_test_error()) {
             fprintf(stderr, "%s\n", rrd_get_error());
             rrd_clear_error();
@@ -246,7 +246,7 @@ static void rrd_update_file(rrd_file_type_t type, float value) {
         return;
     }
     
-    rrd.status = rrd_update(rrd.argc, rrd.argv);
+    rrd.status = rrd_update(rrd.argc, (const char **) rrd.argv);
     if (rrd_test_error()) {
         fprintf(stderr, "%s\n", rrd_get_error());
         rrd_clear_error();
