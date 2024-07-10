@@ -14,6 +14,8 @@ CFLAGS += $(DIALECT) -O2 -g -W -D_DEFAULT_SOURCE -Wall -Werror -fno-common -Wmis
 LIBS = -pthread -lpthread -lm -lrt -lncurses -lprotobuf-c -lrrd
 LDFLAGS = 
 
+LIBS += $(shell pkg-config --libs tinfo)
+
 ifeq ($(AGGRESSIVE), yes)
   CPPFLAGS += -DALLOW_AGGRESSIVE
 endif
