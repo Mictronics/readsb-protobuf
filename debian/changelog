@@ -1,4 +1,14 @@
-readsb (4.0.3~dev) UNRELEASED; urgency=medium
+readsb (4.0.4-dev) UNRELEASED; urgency=medium
+
+  * Added tinfo to LIBS if detected
+  * Fixed compilation with librrd-dev v1.8.0+
+  * Fixed compilation against musl libc
+  * Removed dh-systemd
+  * Increased ICAO_FILTER_SIZE
+
+ -- Michael Wolf <michael@mictronics.de>  Wed, 10 Jul 2024 16:17:47 +0200
+
+readsb (4.0.3) stable; urgency=medium
 
   * In development
   * Upgrade bootstrap v5.1.3.
@@ -6,7 +16,7 @@ readsb (4.0.3~dev) UNRELEASED; urgency=medium
   * Fix dropped counter for rtlsdr
   * Fix prototype pollution and path traversal via loadAsync in JSZip
 
- -- Michael Wolf <michael@mictronics.de>  Fri, 01 Apr 2023 20:33:43 +0200
+ -- Michael Wolf <michael@mictronics.de>  Wed, 10 Jul 2024 16:16:48 +0200
 
 readsb (4.0.2) stable; urgency=medium
 
