@@ -216,7 +216,12 @@ static int rrd_create_files() {
             snprintf(rrd.argv[6 + r], 256, "%s", rra[r]);
             rrd.argc += 1;
         }
-        rrd.status = rrd_create(rrd.argc, (const char **) rrd.argv);
+
+#ifdef LIBRRD_VERSION_1_7
+        rrd.status = rrd_create(rrd.argc, rrd.argv);
+#else
+        rrd.status = rrd_create(rrd.argc, (const char **)rrd.argv);
+#endif
         if (rrd_test_error()) {
             fprintf(stderr, "%s\n", rrd_get_error());
             rrd_clear_error();
@@ -245,8 +250,12 @@ static void rrd_update_file(rrd_file_type_t type, float value) {
         fprintf(stderr, "error system time in past compared to last entry in %s.\n", rrd_files[type].name);
         return;
     }
-    
-    rrd.status = rrd_update(rrd.argc, (const char **) rrd.argv);
+
+#ifdef LIBRRD_VERSION_1_7
+    rrd.status = rrd_update(rrd.argc, rrd.argv);
+#else
+    rrd.status = rrd_update(rrd.argc, (const char **)rrd.argv);
+#endif
     if (rrd_test_error()) {
         fprintf(stderr, "%s\n", rrd_get_error());
         rrd_clear_error();

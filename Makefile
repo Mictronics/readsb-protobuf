@@ -16,6 +16,12 @@ LDFLAGS =
 
 LIBS += $(shell pkg-config --libs tinfo)
 
+# Work around to build with librrd-dev v1.7.2 or v1.8.0+
+# librrd-dev doesn't expose its version to the pre-processor.
+ifeq ($(shell awk -v a="$(shell pkg-config --modversion librrd | cut -c1-3)" -v b="1.8" 'BEGIN{print(a<b)}'), 1)
+  CPPFLAGS += -DLIBRRD_VERSION_1_7
+endif
+
 ifeq ($(AGGRESSIVE), yes)
   CPPFLAGS += -DALLOW_AGGRESSIVE
 endif
