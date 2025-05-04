@@ -1,3 +1,9 @@
+readsb (4.0.5-dev) UNRELEASED; urgency=medium
+
+  * In development
+
+ -- Michael Wolf <michael@mictronics.de>  Wed, 04 May 2025 07:37:16 +0200
+
 readsb (4.0.4) stable; urgency=medium
 
   * Added tinfo to LIBS if detected
