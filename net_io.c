@@ -113,7 +113,7 @@ struct net_service *serviceInit(const char *descr, struct net_writer *writer, he
         exit(1);
     }
 
-    if (!(service = calloc(sizeof (*service), 1))) {
+    if (!(service = calloc(1, sizeof (*service)))) {
         fprintf(stderr, "Out of memory allocating service %s\n", descr);
         exit(1);
     }
