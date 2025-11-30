@@ -640,6 +640,7 @@ namespace READSB {
                 { Value: eEngineType.Jet, Text: "Jet", I18n: "engine.jet" },
                 { Value: eEngineType.Electric, Text: "Electric", I18n: "engine.electric" },
                 { Value: eEngineType.Rocket, Text: "Rocket", I18n: "engine.rocket" },
+                { Value: eEngineType.Motorglider, Text: "Motorglider", I18n: "engine.motorglider" },
             ];
 
         public IsFiltered(aircraft: IAircraft): boolean {
@@ -662,6 +663,8 @@ namespace READSB {
                     case eEngineType.Rocket:
                         if (s === "R") { f = false; }
                         break;
+                    case eEngineType.Motorglider:
+                        if (s === "M") { f = false; }
                     default:
                         f = false;
                         break;

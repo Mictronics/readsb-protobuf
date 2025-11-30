@@ -86,6 +86,7 @@ namespace READSB {
         Jet = 3,
         Electric = 4,
         Rocket = 5,
+        Motorglider = 6,
     }
 
     export enum eCondition {

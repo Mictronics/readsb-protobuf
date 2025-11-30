@@ -213,7 +213,8 @@
     "turboshaft": "Wellenturbine",
     "jet": "Turbine",
     "electric": "Elektrisch",
-    "rocket": "Rakete"
+    "rocket": "Rakete",
+    "motorglider": "Motorsegler"
   },
   "wtc": {
     "none": "Ohne",

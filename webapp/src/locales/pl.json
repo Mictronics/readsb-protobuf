@@ -213,7 +213,8 @@
     "turboshaft": "Turbowentylatorowy",
     "jet": "Odrzutowy",
     "electric": "Elektryczny",
-    "rocket": "Rakietowy"
+    "rocket": "Rakietowy",
+    "motorglider": "Motoparalotnia"
   },
   "wtc": {
     "none": "Brak",

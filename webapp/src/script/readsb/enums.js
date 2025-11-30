@@ -70,6 +70,7 @@ var READSB;
         eEngineType[eEngineType["Jet"] = 3] = "Jet";
         eEngineType[eEngineType["Electric"] = 4] = "Electric";
         eEngineType[eEngineType["Rocket"] = 5] = "Rocket";
+        eEngineType[eEngineType["Motorglider"] = 6] = "Motorglider";
     })(eEngineType = READSB.eEngineType || (READSB.eEngineType = {}));
     let eCondition;
     (function (eCondition) {

@@ -663,6 +663,7 @@ var READSB;
                 { Value: READSB.eEngineType.Jet, Text: "Jet", I18n: "engine.jet" },
                 { Value: READSB.eEngineType.Electric, Text: "Electric", I18n: "engine.electric" },
                 { Value: READSB.eEngineType.Rocket, Text: "Rocket", I18n: "engine.rocket" },
+                { Value: READSB.eEngineType.Motorglider, Text: "Motorglider", I18n: "engine.motorglider" },
             ];
         }
         IsFiltered(aircraft) {
@@ -695,6 +696,10 @@ var READSB;
                             f = false;
                         }
                         break;
+                    case READSB.eEngineType.Motorglider:
+                        if (s === "M") {
+                            f = false;
+                        }
                     default:
                         f = false;
                         break;

@@ -213,7 +213,8 @@
     "turboshaft": "Turboshaft",
     "jet": "Jet",
     "electric": "Electric",
-    "rocket": "Rocket"
+    "rocket": "Rocket",
+    "motorglider": "Motorglider"
   },
   "wtc": {
     "none": "None",
