@@ -1626,19 +1626,20 @@ static const char *commb_format_to_string(commb_format_t format) {
 static const char *nav_modes_to_string(nav_modes_t flags) {
     static char buf[128];
 
+    size_t len = 0;
     buf[0] = 0;
     if (flags & NAV_MODE_AUTOPILOT)
-        strcat(buf, "autopilot ");
+        len += snprintf(buf + len, sizeof(buf) - len, "autopilot ");
     if (flags & NAV_MODE_VNAV)
-        strcat(buf, "vnav ");
+        len += snprintf(buf + len, sizeof(buf) - len, "vnav ");
     if (flags & NAV_MODE_ALT_HOLD)
-        strcat(buf, "althold ");
+        len += snprintf(buf + len, sizeof(buf) - len, "althold ");
     if (flags & NAV_MODE_APPROACH)
-        strcat(buf, "approach ");
+        len += snprintf(buf + len, sizeof(buf) - len, "approach ");
     if (flags & NAV_MODE_LNAV)
-        strcat(buf, "lnav ");
+        len += snprintf(buf + len, sizeof(buf) - len, "lnav ");
     if (flags & NAV_MODE_TCAS)
-        strcat(buf, "tcas ");
+        len += snprintf(buf + len, sizeof(buf) - len, "tcas ");
 
     if (buf[0] != 0)
         buf[strlen(buf) - 1] = 0;
